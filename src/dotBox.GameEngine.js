@@ -16,6 +16,7 @@ dotBox = dotBox || {};
  * Creates a new game engine.
  * @function gameEngine
  * @param   {gameConfig}    - The game configuration options.
+ * 
  */
 dotBox.gameEngine = function gameEngine(config) {
 

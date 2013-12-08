@@ -1,6 +1,6 @@
 /*global describe, it, expect, dotBox */
 
-/*
+
 
 
 describe("The gameEngine factory", function () {
@@ -531,4 +531,3 @@ describe("The gameEngine.isVtLineClosed method", function () {
 
 });
 
-    */
