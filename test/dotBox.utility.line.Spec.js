@@ -236,4 +236,95 @@ describe("dotBox.utility.line", function () {
 
     });
 
+    describe("method getLinesFromBox", function () {
+
+        beforeEach(function() {
+            this.addMatchers({
+
+                toBeMatchingLine: function(expected) {
+                    var actual = JSON.stringify(this.actual);
+                    var exp = JSON.stringify(expected);
+                    var notText = this.isNot ? " not" : "";
+
+                    this.message = function () {
+                        return "Expected " + actual + " to be same as " + exp;
+                    }
+
+                    return actual === exp;
+                }
+
+            });
+        });
+
+        it("should get the correct lines for a left edge box", function () {
+
+            var dotCountLength = 3,
+                actLines,
+                expLines = [],
+                i;
+
+
+            expLines.push({ d1: {x: 0, y: 0}, d2: {x: 1, y: 0} });
+            expLines.push({ d1: {x: 1, y: 0}, d2: {x: 1, y: 1} });
+            expLines.push({ d1: {x: 0, y: 1}, d2: {x: 1, y: 1} });
+            expLines.push({ d1: {x: 0, y: 0}, d2: {x: 0, y: 1} });
+
+            actLines = lineUtil.getLinesFromBox(0, dotCountLength);
+
+            for(i = 0; i < expLines.length; i++) {
+                expect(actLines[i]).toBeMatchingLine(expLines[i]);
+            }
+
+
+
+        });
+
+        it("should get the correct lines for a right edge box", function () {
+
+            var dotCountLength = 3,
+                actLines,
+                expLines = [],
+                i;
+
+
+            expLines.push({ d1: {x: 1, y: 1}, d2: {x: 2, y: 1} });
+            expLines.push({ d1: {x: 2, y: 1}, d2: {x: 2, y: 2} });
+            expLines.push({ d1: {x: 1, y: 2}, d2: {x: 2, y: 2} });
+            expLines.push({ d1: {x: 1, y: 1}, d2: {x: 1, y: 2} });
+
+            actLines = lineUtil.getLinesFromBox(3, dotCountLength);
+
+            for(i = 0; i < expLines.length; i++) {
+                expect(actLines[i]).toBeMatchingLine(expLines[i]);
+            }
+
+
+
+        });
+
+        it("should get the correct lines for an interior box", function () {
+
+            var dotCountLength = 4,
+                actLines,
+                expLines = [],
+                i;
+
+
+            expLines.push({ d1: {x: 1, y: 2}, d2: {x: 2, y: 2} });
+            expLines.push({ d1: {x: 2, y: 2}, d2: {x: 2, y: 3} });
+            expLines.push({ d1: {x: 1, y: 3}, d2: {x: 2, y: 3} });
+            expLines.push({ d1: {x: 1, y: 2}, d2: {x: 1, y: 3} });
+
+            actLines = lineUtil.getLinesFromBox(7, dotCountLength);
+
+            for(i = 0; i < expLines.length; i++) {
+                expect(actLines[i]).toBeMatchingLine(expLines[i]);
+            }
+
+
+
+        });
+
+    });
+
 });

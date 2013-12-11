@@ -111,9 +111,58 @@ dotBox.utility.line = dotBox.utility.line || {};
     }
 
 
+    /**
+     * Gets an array containing four lines of the box.
+     * @function                getLinesFromBox
+     * @param {number}          boxIndex            - The index of the box.
+     * @param {number}          dotCountLength      - The length of the game board in dots.
+     */
+    function getLinesFromBox(boxIndex, dotCountLength) {
+
+        var boxCountLength = dotCountLength - 1,
+            lines = [],
+            x,
+            y;
+
+        //This gives us the upper-left corner of a box.
+        x = boxIndex % boxCountLength;
+        y = (boxIndex - x) / boxCountLength;
+
+        //Top Line
+        lines.push({
+            d1: {x: x, y: y},
+            d2: {x: x + 1, y: y}
+        });
+
+        //Right
+        lines.push({
+            d1: {x: x + 1, y: y},
+            d2: {x: x + 1, y: y + 1}
+        });
+
+        //Bottom Line
+        lines.push({
+            d1: {x: x, y: y + 1},
+            d2: {x: x + 1, y: y + 1}
+        });
+
+        //Left
+        lines.push({
+            d1: {x: x, y: y},
+            d2: {x: x, y: y + 1}
+        });
+
+        return lines;
+
+
+    }
+
+
 
     namespace.isHLine = isHLine;
     namespace.getBoxesFromLine = getBoxesFromLine;
+    namespace.getLinesFromBox = getLinesFromBox;
+
 
 
 })(dotBox.utility.line);
