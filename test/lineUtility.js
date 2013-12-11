@@ -12,7 +12,7 @@ var hLineIterator = function hLineIterator(dotCountLength, dotCountWidth) {
         return {
             d1 : {x: colIndex, y: rowIndex},
             d2 : {x: colIndex + 1, y: rowIndex}
-        }
+        };
 
     }
 
@@ -63,7 +63,7 @@ var vLineIterator = function hLineIterator(dotCountLength, dotCountWidth) {
         return {
             d1 : {x: colIndex, y: rowIndex},
             d2 : {x: colIndex, y: rowIndex + 1}
-        }
+        };
 
     }
 
@@ -101,6 +101,58 @@ var vLineIterator = function hLineIterator(dotCountLength, dotCountWidth) {
 
 };
 
+var boxIterator = function boxIterator(dotCountLength, dotCountWidth) {
+
+    var colIndex = -1,
+        rowIndex = 0,
+        isComplete = false,
+        boxCountLength = dotCountLength - 1,
+        boxCountWidth = dotCountWidth - 1;
+
+    function current() {
+
+        var boxIndex;
+
+        if(isComplete) return false;
+
+        boxIndex = (rowIndex * boxCountLength) + colIndex;
+        return {boxIndex: boxIndex};
+
+    }
+
+    function isLastColumn() {
+        return colIndex === boxCountLength - 1;
+    }
+
+    function isLastRow() {
+        return rowIndex === boxCountWidth - 1
+    }
+
+    function next() {
+
+        if(isComplete) return null;
+
+        if(isLastRow() && isLastColumn()) {
+            isComplete = true;
+            return null;
+        } else if(isLastColumn()) {
+            rowIndex +=1 ;
+            colIndex = 0;
+        } else {
+            colIndex += 1;
+        }
+
+        return current();
+
+    }
+
+    return {
+        next: next,
+        current: current
+    };
+
+
+};
 
 
 describe("line iterator", function () {
@@ -203,4 +255,49 @@ describe("line iterator", function () {
 
 });
 
+describe("box iterator", function () {
 
+    it("should return 9 ordered indexes for a game size of 4x4 (sized in dots)", function () {
+
+        var i,
+            bIt,
+            box,
+            actualIndexes = [],
+            EXP_BOX_COUNT = 9;
+
+        bIt = boxIterator(4, 4);
+
+        while(box = bIt.next()) {
+            actualIndexes.push(box.boxIndex);
+        }
+
+        expect(actualIndexes.length).toBe(EXP_BOX_COUNT)
+
+        for(i = 0; i < EXP_BOX_COUNT; i++) {
+            expect(actualIndexes[i]).toBe(i);
+        }
+
+    });
+
+    it("should return 6 ordered indexes for a game size of 3x4 (sized in dots)", function () {
+
+        var i,
+            bIt,
+            box,
+            actualIndexes = [],
+            EXP_BOX_COUNT = 6;
+
+        bIt = boxIterator(3, 4);
+
+        while(box = bIt.next()) {
+            actualIndexes.push(box.boxIndex);
+        }
+
+        expect(actualIndexes.length).toBe(EXP_BOX_COUNT)
+
+        for(i = 0; i < EXP_BOX_COUNT; i++) {
+            expect(actualIndexes[i]).toBe(i);
+        }
+
+    });
+});

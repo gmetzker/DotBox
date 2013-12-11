@@ -21,10 +21,6 @@ dotBox.utility = dotBox.utility || {};
             _verticalLineStates[i] = false;
         }
 
-        function isHLine(line) {
-            return Math.abs(line.d1.x - line.d2.x) > 0;
-        }
-
         function getLineLookup(line) {
 
             var row,
@@ -32,7 +28,7 @@ dotBox.utility = dotBox.utility || {};
                 index,
                 stateArr;
 
-            if(isHLine(line)) {
+            if(util.line.isHLine(line)) {
                 //Horizontal Line
                 stateArr = _horizontalLineStates;
 
@@ -154,10 +150,32 @@ dotBox.utility = dotBox.utility || {};
 
         }
 
+        /**
+         * Checks to see if the the four sides of the box
+         * are all in a connected state.
+         * @function            isBoxClosed
+         * @param   {number}    boxIndex    - The box index we are checking.
+         * @returns {boolean}               - True if all four lines are connected, false otherwise.
+         */
+        function isBoxClosed(boxIndex) {
+
+            var i,
+                boxLines;
+
+            boxLines = util.line.getLinesFromBox(boxIndex, dotCountLength);
+
+            for(i = 0; i < 3; i++) {
+                if(!connected(boxLines[i])) return false;
+            }
+
+            return true;
+        }
+
 
 
         return {
-            connected: connected
+            connected: connected,
+            isBoxClosed: isBoxClosed
         };
 
 

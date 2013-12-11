@@ -552,6 +552,72 @@ describe("dotBox.utility.lineSet", function (){
         });
     });
 
+    it("method isBoxClosed should return true when all of it's sides are connected", function () {
+
+        var expClosedBoxIndex = 0,
+            LENGTH = 4,
+            WIDTH = 4,
+            lineState = lineSet(LENGTH, WIDTH),
+            box,
+            bIt,
+            isBoxClosed;
+
+        lineState.connected({d1: {x: 0, y: 0}, d2: {x: 1, y: 0}}, true);
+        lineState.connected({d1: {x: 0, y: 1}, d2: {x: 1, y: 1}}, true);
+        lineState.connected({d1: {x: 1, y: 1}, d2: {x: 1, y: 0}}, true);
+        lineState.connected({d1: {x: 0, y: 1}, d2: {x: 0, y: 0}}, true);
+
+        bIt = boxIterator(LENGTH, WIDTH);
+
+        while(box = bIt.next()) {
+
+            isBoxClosed = lineState.isBoxClosed(box.boxIndex);
+            if(box.boxIndex === expClosedBoxIndex) {
+                expect(isBoxClosed).toBe(true);
+            } else {
+                expect(isBoxClosed).toBe(false);
+            }
+
+        }
+
+    });
+
+    it("method isBoxClosed should return false a side is open", function () {
+
+        var i,
+            j,
+            expClosedBoxIndex = 0,
+            LENGTH = 4,
+            WIDTH = 4,
+            lineState = lineSet(LENGTH, WIDTH),
+            isBoxClosed,
+            allSides = [];
+
+        allSides.push({d1: {x: 0, y: 0}, d2: {x: 1, y: 0}});
+        allSides.push({d1: {x: 0, y: 1}, d2: {x: 1, y: 1}});
+        allSides.push({d1: {x: 1, y: 1}, d2: {x: 1, y: 0}});
+        allSides.push({d1: {x: 0, y: 1}, d2: {x: 0, y: 0}});
+
+        for(i = 0; i < 4; i++ ) {
+
+            //Create a fresh state.
+            lineState = lineSet(LENGTH, WIDTH);
+
+            for(j = 0; j < 4; j++) {
+                if(j !== i) {
+                    //Connect all sides except i.
+                    lineState.connected(allSides[i], true);
+                }
+            }
+
+            expect(lineState.isBoxClosed(0)).toBe(false);
+
+        }
+
+
+
+    });
+
 });
 
 function areLinesSame(line1, line2) {
