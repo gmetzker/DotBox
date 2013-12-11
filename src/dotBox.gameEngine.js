@@ -122,73 +122,6 @@ dotBox.gameEngine = function gameEngine(config) {
     }
 
 
-//    /**
-//     * Checks to see if the specified horizontal line is closed.
-//     *
-//     * @param   {number}    row     The row index of the h-line.
-//     *                              Valid values are 0 to dotCountWidth-1.
-//     *
-//     * @param   {number}    col     The column index of the h-line.
-//     *                              Valid values are 0 to boxCountLength-1.
-//     *
-//     * @returns {boolean}           true if the line is closed (connected),
-//     *                              or false if the line is open.
-//     */
-//    function isHzLineClosed(row, col) {
-//
-//        var index = 0,
-//            isClosed;
-//
-//        if((row < 0) || (row > (_dotCountWidth - 1))) {
-//            throw new RangeError("row must be between 0 and dotCountWidth - 1.");
-//        }
-//
-//        if((col < 0) || (col > (_boxCountLength - 1))) {
-//            throw new RangeError("col must be between 0 and boxCountLength - 1.");
-//        }
-//
-//        index = (row * _boxCountLength) + col;
-//
-//        isClosed = _horizontalLineStates[index];
-//
-//        return isClosed;
-//
-//    }
-
-
-//    /**
-//     * Checks to see if the specified vertical line is closed.
-//     *
-//     * @param   {number}    row     The row index of the v-line.
-//     *                              Valid values are 0 to boxCountWidth-1.
-//     *
-//     * @param   {number}    col     The column index of the v-line.
-//     *                              Valid values are 0 to dotCountLength-1.
-//     *
-//     * @returns {boolean}           true if the line is closed (connected),
-//     *                              or false if the line is open.
-//     */
-//    function isVtLineClosed(row, col) {
-//
-//        var index = 0,
-//            isClosed;
-//
-//        if((row < 0) || (row > (_boxCountWidth - 1))) {
-//            throw new RangeError("row must be between 0 and boxCountWidth - 1.");
-//        }
-//
-//        if((col < 0) || (col > (_dotCountLength - 1))) {
-//            throw new RangeError("col must be between 0 and dotCountLength - 1.");
-//        }
-//
-//        index = (row * getDotCountLength()) + col;
-//
-//        isClosed = _verticalLineStates[index];
-//
-//        return isClosed;
-//
-//    }
-
 
 
     /**
@@ -294,6 +227,32 @@ dotBox.gameEngine = function gameEngine(config) {
 
     }
 
+    function connectLine(line) {
+
+        ensureValidMove(line);
+
+        _lineSet.connectLine(line, true);
+//
+//        //TODO:
+//        //1.  Find all newly made boxes
+//              // IF #1.Any()
+//              // 1a) Assign boxes from #1 to the current player
+//              // 1b) Is-Game-Over: Yes->Mark Closed, DONE
+//              // 1c) Is-Game-Over: No -> DONE
+//
+//              // IF NOT #1.Any()
+//              // Turn += 1;
+//
+//        //Consider returning:
+//        var result = {
+//            boxesScored : [],   //List of boxes and locations scored
+//            isGameOver: false,  //True if over, false if game is still on.
+//            nextPlayer: 1       //The player who can go next (might be same player if boxesScored.length > 0.
+//        };
+
+
+    }
+
 
 
 
@@ -305,7 +264,8 @@ dotBox.gameEngine = function gameEngine(config) {
         getBoxCountWidth: getBoxCountWidth,
         getPlayerCount: getPlayerCount,
         getCurrentPlayer: getCurrentPlayer,
-        isLineConnected: isLineConnected
+        isLineConnected: isLineConnected,
+        connectLine: connectLine
 
     };
 
