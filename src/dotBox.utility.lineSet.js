@@ -6,7 +6,7 @@ dotBox.utility = dotBox.utility || {};
 
     namespace.lineSet = function lineSet (dotCountLength, dotCountWidth) {
 
-        var util = namespace;
+        var util = namespace,
             _horizontalLineStates = [],
             _verticalLineStates = [],
             hLineCount = (dotCountLength - 1) * dotCountWidth,
