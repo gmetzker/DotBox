@@ -50,12 +50,6 @@ dotBox.gameEngine = function gameEngine(config) {
         _boxCountWidth,
         _currentPlayer,
         _lineSet,
-
-        /**
-         * @member {number[]}   _boxState   - This is an array that matches up with the number of boxes.
-         * - The index in the array is the box index, and the value is the index of the player
-         * - if the box was scored.  If the value is null then no player has yet scored it.
-         */
         _boxState;
 
 
@@ -170,16 +164,7 @@ dotBox.gameEngine = function gameEngine(config) {
      */
     function isGameOver() {
 
-        function isClaimed(player) {
-
-            if(player !== null) {
-                return true;
-            } else {
-                return false;
-            }
-
-        }
-        return _boxState.every(isClaimed);
+        return _boxState.areAllBoxesScored();
 
     }
 
@@ -270,30 +255,17 @@ dotBox.gameEngine = function gameEngine(config) {
     function configureDependencies(config) {
 
 
-        boxCount = _boxCountLength * _boxCountWidth;
-
         // BOX STATE
 
         if( !util.isNullOrUndefined(config.boxState)) {
 
             //If we have a box state then assign it.
-            if( config.boxState.length !== boxCount) {
-                throw new Error("A boxState was found in the config but it was not the correct size.");
-            } else {
-                _boxState = config.boxState;
-            }
-
+             _boxState = config.boxState;
 
         } else {
 
             //Default boxState.
-
-            _boxState = [];
-
-            for(i = 0; i < boxCount; i++) {
-                _boxState.push(null);
-            }
-
+            _boxState = dotBox.boxState(_dotCountLength, _dotCountWidth);
 
         }
 
@@ -338,36 +310,22 @@ dotBox.gameEngine = function gameEngine(config) {
     }
 
 
-    /**
-     * Checks to see if a box has no player yet associated with it.
-     * @function    isBoxUnClaimed
-     * @param       {number}        boxIndex    - The index of the box we are checking.
-     * @returns     {boolean}                   - True if the box has no player association
-     *                                          - false otherwise.
-     */
-    function isBoxUnClaimed(boxIndex) {
-
-        var boxState;
-        boxState = _boxState[boxIndex];
-
-        if(boxState === null) { return true; }
-        else { return false; }
-
-    }
-
 
 
     function connectLine(line) {
 
         var adjacentBoxes,
             closedBoxesThisTurn,
-            result = {};
+            result = {},
+            playerThisTurn;
 
         if(isGameOver()) {
             throw new Error("Cannot make a move when the game is over.");
         }
 
         ensureValidMove(line);
+
+        playerThisTurn = getCurrentPlayer();
 
         _lineSet.connected(line, true);
 
@@ -379,11 +337,11 @@ dotBox.gameEngine = function gameEngine(config) {
         //If so then these are new scores for the player.
         closedBoxesThisTurn = adjacentBoxes
             .filter(_lineSet.isBoxClosed)
-            .filter(isBoxUnClaimed);
+            .filter(_boxState.isBoxUnscored);
 
         //Record these boxes for the current player.
         closedBoxesThisTurn.forEach(function(boxIndex) {
-            _boxState[boxIndex] = _currentPlayer;
+            _boxState.scoreBox(boxIndex, playerThisTurn);
         });
 
         result.boxesScored = closedBoxesThisTurn;

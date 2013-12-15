@@ -359,21 +359,24 @@ describe("dotBox.gameEngine", function () {
 
     });
 
-    function createConfigForGameOver() {
+    function createConfigForGameOver(isGameOver) {
 
         var i,
-            boxCount,
             DOT_COUNT_LENGTH = 4,
             DOT_COUNT_WIDTH = 4,
-            mockBoxState = [],
+            mockBoxState = dotBox.boxState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH),
             config;
 
-        boxCount = (DOT_COUNT_LENGTH - 1) * (DOT_COUNT_WIDTH - 1);
-        for(i = 0; i < boxCount; i++) {
 
-            //Fake it so player 0 has all the boxes.
-            mockBoxState.push(0);
-        }
+        mockBoxState.areAllBoxesScored = function () {
+
+            if( isGameOver === undefined ) {
+                return true;
+            } else {
+                return isGameOver;
+            }
+
+        };
 
         config = {
             dotCountLength: DOT_COUNT_LENGTH,
@@ -387,7 +390,7 @@ describe("dotBox.gameEngine", function () {
 
 
 
-    it("isGameOver should return true if all boxes are claimed", function () {
+    it("isGameOver should return true if box state has all boxes scored", function () {
 
         var config,
             target;
@@ -403,38 +406,19 @@ describe("dotBox.gameEngine", function () {
 
     });
 
-    it("isGameOver should return false if some boxes are null", function () {
+    it("isGameOver should return false if box state has all boxes scored", function () {
 
-        var i,
-            boxCount,
-            DOT_COUNT_LENGTH = 4,
-            DOT_COUNT_WIDTH = 4,
-            mockBoxState = [],
-            config,
+        var config,
             target;
 
-        boxCount = (DOT_COUNT_LENGTH - 1) * (DOT_COUNT_WIDTH - 1);
-        for(i = 0; i < boxCount; i++) {
 
-            if(i%2 === 0) {
-                //Only fake the score on even boxes.
-                mockBoxState.push(0);
-            } else {
-                mockBoxState.push(null);
-            }
-        }
-
-        config = {
-            dotCountLength: DOT_COUNT_LENGTH,
-            dotCountWidth: DOT_COUNT_WIDTH,
-            boxState: mockBoxState
-        };
+        config = createConfigForGameOver(false);
 
 
         target = dotBox.gameEngine(config);
 
-        expect(target.isGameOver()).toBe(false);
 
+        expect(target.isGameOver()).toBe(false);
 
     });
     
@@ -652,86 +636,32 @@ describe("dotBox.gameEngine", function () {
 
         });
 
-
-        /**
-         * Creates a game with one move left.  The line
-         * from 0,0 to 1, 0
-         */
-        function createGameWithOneMoveLeft() {
-
-            var i,
-                box,
-                boxCount,
-                DOT_COUNT_LENGTH = 4,
-                DOT_COUNT_WIDTH = 4,
-                mockBoxState = [],
-                config,
-                bIt,
-                hIt,
-                vIt,
-                tempLine,
-                lines,
-                boxPlayerClaim;
-
-            boxCount = (DOT_COUNT_LENGTH - 1) * (DOT_COUNT_WIDTH - 1);
-            bIt = boxIterator(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
-            hIt = hLineIterator(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
-            vIt = vLineIterator(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
-            lines = dotBox.utility.lineSet(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
-
-            while(box = bIt.next()) {
-
-
-                if(box.boxIndex === 0) {
-                    //Leave the first box open.
-                    boxPlayerClaim = null;
-                } else {
-                    //Force all other boxes to be claimed by player 0.
-                    boxPlayerClaim = 0;
-                }
-                mockBoxState.push(boxPlayerClaim);
-            }
-
-            i = 0;
-            //Connect all horizontal lines.
-            //except for the first.
-            while(tempLine = hIt.next()) {
-
-                if(i !== 0) {
-                    lines.connected(tempLine, true);
-                }
-
-                i += 1;
-            }
-
-            //Connect all vertical lines
-            while(tempLine = vIt.next()) {
-                lines.connected(tempLine, true);
-            }
-
-
-            config = {
-                dotCountLength: DOT_COUNT_LENGTH,
-                dotCountWidth: DOT_COUNT_WIDTH,
-                boxState: mockBoxState,
-                lineSet : lines
-            };
-
-            return config;
-
-
-        }
-
-
-
         it("should return result with gameOver eq true when it the line completes the game", function () {
 
             var config,
                 target,
                 lastLine,
-                result;
+                result,
+                isGameOverCallCount = 0;
 
-            config = createGameWithOneMoveLeft();
+            config = createConfigForGameOver();
+
+
+            config.boxState.areAllBoxesScored = function() {
+
+                if( isGameOverCallCount === 0) {
+                    isGameOverCallCount += 1;
+                    return false;
+                } else {
+                    isGameOverCallCount += 1;
+                    return true;
+                }
+            };
+
+            //Mock the lineSet to indicate a closed box.
+            config.lineSet = dotBox.utility.lineSet(4, 4);
+            config.lineSet.isBoxClosed = function (index) { return true; };
+
             lastLine = {
                 d1: {x: 0, y: 0},
                 d2: {x: 1, y: 0}
@@ -739,9 +669,6 @@ describe("dotBox.gameEngine", function () {
 
             target = dotBox.gameEngine(config);
 
-            //Make sure the game is not yet over.
-            //this kind of validates createGameWithOneMoveLeft()
-            expect(target.isGameOver()).toBe(false);
 
             result = target.connectLine(lastLine);
 
@@ -765,11 +692,9 @@ describe("dotBox.gameEngine", function () {
                 DOT_COUNT_LENGTH = 4,
                 DOT_COUNT_WIDTH = 4,
                 BOX_COUNT = 9,
-                boxState = [];
+                boxState = dotBox.boxState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
 
-            for(i = 0; i < BOX_COUNT; i++) {
-                boxState.push(null);
-            }
+
 
             config = {
                 dotCountLength: DOT_COUNT_LENGTH,
@@ -791,7 +716,7 @@ describe("dotBox.gameEngine", function () {
             expect(result.boxesScored.length).toBe(0);
 
             for(i = 0; i < BOX_COUNT; i++) {
-                expect(boxState[i]).toBeNull();
+                expect(boxState.isBoxScored(i)).toBe(false);
             }
 
 
@@ -802,19 +727,15 @@ describe("dotBox.gameEngine", function () {
 
             var i,
                 target,
-                line,
                 config,
                 result,
                 DOT_COUNT_LENGTH = 4,
                 DOT_COUNT_WIDTH = 4,
                 BOX_COUNT = 9,
-                boxState = [],
+                boxState = dotBox.boxState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH),
                 currentPlayer = 1;
 
             lineSet = dotBox.utility.lineSet(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
-            for(i = 0; i < BOX_COUNT; i++) {
-                boxState.push(null);
-            }
 
 
             config = {
@@ -859,15 +780,10 @@ describe("dotBox.gameEngine", function () {
             expect(result.boxesScored.length).toBe(1);
             expect(result.boxesScored[0]).toBe(0);
 
+            expect(boxState.whichPlayerScoredBox(0)).toBe(currentPlayer);
 
-            for(i = 0; i < BOX_COUNT; i++) {
-                if( i === 0) {
-                    //First box should be claimed by the current player.
-                    expect(boxState[i]).toBe(currentPlayer);
-                } else {
-                    //All other boxes should be unclaimed still.
-                    expect(boxState[i]).toBeNull();
-                }
+            for(i = 1; i < BOX_COUNT; i++) {
+                expect(boxState.isBoxScored(i)).toBe(false);
             }
 
             //Player scored so the same player will be the next and current player.
@@ -882,19 +798,16 @@ describe("dotBox.gameEngine", function () {
 
             var i,
                 target,
-                line,
                 config,
                 result,
                 DOT_COUNT_LENGTH = 4,
                 DOT_COUNT_WIDTH = 4,
                 BOX_COUNT = 9,
-                boxState = [],
+                boxState,
                 currentPlayer = 1;
 
+            boxState = dotBox.boxState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
             lineSet = dotBox.utility.lineSet(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
-            for(i = 0; i < BOX_COUNT; i++) {
-                boxState.push(null);
-            }
 
 
             config = {
@@ -957,15 +870,14 @@ describe("dotBox.gameEngine", function () {
             expect(result.boxesScored).toContain(0);
             expect(result.boxesScored).toContain(1);
 
+            expect(boxState.whichPlayerScoredBox(0)).toBe(currentPlayer);
+            expect(boxState.whichPlayerScoredBox(1)).toBe(currentPlayer);
 
-            for(i = 0; i < BOX_COUNT; i++) {
-                if( (i === 0) || (i === 1) ) {
-                    //Both boxes should be claimed by the first player.
-                    expect(boxState[i]).toBe(currentPlayer);
-                } else {
-                    //All other boxes should be unclaimed still.
-                    expect(boxState[i]).toBeNull();
-                }
+            for(i = 2; i < BOX_COUNT; i++) {
+
+                //All other boxes should be unclaimed still.
+                expect(boxState.isBoxScored(i)).toBe(false);
+
             }
 
             //Player scored so the same player will be the next and current player.
