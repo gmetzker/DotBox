@@ -453,7 +453,7 @@ describe("dotBox.gameEngine", function () {
                 line,
                 target,
                 act,
-                mockLineSet,
+                mockLineState,
                 expMsg = 'This line is already connected.';
 
             line = {
@@ -461,8 +461,8 @@ describe("dotBox.gameEngine", function () {
                 d2: {x: 0, y: 1}
             };
 
-            //Create a mocked lineSet that pretends all lines are connected.
-            mockLineSet = {
+            //Create a mocked lineState that pretends all lines are connected.
+            mockLineState = {
                 connected: function(l, v) {
 
                     expect(l).toBe(line);
@@ -473,7 +473,7 @@ describe("dotBox.gameEngine", function () {
             };
 
             config = {
-              lineSet: mockLineSet
+              lineState: mockLineState
             };
 
 
@@ -489,13 +489,13 @@ describe("dotBox.gameEngine", function () {
 
         });
 
-        it("should throw an error if the lineSet.connected throws an error ", function () {
+        it("should throw an error if the lineState.connected throws an error ", function () {
 
             var config,
                 line,
                 target,
                 act,
-                mockLineSet,
+                mockLineState,
                 expMessage = 'Bad error';
 
             line = {
@@ -503,9 +503,9 @@ describe("dotBox.gameEngine", function () {
                 d2: {x: 0, y: 1}
             };
 
-            //Create a mocked lineSet that throws an error, when
+            //Create a mocked lineState that throws an error, when
             //it is queried without the set value.
-            mockLineSet = {
+            mockLineState = {
                 connected: function(l, v) {
 
                     expect(l).toBe(line);
@@ -517,7 +517,7 @@ describe("dotBox.gameEngine", function () {
             };
 
             config = {
-                lineSet: mockLineSet
+                lineState: mockLineState
             };
 
 
@@ -581,13 +581,13 @@ describe("dotBox.gameEngine", function () {
 
         });
 
-        it("should call lineSet.connectLine for same line", function () {
+        it("should call lineState.connectLine for same line", function () {
 
 
             var config,
                 line,
                 target,
-                mockLineSet,
+                mockLineState,
                 connectSetCallCount = 0;
 
             line = {
@@ -595,9 +595,9 @@ describe("dotBox.gameEngine", function () {
                 d2: {x: 0, y: 1}
             };
 
-            //Create a mocked lineSet that throws an error, when
+            //Create a mocked lineState that throws an error, when
             //it is queried without the set value.
-            mockLineSet = {
+            mockLineState = {
                 connected: function(l, v) {
 
 
@@ -622,7 +622,7 @@ describe("dotBox.gameEngine", function () {
             };
 
             config = {
-                lineSet: mockLineSet
+                lineState: mockLineState
             };
 
 
@@ -658,9 +658,9 @@ describe("dotBox.gameEngine", function () {
                 }
             };
 
-            //Mock the lineSet to indicate a closed box.
-            config.lineSet = dotBox.utility.lineSet(4, 4);
-            config.lineSet.isBoxClosed = function (index) { return true; };
+            //Mock the lineState to indicate a closed box.
+            config.lineState = dotBox.lineState(4, 4);
+            config.lineState.isBoxClosed = function (index) { return true; };
 
             lastLine = {
                 d1: {x: 0, y: 0},
@@ -735,14 +735,14 @@ describe("dotBox.gameEngine", function () {
                 boxState = dotBox.boxState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH),
                 currentPlayer = 1;
 
-            lineSet = dotBox.utility.lineSet(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
+            lineState = dotBox.lineState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
 
 
             config = {
                 dotCountLength: DOT_COUNT_LENGTH,
                 dotCountWidth:  DOT_COUNT_WIDTH,
                 boxState: boxState,
-                lineSet: lineSet,
+                lineState: lineState,
                 startPlayer: currentPlayer,
                 playerCount: 2
             };
@@ -750,18 +750,18 @@ describe("dotBox.gameEngine", function () {
 
 
 
-            lineSet.connected({
+            lineState.connected({
                 d1: {x: 0, y: 0},
                 d2: {x: 1, y: 0}
             }, true);
 
-            lineSet.connected({
+            lineState.connected({
                 d1: {x: 0, y: 0},
                 d2: {x: 0, y: 1}
             }, true);
 
 
-            lineSet.connected({
+            lineState.connected({
                 d1: {x: 0, y: 1},
                 d2: {x: 1, y: 1}
             }, true);
@@ -807,14 +807,14 @@ describe("dotBox.gameEngine", function () {
                 currentPlayer = 1;
 
             boxState = dotBox.boxState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
-            lineSet = dotBox.utility.lineSet(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
+            lineState = dotBox.lineState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
 
 
             config = {
                 dotCountLength: DOT_COUNT_LENGTH,
                 dotCountWidth:  DOT_COUNT_WIDTH,
                 boxState: boxState,
-                lineSet: lineSet,
+                lineState: lineState,
                 startPlayer: currentPlayer,
                 playerCount: 2
             };
@@ -822,34 +822,34 @@ describe("dotBox.gameEngine", function () {
 
 
 
-            lineSet.connected({
+            lineState.connected({
                 d1: {x: 0, y: 0},
                 d2: {x: 1, y: 0}
             }, true);
 
-            lineSet.connected({
+            lineState.connected({
                 d1: {x: 0, y: 0},
                 d2: {x: 0, y: 1}
             }, true);
 
 
-            lineSet.connected({
+            lineState.connected({
                 d1: {x: 0, y: 1},
                 d2: {x: 1, y: 1}
             }, true);
 
 
-            lineSet.connected({
+            lineState.connected({
                 d1: {x: 1, y: 0},
                 d2: {x: 2, y: 0}
             }, true);
 
-            lineSet.connected({
+            lineState.connected({
                 d1: {x: 2, y: 0},
                 d2: {x: 2, y: 1}
             }, true);
 
-            lineSet.connected({
+            lineState.connected({
                 d1: {x: 1, y: 1},
                 d2: {x: 2, y: 1}
             }, true);

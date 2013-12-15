@@ -1,25 +1,33 @@
 var dotBox;
 dotBox = dotBox || {};
-dotBox.utility = dotBox.utility || {};
 
-(function(namespace) {
+dotBox.lineState = function lineState (dotCountLength, dotCountWidth) {
 
-    namespace.lineSet = function lineSet (dotCountLength, dotCountWidth) {
-
-        var util = namespace,
+        var util = dotBox.utility,
             _horizontalLineStates = [],
-            _verticalLineStates = [],
-            hLineCount = (dotCountLength - 1) * dotCountWidth,
-            vLineCount = (dotCountWidth - 1) * dotCountLength;
+            _verticalLineStates = [];
+
+        configure(dotCountLength, dotCountWidth);
+
+        function configure(dotLength, dotWidth) {
+
+            var hLineCount,
+                vLineCount;
+
+            hLineCount = (dotLength - 1) * dotWidth,
+            vLineCount = (dotWidth - 1) * dotLength;
 
 
-        for(i = 0; i < hLineCount; i++) {
-            _horizontalLineStates[i] = false;
+            for(i = 0; i < hLineCount; i++) {
+                _horizontalLineStates[i] = false;
+            }
+
+            for(i = 0; i < vLineCount; i++) {
+                _verticalLineStates[i] = false;
+            }
+
         }
 
-        for(i = 0; i < vLineCount; i++) {
-            _verticalLineStates[i] = false;
-        }
 
         function getLineLookup(line) {
 
@@ -180,9 +188,6 @@ dotBox.utility = dotBox.utility || {};
 
 
     };
-
-})(dotBox.utility);
-
 
 
 

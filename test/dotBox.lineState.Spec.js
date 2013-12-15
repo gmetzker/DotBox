@@ -3,7 +3,7 @@
 
 describe("dotBox.utility.lineSet", function (){
 
-    var lineSet = dotBox.utility.lineSet;
+    var lineState = dotBox.lineState;
 
     it("should construct", function () {
 
@@ -11,8 +11,8 @@ describe("dotBox.utility.lineSet", function (){
             act;
 
         act = function () {
-            target = lineSet(10, 10);
-        }
+            target = lineState(10, 10);
+        };
 
         expect(act).not.toThrow();
         expect(target).not.toBeNull();
@@ -32,7 +32,7 @@ describe("dotBox.utility.lineSet", function (){
 
         hIt = hLineIterator(dotCountL, dotCountW);
 
-        target = lineSet(dotCountL, dotCountW);
+        target = lineState(dotCountL, dotCountW);
 
         while(line = hIt.next()) {
 
@@ -55,7 +55,7 @@ describe("dotBox.utility.lineSet", function (){
 
         vIt = vLineIterator(dotCountL, dotCountW);
 
-        target = lineSet(dotCountL, dotCountW);
+        target = lineState(dotCountL, dotCountW);
 
         while(line = vIt.next()) {
 
@@ -83,7 +83,7 @@ describe("dotBox.utility.lineSet", function (){
         hIt = hLineIterator(dotCountL, dotCountW);
         vIt = vLineIterator(dotCountL, dotCountW);
 
-        target = lineSet(dotCountL, dotCountW);
+        target = lineState(dotCountL, dotCountW);
 
         while(line = outerIt.next()) {
 
@@ -127,7 +127,7 @@ describe("dotBox.utility.lineSet", function (){
         hIt = hLineIterator(dotCountL, dotCountW);
         vIt = vLineIterator(dotCountL, dotCountW);
 
-        target = lineSet(dotCountL, dotCountW);
+        target = lineState(dotCountL, dotCountW);
 
         while(line = outerIt.next()) {
 
@@ -162,7 +162,7 @@ describe("dotBox.utility.lineSet", function (){
             var target,
                 act;
 
-            target = lineSet(3, 4);
+            target = lineState(3, 4);
 
             act = function () {
                 target.connected();
@@ -177,7 +177,7 @@ describe("dotBox.utility.lineSet", function (){
             var target,
                 act;
 
-            target = lineSet(3, 4);
+            target = lineState(3, 4);
 
             act = function () {
                 target.connected(null);
@@ -197,7 +197,7 @@ describe("dotBox.utility.lineSet", function (){
                 p1 = {x: 0, y: 0},
                 p2 = {x: 2, y: 0};
 
-            target = lineSet(dotCountLength, dotCountWidth);
+            target = lineState(dotCountLength, dotCountWidth);
 
             line = {d1: p1, d2 : p2};
 
@@ -231,7 +231,7 @@ describe("dotBox.utility.lineSet", function (){
                 p1 = {x: 0, y: 0},
                 p2 = {x: 0, y: 2};
 
-            target = lineSet(dotCountLength, dotCountWidth);
+            target = lineState(dotCountLength, dotCountWidth);
 
             line = {d1: p1, d2 : p2};
 
@@ -265,7 +265,7 @@ describe("dotBox.utility.lineSet", function (){
                 p1 = {x: 0, y: 0},
                 p2 = {x: 1, y: 1};
 
-            target = lineSet(dotCountLength, dotCountWidth);
+            target = lineState(dotCountLength, dotCountWidth);
 
             line = {d1: p1, d2 : p2};
 
@@ -299,7 +299,7 @@ describe("dotBox.utility.lineSet", function (){
                     line;
 
                 line = {d2 : {x: 0, y: 1}};
-                target = lineSet(3, 4);
+                target = lineState(3, 4);
 
                 act = function () {
                     target.connected(line);
@@ -316,7 +316,7 @@ describe("dotBox.utility.lineSet", function (){
                     line;
 
                 line = {d1: null, d2 : {x: 0, y: 1}};
-                target = lineSet(3, 4);
+                target = lineState(3, 4);
 
                 act = function () {
                     target.connected(line);
@@ -333,7 +333,7 @@ describe("dotBox.utility.lineSet", function (){
                     line;
 
                 line = {d1: {x: -1, y: 1}, d2 : {x: 0, y: 1}};
-                target = lineSet(3, 4);
+                target = lineState(3, 4);
 
                 act = function () {
                     target.connected(line);
@@ -351,7 +351,7 @@ describe("dotBox.utility.lineSet", function (){
                     dotCountLength = 3,
                     dotCountWidth = 4;
 
-                target = lineSet(dotCountLength, dotCountWidth);
+                target = lineState(dotCountLength, dotCountWidth);
 
                 line = {d1: {x: dotCountLength, y: 1}, d2 : {x: 0, y: 1}};
 
@@ -379,7 +379,7 @@ describe("dotBox.utility.lineSet", function (){
                     line;
 
                 line = {d1: {x: 0, y: -1}, d2 : {x: 0, y: 1}};
-                target = lineSet(3, 4);
+                target = lineState(3, 4);
 
                 act = function () {
                     target.connected(line);
@@ -397,7 +397,7 @@ describe("dotBox.utility.lineSet", function (){
                     dotCountLength = 3,
                     dotCountWidth = 4;
 
-                target = lineSet(dotCountLength, dotCountWidth);
+                target = lineState(dotCountLength, dotCountWidth);
 
                 line = {d1: {x: 0, y: dotCountWidth}, d2 : {x: 0, y: dotCountWidth - 2}};
 
@@ -430,7 +430,7 @@ describe("dotBox.utility.lineSet", function (){
                     line;
 
                 line = {d1 : {x: 0, y: 1}};
-                target = lineSet(3, 4);
+                target = lineState(3, 4);
 
                 act = function () {
                     target.connected(line);
@@ -447,7 +447,7 @@ describe("dotBox.utility.lineSet", function (){
                     line;
 
                 line = {d2: null, d1 : {x: 0, y: 1}};
-                target = lineSet(3, 4);
+                target = lineState(3, 4);
 
                 act = function () {
                     target.connected(line);
@@ -464,7 +464,7 @@ describe("dotBox.utility.lineSet", function (){
                     line;
 
                 line = {d2: {x: -1, y: 1}, d1 : {x: 0, y: 1}};
-                target = lineSet(3, 4);
+                target = lineState(3, 4);
 
                 act = function () {
                     target.connected(line);
@@ -482,7 +482,7 @@ describe("dotBox.utility.lineSet", function (){
                     dotCountLength = 3,
                     dotCountWidth = 4;
 
-                target = lineSet(dotCountLength, dotCountWidth);
+                target = lineState(dotCountLength, dotCountWidth);
 
                 line = {d2: {x: dotCountLength, y: 1}, d1 : {x: 0, y: 1}};
 
@@ -510,7 +510,7 @@ describe("dotBox.utility.lineSet", function (){
                     line;
 
                 line = {d2: {x: 0, y: -1}, d1 : {x: 0, y: 1}};
-                target = lineSet(3, 4);
+                target = lineState(3, 4);
 
                 act = function () {
                     target.connected(line);
@@ -528,7 +528,7 @@ describe("dotBox.utility.lineSet", function (){
                     dotCountLength = 3,
                     dotCountWidth = 4;
 
-                target = lineSet(dotCountLength, dotCountWidth);
+                target = lineState(dotCountLength, dotCountWidth);
 
                 line = {d2: {x: 0, y: dotCountWidth}, d1 : {x: 0, y: dotCountWidth - 2}};
 
@@ -557,7 +557,7 @@ describe("dotBox.utility.lineSet", function (){
         var expClosedBoxIndex = 0,
             LENGTH = 4,
             WIDTH = 4,
-            lineState = lineSet(LENGTH, WIDTH),
+            lineState = dotBox.lineState(LENGTH, WIDTH),
             box,
             bIt,
             isBoxClosed;
@@ -586,11 +586,9 @@ describe("dotBox.utility.lineSet", function (){
 
         var i,
             j,
-            expClosedBoxIndex = 0,
             LENGTH = 4,
             WIDTH = 4,
-            lineState = lineSet(LENGTH, WIDTH),
-            isBoxClosed,
+            target = lineState(LENGTH, WIDTH),
             allSides = [];
 
         allSides.push({d1: {x: 0, y: 0}, d2: {x: 1, y: 0}});
@@ -601,16 +599,16 @@ describe("dotBox.utility.lineSet", function (){
         for(i = 0; i < 4; i++ ) {
 
             //Create a fresh state.
-            lineState = lineSet(LENGTH, WIDTH);
+            target = lineState(LENGTH, WIDTH);
 
             for(j = 0; j < 4; j++) {
                 if(j !== i) {
                     //Connect all sides except i.
-                    lineState.connected(allSides[i], true);
+                    target.connected(allSides[i], true);
                 }
             }
 
-            expect(lineState.isBoxClosed(0)).toBe(false);
+            expect(target.isBoxClosed(0)).toBe(false);
 
         }
 

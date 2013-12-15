@@ -49,7 +49,7 @@ dotBox.gameEngine = function gameEngine(config) {
         _boxCountLength,
         _boxCountWidth,
         _currentPlayer,
-        _lineSet,
+        _lineState,
         _boxState;
 
 
@@ -154,7 +154,7 @@ dotBox.gameEngine = function gameEngine(config) {
      * @returns {boolean}           - Returns true if connected, false otherwise.
      */
     function isLineConnected(line) {
-        return _lineSet.connected(line);
+        return _lineState.connected(line);
     }
 
     /**
@@ -271,16 +271,16 @@ dotBox.gameEngine = function gameEngine(config) {
 
         // LINE SET
 
-        if( !util.isNullOrUndefined(config.lineSet)) {
+        if( !util.isNullOrUndefined(config.lineState)) {
 
             //If we have a line set then assign it.
-            _lineSet = config.lineSet;
+            _lineState = config.lineState;
 
 
         } else {
 
             //Assign the default line set.
-            _lineSet = util.lineSet(_dotCountLength, _dotCountWidth);
+            _lineState = dotBox.lineState(_dotCountLength, _dotCountWidth);
 
         }
 
@@ -297,11 +297,11 @@ dotBox.gameEngine = function gameEngine(config) {
     function ensureValidMove(line) {
 
         //There are several validations going on here.
-        //1.  lineSet.connected implicitly validates the line.
+        //1.  _lineState.connected implicitly validates the line.
         //2.  We are checking if he line is already connected
         //    if so disallow the move.
 
-        if(_lineSet.connected(line)) {
+        if(_lineState.connected(line)) {
             throw new Error("This line is already connected.")
         }
 
@@ -327,7 +327,7 @@ dotBox.gameEngine = function gameEngine(config) {
 
         playerThisTurn = getCurrentPlayer();
 
-        _lineSet.connected(line, true);
+        _lineState.connected(line, true);
 
         //Get any boxes this line is a part of.
         adjacentBoxes = util.line.getBoxesFromLine(line, _dotCountLength, _dotCountWidth);
@@ -336,7 +336,7 @@ dotBox.gameEngine = function gameEngine(config) {
         //are now closed or and unclaimed.
         //If so then these are new scores for the player.
         closedBoxesThisTurn = adjacentBoxes
-            .filter(_lineSet.isBoxClosed)
+            .filter(_lineState.isBoxClosed)
             .filter(_boxState.isBoxUnscored);
 
         //Record these boxes for the current player.
