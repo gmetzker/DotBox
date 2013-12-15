@@ -142,6 +142,40 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
         return _boxStates.every(isScored);
     }
 
+    /**
+     * Returns the number of boxes scored for each player.
+     * @function                getCurrentScores
+     * @param       {number}    playerCount    - The number of players to check scores for.
+     * @returns     {number[]}                 - An array where each position corresponds to the
+     *                                           ordinal of the playerIndex and the value is a
+     *                                           count of the number of boxes scored.
+     */
+    function getCurrentScores(playerCount) {
+
+        var i,
+            playerScores = [],
+            boxCount,
+            playerIndex;
+
+        for(i = 0; i < playerCount; i++) {
+
+            playerScores[i] = 0;
+
+        }
+
+        boxCount = getBoxCount();
+        for(i = 0; i < boxCount; i++) {
+            if(isBoxScored(i)) {
+                playerIndex = whichPlayerScoredBox(i);
+                playerScores[playerIndex] += 1;
+            }
+        }
+
+        return playerScores;
+
+
+    }
+
 
 
     return {
@@ -151,7 +185,8 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
         isBoxScored: isBoxScored,
         isBoxUnscored: isBoxUnscored,
         whichPlayerScoredBox: whichPlayerScoredBox,
-        scoreBox: scoreBox
+        scoreBox: scoreBox,
+        getCurrentScores: getCurrentScores
 
     };
 

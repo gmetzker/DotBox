@@ -891,4 +891,39 @@ describe("dotBox.gameEngine", function () {
 
     });
 
+    it("getCurrentScores should call boxState.getCurrentScores with the correct playerCount", function () {
+
+        var i,
+            boxState,
+            playerCount = 5,
+            target,
+            mockCurrentScores,
+            actCurrentScores,
+            actPlayerCount;
+
+        mockCurrentScores = [];
+        for(i = 0; i < playerCount; i++) {
+            mockCurrentScores[i] = 2;
+        }
+        boxState = dotBox.boxState(4, 4);
+        boxState.getCurrentScores = function (pCount) {
+            actPlayerCount = pCount;
+            return mockCurrentScores;
+        };
+
+        config = {
+            boxState: boxState,
+            playerCount: playerCount
+        };
+
+
+        target = dotBox.gameEngine(config);
+
+        actCurrentScores = target.getCurrentScores();
+
+        expect(actCurrentScores).toBe(mockCurrentScores);
+        expect(actPlayerCount).toBe(playerCount);
+
+    });
+
 });

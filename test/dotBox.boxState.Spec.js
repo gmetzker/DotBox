@@ -167,13 +167,43 @@ describe("dotBox.boxState", function () {
         var dotCountLength = 4,
             dotCountWidth = 3,
             target,
-            playerIndex = 3,
             boxIndex = 4;
 
         target = boxState(dotCountLength, dotCountWidth);
 
 
         expect(target.whichPlayerScoredBox(boxIndex)).toBeNull();
+    });
+
+    it("getCurrentScore should return the correct scores for each player", function () {
+
+        var boxState,
+            playerCount = 3,
+            dotCountLength = 4,
+            dotCountWidth = 4,
+            actCurrentScores;
+
+
+        boxState = dotBox.boxState(dotCountLength, dotCountWidth);
+
+        //Player 1 has two boxes.
+        boxState.scoreBox(0, 1);
+        boxState.scoreBox(2, 1);
+
+        //Player 2 has one box.
+        boxState.scoreBox(boxState.getBoxCount() - 1, 2);
+
+        actCurrentScores = boxState.getCurrentScores(playerCount);
+
+        expect(actCurrentScores.length).toBe(playerCount);
+
+        expect(actCurrentScores[0]).toBe(0);
+        expect(actCurrentScores[1]).toBe(2);
+        expect(actCurrentScores[2]).toBe(1);
+
+
+
+
     });
 
 });

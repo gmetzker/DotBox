@@ -359,6 +359,17 @@ dotBox.gameEngine = function gameEngine(config) {
 
     }
 
+    /**
+     * Returns the number of boxes scored for each player.
+     * @function                getCurrentScores
+     * @returns     {number[]}                 - An array where each position corresponds to the
+     *                                           ordinal of the playerIndex and the value is a
+     *                                           count of the number of boxes scored.
+     */
+    function getCurrentScores() {
+        return _boxState.getCurrentScores(_playerCount);
+    }
+
 
 
 
@@ -371,6 +382,7 @@ dotBox.gameEngine = function gameEngine(config) {
         getBoxCount: getBoxCount,
         getPlayerCount: getPlayerCount,
         getCurrentPlayer: getCurrentPlayer,
+        getCurrentScores: getCurrentScores,
         isLineConnected: isLineConnected,
         connectLine: connectLine,
         isGameOver: isGameOver
