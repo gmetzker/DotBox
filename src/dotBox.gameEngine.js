@@ -49,8 +49,14 @@ dotBox.gameEngine = function gameEngine(config) {
         _boxCountLength,
         _boxCountWidth,
         _currentPlayer,
-        _lineSet;
+        _lineSet,
 
+        /**
+         * @member {number[]}   _boxState   - This is an array that matches up with the number of boxes.
+         * - The index in the array is the box index, and the value is the index of the player
+         * - if the box was scored.  If the value is null then no player has yet scored it.
+         */
+        _boxState;
 
 
     configureGame(config);
@@ -69,7 +75,34 @@ dotBox.gameEngine = function gameEngine(config) {
      * @returns {number}    - 0 for the first player, 1 for the second, etc...
      */
     function getCurrentPlayer() {
+
+        if(isGameOver()) {
+            return null;
+        } else {
+            return _currentPlayer;
+        }
+    }
+
+    /**
+     * Advances the _currentPlayer to the next.
+     * @function    nextPlayer
+     * @returns {number}    - The number of the next player.
+     */
+    function nextPlayer() {
+
+        if(isGameOver()) {
+            return null;
+        }
+
+        if(_currentPlayer === _playerCount - 1) {
+            _currentPlayer = 0;
+        }
+        else {
+            _currentPlayer += 1;
+        }
+
         return _currentPlayer;
+
     }
 
     /**
@@ -110,6 +143,15 @@ dotBox.gameEngine = function gameEngine(config) {
         return _boxCountWidth;
     };
 
+    /**
+     * Calculates the total number of boxes on the board.
+     * @function    getBoxCount
+     * @returns {number}         - BoxCountWidth X BoxCountLength
+     */
+    function getBoxCount() {
+        return getBoxCountLength() * getBoxCountWidth();
+    }
+
 
     /**
      * Checks to see if a line has been connected already.
@@ -121,7 +163,25 @@ dotBox.gameEngine = function gameEngine(config) {
         return _lineSet.connected(line);
     }
 
+    /**
+     * Determines if all boxes are claimed and the game is over.
+     * @function isGameOver
+     * @returns {boolean}   - True if the game is over, false otherwise.
+     */
+    function isGameOver() {
 
+        function isClaimed(player) {
+
+            if(player !== null) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+        return _boxState.every(isClaimed);
+
+    }
 
 
     /**
@@ -132,7 +192,8 @@ dotBox.gameEngine = function gameEngine(config) {
      */
     function configureGame(config)
     {
-        var i;
+        var i,
+            boxCount;
 
         if(!config) {
             config = {};
@@ -202,7 +263,56 @@ dotBox.gameEngine = function gameEngine(config) {
         _boxCountLength = _dotCountLength - 1;
         _boxCountWidth = _dotCountWidth - 1;
 
-        _lineSet = util.lineSet(_dotCountLength, _dotCountWidth);
+        configureDependencies(config);
+
+    }
+
+    function configureDependencies(config) {
+
+
+        boxCount = _boxCountLength * _boxCountWidth;
+
+        // BOX STATE
+
+        if( !util.isNullOrUndefined(config.boxState)) {
+
+            //If we have a box state then assign it.
+            if( config.boxState.length !== boxCount) {
+                throw new Error("A boxState was found in the config but it was not the correct size.");
+            } else {
+                _boxState = config.boxState;
+            }
+
+
+        } else {
+
+            //Default boxState.
+
+            _boxState = [];
+
+            for(i = 0; i < boxCount; i++) {
+                _boxState.push(null);
+            }
+
+
+        }
+
+        // LINE SET
+
+        if( !util.isNullOrUndefined(config.lineSet)) {
+
+            //If we have a line set then assign it.
+            _lineSet = config.lineSet;
+
+
+        } else {
+
+            //Assign the default line set.
+            _lineSet = util.lineSet(_dotCountLength, _dotCountWidth);
+
+        }
+
+
 
 
     }
@@ -227,29 +337,67 @@ dotBox.gameEngine = function gameEngine(config) {
 
     }
 
+
+    /**
+     * Checks to see if a box has no player yet associated with it.
+     * @function    isBoxUnClaimed
+     * @param       {number}        boxIndex    - The index of the box we are checking.
+     * @returns     {boolean}                   - True if the box has no player association
+     *                                          - false otherwise.
+     */
+    function isBoxUnClaimed(boxIndex) {
+
+        var boxState;
+        boxState = _boxState[boxIndex];
+
+        if(boxState === null) { return true; }
+        else { return false; }
+
+    }
+
+
+
     function connectLine(line) {
+
+        var adjacentBoxes,
+            closedBoxesThisTurn,
+            result = {};
+
+        if(isGameOver()) {
+            throw new Error("Cannot make a move when the game is over.");
+        }
 
         ensureValidMove(line);
 
-        _lineSet.connectLine(line, true);
-//
-//        //TODO:
-//        //1.  Find all newly made boxes
-//              // IF #1.Any()
-//              // 1a) Assign boxes from #1 to the current player
-//              // 1b) Is-Game-Over: Yes->Mark Closed, DONE
-//              // 1c) Is-Game-Over: No -> DONE
-//
-//              // IF NOT #1.Any()
-//              // Turn += 1;
-//
-//        //Consider returning:
-//        var result = {
-//            boxesScored : [],   //List of boxes and locations scored
-//            isGameOver: false,  //True if over, false if game is still on.
-//            nextPlayer: 1       //The player who can go next (might be same player if boxesScored.length > 0.
-//        };
+        _lineSet.connected(line, true);
 
+        //Get any boxes this line is a part of.
+        adjacentBoxes = util.line.getBoxesFromLine(line, _dotCountLength, _dotCountWidth);
+
+        //Check to see if any of the boxes
+        //are now closed or and unclaimed.
+        //If so then these are new scores for the player.
+        closedBoxesThisTurn = adjacentBoxes
+            .filter(_lineSet.isBoxClosed)
+            .filter(isBoxUnClaimed);
+
+        //Record these boxes for the current player.
+        closedBoxesThisTurn.forEach(function(boxIndex) {
+            _boxState[boxIndex] = _currentPlayer;
+        });
+
+        result.boxesScored = closedBoxesThisTurn;
+        result.gameOver = isGameOver();
+
+        if(result.boxesScored.length === 0) {
+            //If no boxes were scored then advance
+            //to the next player, and assign it to.
+            result.nextPlayer = nextPlayer();
+        } else {
+            result.nextPlayer = getCurrentPlayer();
+        }
+
+        return result;
 
     }
 
@@ -262,10 +410,12 @@ dotBox.gameEngine = function gameEngine(config) {
         getBoxCountLength: getBoxCountLength,
         getDotCountWidth: getDotCountWidth,
         getBoxCountWidth: getBoxCountWidth,
+        getBoxCount: getBoxCount,
         getPlayerCount: getPlayerCount,
         getCurrentPlayer: getCurrentPlayer,
         isLineConnected: isLineConnected,
-        connectLine: connectLine
+        connectLine: connectLine,
+        isGameOver: isGameOver
 
     };
 

@@ -203,7 +203,7 @@ describe("line iterator", function () {
 
    });
 
-    it("for vertical lines should iterate all vertical lines", function () {
+   it("for vertical lines should iterate all vertical lines", function () {
 
         var i,
             lDotCount = 3,
