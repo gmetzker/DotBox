@@ -616,6 +616,182 @@ describe("dotBox.utility.lineSet", function (){
 
     });
 
+    describe("getAllLinesForDot", function () {
+
+        var LEN = 5,
+            WIDTH = 5,
+            target = lineState(LEN, WIDTH);
+
+        beforeEach(function() {
+            this.addMatchers({
+                toBeSameLine: function(expected) {
+
+                    return areLinesSame(this.actual, expected);
+                }
+            });
+        });
+
+        it("should return two lines for corner dots", function () {
+
+            var actLines,
+                x,
+                y;
+
+            //Top left corner
+            x = 0;
+            y = 0;
+            actLines = target.getAllLinesForDot({x: x, y: y});
+            expect(actLines.length).toBe(2);
+            expect(actLines[0]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 1, y: 0}});
+            expect(actLines[1]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 0, y: 1}});
+
+            //Top right corner
+            x = LEN - 1;
+            y = 0;
+            actLines = target.getAllLinesForDot({x: x, y: y});
+            expect(actLines.length).toBe(2);
+            expect(actLines[0]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 4, y: 1}});
+            expect(actLines[1]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 3, y: 0}});
+
+            //Bottom right corner
+            x = LEN - 1;
+            y = WIDTH - 1;
+            actLines = target.getAllLinesForDot({x: x, y: y});
+            expect(actLines.length).toBe(2);
+            expect(actLines[0]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 4, y: 3}});
+            expect(actLines[1]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 3, y: 4}});
+
+            //Bottom left corner
+            x = 0;
+            y = WIDTH - 1;
+            actLines = target.getAllLinesForDot({x: x, y: y});
+            expect(actLines.length).toBe(2);
+            expect(actLines[0]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 0, y: 3}});
+            expect(actLines[1]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 1, y: 4}});
+
+
+        });
+
+
+        it("should return three lines for non-corner edge dots", function () {
+
+            var actLines,
+                x,
+                y;
+
+
+            x = 1;
+            y = 0;
+            actLines = target.getAllLinesForDot({x: x, y: y});
+            expect(actLines.length).toBe(3);
+            expect(actLines[0]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 2, y: 0}});
+            expect(actLines[1]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 1, y: 1}});
+            expect(actLines[2]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 0, y: 0}});
+
+            x = 4;
+            y = 1;
+            actLines = target.getAllLinesForDot({x: x, y: y});
+            expect(actLines.length).toBe(3);
+            expect(actLines[0]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 4, y: 0}});
+            expect(actLines[1]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 4, y: 2}});
+            expect(actLines[2]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 3, y: 1}});
+
+            x = 2;
+            y = 4;
+            actLines = target.getAllLinesForDot({x: x, y: y});
+            expect(actLines.length).toBe(3);
+            expect(actLines[0]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 2, y: 3}});
+            expect(actLines[1]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 3, y: 4}});
+            expect(actLines[2]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 1, y: 4}});
+
+            x = 0;
+            y = 3;
+            actLines = target.getAllLinesForDot({x: x, y: y});
+            expect(actLines.length).toBe(3);
+            expect(actLines[0]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 0, y: 2}});
+            expect(actLines[1]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 1, y: 3}});
+            expect(actLines[2]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 0, y: 4}});
+
+        });
+
+        it("should return four lines for interior dots", function () {
+
+            var actLines,
+                x,
+                y;
+
+
+            x = 1;
+            y = 1;
+            actLines = target.getAllLinesForDot({x: x, y: y});
+            expect(actLines.length).toBe(4);
+            expect(actLines[0]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 1, y: 0}});
+            expect(actLines[1]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 2, y: 1}});
+            expect(actLines[2]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 1, y: 2}});
+            expect(actLines[3]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 0, y: 1}});
+
+            x = 2;
+            y = 3;
+            actLines = target.getAllLinesForDot({x: x, y: y});
+            expect(actLines.length).toBe(4);
+            expect(actLines[0]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 2, y: 2}});
+            expect(actLines[1]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 3, y: 3}});
+            expect(actLines[2]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 2, y: 4}});
+            expect(actLines[3]).toBeSameLine({d1: {x: x, y: y}, d2: {x: 1, y: 3}});
+
+        });
+
+
+
+    });
+
+    it("getOpenLinesForDot should filter dot-lines to only those that are connected", function () {
+
+        var target = lineState(5, 5),
+            callCount_getAllLinesForDot = 0,
+            x = 1,
+            y = 3,
+            l1 = {id : 1},
+            l2 = {id : 2},
+            l3 = {id : 3},
+            l4 = {id: 4},
+            connectedCallArgs = [],
+            actResults;
+
+        //Mock this method.
+        target.getAllLinesForDot = function(dot) {
+            callCount_getAllLinesForDot += 1;
+            expect(dot.x).toBe(x);
+            expect(dot.y).toBe(y);
+
+            return [l1, l2, l3, l4];
+        };
+
+        target.connected = function (l) {
+
+            connectedCallArgs.push(l);
+
+            if(l.id === 2 || l.id === 4) { return true; }
+            else { return false; }
+
+        };
+
+        actResults = target.getOpenLinesForDot({x: x, y: y});
+
+        expect(callCount_getAllLinesForDot).toBe(1);
+        expect(connectedCallArgs.length).toBe(4);
+        expect(connectedCallArgs[0]).toBe(l1);
+        expect(connectedCallArgs[1]).toBe(l2);
+        expect(connectedCallArgs[2]).toBe(l3);
+        expect(connectedCallArgs[3]).toBe(l4);
+
+        expect(actResults.length).toBe(2);
+        expect(actResults[0]).toBe(l1);
+        expect(actResults[1]).toBe(l3);
+
+
+    });
+
 });
 
 function areLinesSame(line1, line2) {
@@ -628,3 +804,4 @@ function areLinesSame(line1, line2) {
     return true;
 
 }
+

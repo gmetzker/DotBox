@@ -371,7 +371,74 @@ dotBox.gameEngine = function gameEngine(config) {
     }
 
 
+    /**
+     * Checks to see if the given dot has any open lines.
+     * @function             hasAnyOpenLines
+     * @param     {gameDot}  dot    - The dot we are checking.
+     * @returns   {boolean}         - True if the dot has any open lines, false otherwise.
+     */
+    function hasAnyOpenLines(dot) {
 
+        if(dot === undefined) {
+            throw new Error("dot argument was not supplied.")
+        }
+
+        if(dot === null) {
+            throw new Error("dot argument was null.")
+        }
+
+        var openLines;
+
+        openLines = _lineState.getOpenLinesForDot(dot);
+
+        if(openLines.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+
+
+    }
+
+
+    /**
+     * Checks to see if the two dots can be connected.  They can only be connected
+     * if they are adjacent and they are not already connected.
+     * @function          canConnectDots
+     * @param   {gameDot} dot1
+     * @param   {gameDot} dot2
+     * @returns {boolean}       - True if the dots can be connected, or false otherwise.
+     */
+    function canConnectDots(dot1, dot2) {
+
+        var i,
+            openLines,
+            tempDot;
+
+        if(util.isNullOrUndefined(dot1)) {
+            throw new Error("dot1 argument was null or undefined.");
+        }
+
+        if(util.isNullOrUndefined(dot2)) {
+            throw new Error("dot2 argument was null or undefined.");
+        }
+
+        openLines = _lineState.getOpenLinesForDot(dot1);
+
+
+        //If we found the dot in the list of open lines
+        //then we can connect it.
+
+        for(i = 0; i < openLines.length; i++) {
+            tempDot = openLines[i].d2;
+            if(tempDot.x === dot2.x && tempDot.y === dot2.y) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
 
     return {
 
@@ -385,7 +452,9 @@ dotBox.gameEngine = function gameEngine(config) {
         getCurrentScores: getCurrentScores,
         isLineConnected: isLineConnected,
         connectLine: connectLine,
-        isGameOver: isGameOver
+        isGameOver: isGameOver,
+        hasAnyOpenLines: hasAnyOpenLines,
+        canConnectDots: canConnectDots
 
     };
 

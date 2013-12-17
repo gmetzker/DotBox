@@ -926,4 +926,219 @@ describe("dotBox.gameEngine", function () {
 
     });
 
+    describe("hasAnyOpenLines", function () {
+
+        it("should return true if lineState.getOpenLinesForDot returns at least one line", function () {
+
+            var target,
+                config = {},
+                getOpenLinesForDotArgList = [],
+                x = 0,
+                y = 1,
+                actResult;
+
+            config.lineState = {
+                getOpenLinesForDot : function (dot) {
+                    getOpenLinesForDotArgList.push(dot);
+                    return [{}];
+                }
+            };
+
+            target = dotBox.gameEngine(config);
+
+            actResult = target.hasAnyOpenLines({x: x, y: y});
+
+            expect(actResult).toBe(true);
+            expect(getOpenLinesForDotArgList.length).toBe(1);
+
+            expect(getOpenLinesForDotArgList[0].x).toBe(x);
+            expect(getOpenLinesForDotArgList[0].y).toBe(y);
+
+
+
+        });
+
+        it("should return false if lineState.getOpenLinesForDot returns no lines", function () {
+
+            var target,
+                config = {},
+                getOpenLinesForDotArgList = [],
+                x = 0,
+                y = 1,
+                actResult;
+
+            config.lineState = {
+                getOpenLinesForDot : function (dot) {
+                    getOpenLinesForDotArgList.push(dot);
+                    return [];
+                }
+            };
+
+            target = dotBox.gameEngine(config);
+
+            actResult = target.hasAnyOpenLines({x: x, y: y});
+
+            expect(actResult).toBe(false);
+            expect(getOpenLinesForDotArgList.length).toBe(1);
+
+            expect(getOpenLinesForDotArgList[0].x).toBe(x);
+            expect(getOpenLinesForDotArgList[0].y).toBe(y);
+
+
+        });
+
+        it("should throw an exception if no argument is passed", function () {
+
+            var target,
+                act;
+
+            target = dotBox.gameEngine();
+
+            act = function () { target.hasAnyOpenLines(); };
+
+            expect(act).toThrow();
+
+        });
+
+        it("should throw an exception if NULL argument is passed", function () {
+
+            var target,
+                act;
+
+            target = dotBox.gameEngine();
+
+            act = function () { target.hasAnyOpenLines(null); };
+
+            expect(act).toThrow();
+
+        });
+
+
+    });
+
+    describe("canConnectDots", function () {
+
+        it("should return false if dot1 has no open lines", function () {
+
+            var target,
+                config = {},
+                getOpenLinesForDotArgList = [],
+                x1 = 0,
+                y1 = 1,
+                actResult,
+                dot1,
+                dot2,
+                x2 = 1,
+                y2 = 1;
+
+            dot1 = {x: x1, y: y1};
+            dot2 = {x: x2, y: y2};
+
+
+            config.lineState = {
+                getOpenLinesForDot : function (dot) {
+                    getOpenLinesForDotArgList.push(dot);
+                    return [];
+                }
+            };
+
+            target = dotBox.gameEngine(config);
+
+            actResult = target.canConnectDots(dot1, dot2);
+
+            //Validate the dependency was called.
+            expect(getOpenLinesForDotArgList.length).toBe(1);
+            expect(getOpenLinesForDotArgList[0].x).toBe(x1);
+            expect(getOpenLinesForDotArgList[0].y).toBe(y1);
+
+            expect(actResult).toBe(false);
+
+
+        });
+
+        it("should return false if dot1 has open lines but dot2 was not in any of them", function () {
+
+            var target,
+                config = {},
+                getOpenLinesForDotArgList = [],
+                x1 = 0,
+                y1 = 1,
+                actResult,
+                dot1,
+                dot2,
+                x2 = 1,
+                y2 = 1;
+
+            dot1 = {x: x1, y: y1};
+            dot2 = {x: x2, y: y2};
+
+
+            config.lineState = {
+                getOpenLinesForDot : function (dot) {
+                    getOpenLinesForDotArgList.push(dot);
+                    return [
+                        {d1: dot1, d2: {x: 0, y: 0}},
+                        {d1: dot1, d2: {x: 0, y: 2}}
+                    ];
+                }
+            };
+
+            target = dotBox.gameEngine(config);
+
+            actResult = target.canConnectDots(dot1, dot2);
+
+            //Validate the dependency was called.
+            expect(getOpenLinesForDotArgList.length).toBe(1);
+            expect(getOpenLinesForDotArgList[0].x).toBe(x1);
+            expect(getOpenLinesForDotArgList[0].y).toBe(y1);
+
+            expect(actResult).toBe(false);
+
+
+        });
+
+        it("should return true if dot1 has open lines and dot2 was in one of them", function () {
+
+            var target,
+                config = {},
+                getOpenLinesForDotArgList = [],
+                x1 = 0,
+                y1 = 1,
+                actResult,
+                dot1,
+                dot2,
+                x2 = 1,
+                y2 = 1;
+
+            dot1 = {x: x1, y: y1};
+            dot2 = {x: x2, y: y2};
+
+
+            config.lineState = {
+                getOpenLinesForDot : function (dot) {
+                    getOpenLinesForDotArgList.push(dot);
+                    return [
+                        {d1: dot1, d2: {x: 0, y: 0}},
+                        {d1: dot1, d2: {x: x2, y: y2}}
+                    ];
+                }
+            };
+
+            target = dotBox.gameEngine(config);
+
+            actResult = target.canConnectDots(dot1, dot2);
+
+            //Validate the dependency was called.
+            expect(getOpenLinesForDotArgList.length).toBe(1);
+            expect(getOpenLinesForDotArgList[0].x).toBe(x1);
+            expect(getOpenLinesForDotArgList[0].y).toBe(y1);
+
+            expect(actResult).toBe(true);
+
+
+        });
+
+    });
+
+
 });

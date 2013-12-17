@@ -5,9 +5,12 @@ dotBox.lineState = function lineState (dotCountLength, dotCountWidth) {
 
         var util = dotBox.utility,
             _horizontalLineStates = [],
-            _verticalLineStates = [];
+            _verticalLineStates = [],
+            that;
 
         configure(dotCountLength, dotCountWidth);
+
+
 
         function configure(dotLength, dotWidth) {
 
@@ -179,12 +182,92 @@ dotBox.lineState = function lineState (dotCountLength, dotCountWidth) {
             return true;
         }
 
+        /**
+         * Gets the set of all lines could connect or are connected to the given dot.
+         * @function             getAllLinesForDot
+         * @param   {gameDot}    dot  - The dot who's lines we are returning.
+         * @returns {line[]}            - A list of lines that can connect to the dot.
+         *                            Corner dots have two lines.
+         *                            Edge dots have three lines.
+         *                            Interior dots have four lines.
+         */
+        function getAllLinesForDot(dot) {
+
+            var allLines = [],
+                cloneDot,
+                addLine;
+
+            cloneDot = function() {
+                return  {x: dot.x, y: dot.y};
+            }
+
+            addLine = function(x, y) {
+                allLines.push({
+                    d1: cloneDot(),
+                    d2: {
+                        x:  x,
+                        y:  y
+                    }
+                });
+            }
 
 
-        return {
+
+            // If there is a dot ABOVE of the current dot.
+            if(dot.y > 0) {
+                addLine(dot.x, dot.y - 1);
+            }
+
+            // If there is a dot to the RIGHT of the current dot.
+            if(dot.x < (dotCountLength - 1)) {
+                addLine(dot.x + 1, dot.y);
+            }
+
+            // If there is a dot BELOW the current dot.
+            if(dot.y < (dotCountWidth - 1)) {
+                addLine(dot.x, dot.y + 1);
+            }
+
+            // If there is a dot to the LEFT of the current dot.
+            if(dot.x > 0) {
+                addLine(dot.x - 1, dot.y);
+            }
+
+            return allLines;
+
+        }
+
+
+        /**
+         * Finds all of the open (not-connected) lines that this dot could connectet to.
+         * @function            getOpenLinesForDot
+         * @param   {gameDot}   dot
+         * @returns {line[]}    Returns an array of all unconnected lines for this dot.
+         */
+        function getOpenLinesForDot(dot) {
+
+            var allLines
+                openLines = [];
+
+            allLines = that.getAllLinesForDot(dot);
+            openLines = allLines.filter(function(line) {
+                return !that.connected(line);
+            });
+
+            return openLines;
+
+        }
+
+
+
+        that = {
             connected: connected,
-            isBoxClosed: isBoxClosed
+            isBoxClosed: isBoxClosed,
+            getAllLinesForDot: getAllLinesForDot,
+            getOpenLinesForDot: getOpenLinesForDot
         };
+
+        return that;
 
 
     };
