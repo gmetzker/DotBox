@@ -603,8 +603,8 @@ describe("dotBox.utility.lineSet", function (){
 
             for(j = 0; j < 4; j++) {
                 if(j !== i) {
-                    //Connect all sides except i.
-                    target.connected(allSides[i], true);
+                    //Connect all sides except when j matches i.
+                    target.connected(allSides[j], true);
                 }
             }
 

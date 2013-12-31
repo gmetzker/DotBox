@@ -175,7 +175,7 @@ dotBox.lineState = function lineState (dotCountLength, dotCountWidth) {
 
             boxLines = util.line.getLinesFromBox(boxIndex, dotCountLength);
 
-            for(i = 0; i < 3; i++) {
+            for(i = 0; i < 4; i++) {
                 if(!connected(boxLines[i])) return false;
             }
 

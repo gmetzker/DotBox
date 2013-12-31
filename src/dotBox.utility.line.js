@@ -112,7 +112,8 @@ dotBox.utility.line = dotBox.utility.line || {};
 
 
     /**
-     * Gets an array containing four lines of the box.
+     * Gets an array containing four lines of the box.  Lines of the box follow
+     * clock wise order from left to right and top to bottom.
      * @function                getLinesFromBox
      * @param {number}          boxIndex            - The index of the box.
      * @param {number}          dotCountLength      - The length of the game board in dots.

@@ -13,7 +13,8 @@ dotBox.model = function model(gameEngine) {
         isHoveredDot: isHoveredDot,
         getDotColCount: getDotColCount,
         canConnectDots: canConnectDots,
-        getDotRowCount: getDotRowCount
+        getDotRowCount: getDotRowCount,
+        hasAnyOpenLines: hasAnyOpenLines
 
     };
 
@@ -56,6 +57,10 @@ dotBox.model = function model(gameEngine) {
             return false;
         }
 
+    }
+
+    function hasAnyOpenLines(dot) {
+        return _gameEngine.hasAnyOpenLines(dot);
     }
 
 

@@ -9,10 +9,17 @@ dotBox.view = function (events, $parent) {
     var CANVAS_ID_PREFIX = 'dotBoxCanvas_',
         DOT_RADIUS = 5,
         DOT_MARGIN = 20,
-        CANVAS_BACK_COLOR = 'blue',
-        DOT_COLOR_DEF = 'red',
-        DOT_COLOR_SEL = 'pink',
-        DOT_COLOR_CONN = 'green',
+        CANVAS_BACK_COLOR = '#272822',
+        CANVAS_BORDER_COLOR = '#3b3d38',
+        DOT_COLOR_DEF = '#53d2f1',
+        DOT_COLOR_DEF_OUTER = 'rgba(83, 210, 241, .02)',
+        DOT_COLOR_HOV = '#89E0F5',
+        DOT_COLOR_SEL = '#fc1f70',
+       DOT_COLOR_CONN = '#E20355',
+
+        LINE_COLOR_DEF = 'white',
+        LINE_COLOR_BOXED = '#a4e402',
+        BOX_COLOR_CONN = 'rgba(164,228,2,.33)',
         BORDER_SIZE = 2;
 
     //Members
@@ -20,7 +27,9 @@ dotBox.view = function (events, $parent) {
         _canvasId,
         _events = events,
         _model,
-        _dotShapes;
+        _dotShapes,
+        _hLineShapes = {},
+        _vLineShapes = {};
 
     addSubscribers();
 
@@ -34,6 +43,10 @@ dotBox.view = function (events, $parent) {
         _events.subscribe('view.dotRollOut', onDotRollOut);
 
         _events.subscribe('view.dotSelectionChanged', onDotSelectionChanged);
+
+        _events.subscribe('view.lineConnected', onLineConnected);
+
+        _events.subscribe('view.boxesScored', onBoxesScored);
 
     };
 
@@ -105,7 +118,7 @@ dotBox.view = function (events, $parent) {
         canvasHeight = dotSum + marginSum;
 
         $parent.append('<canvas style="background-color: ' + CANVAS_BACK_COLOR +
-            '; border: solid ' + BORDER_SIZE + 'px black;"' +
+            '; border: solid ' + BORDER_SIZE + 'px ' + CANVAS_BORDER_COLOR + ';"' +
             ' width=' + canvasWidth +
             ' height=' + canvasHeight +
             ' id="' + canvasId + '"></canvas>');
@@ -156,7 +169,7 @@ dotBox.view = function (events, $parent) {
                 dotShape.on('rollover', function() { _events.publish('dotRollOver', this.dot); });
                 dotShape.on('rollout', function() { _events.publish('dotRollOut', this.dot); });
                 dotShape.on('click', function() { _events.publish('dotClick', this.dot); });
-                dotShape.cursor = "pointer";
+
 
                 dotShapeRow.push(dotShape);
                 _stage.addChild(dotShape);
@@ -198,11 +211,22 @@ dotBox.view = function (events, $parent) {
         } else if(_model.isHoveredDot(dot) && _model.canConnectDots(dot)) {
             color = DOT_COLOR_CONN;
         } else {
-            color = DOT_COLOR_DEF;
+            if(_model.isHoveredDot(dot)) {
+                color = DOT_COLOR_HOV;
+            } else {
+                color = DOT_COLOR_DEF;
+            }
         }
 
-        dotShape.graphics.beginFill('rgba(255, 0, 0, .02)').drawCircle(0, 0, DOT_RADIUS * 2.5);
+        dotShape.graphics.beginFill(DOT_COLOR_DEF_OUTER).drawCircle(0, 0, DOT_RADIUS * 2.80);
         dotShape.graphics.beginFill(color).drawCircle(0, 0, DOT_RADIUS);
+
+        if(_model.hasAnyOpenLines(dot)) {
+            dotShape.cursor = "pointer";
+        } else {
+            dotShape.cursor = null;
+        }
+
 
         return dotShape;
 
@@ -231,14 +255,179 @@ dotBox.view = function (events, $parent) {
 
     function onDotSelectionChanged(oldDot, newDot) {
 
-        if( !util.isNullOrUndefined(oldDot)) {
+        var dotShape;
+
+        if( oldDot !== null) {
             drawDotShape(oldDot);
         }
 
-        if( !util.isNullOrUndefined(newDot)) {
+        if( newDot !== null) {
             drawDotShape(newDot);
         }
+
+        if( oldDot !== newDot) {
+            //If dot was unselected, make it not hovered.
+            dotShape = getDotShape(newDot !== null ? newDot : oldDot);
+            createjs.Tween.get(dotShape, {override: true}).to({scaleX: 1, scaleY: 1}, 150);
+        }
+
     }
+
+    function onLineConnected(line) {
+
+        var dotShape;
+
+        drawDotShape(line.d1);
+        dotShape = drawDotShape(line.d2);
+        createjs.Tween.get(dotShape, {override: true}).to({scaleX: 1, scaleY: 1}, 150);
+
+        drawLineShape(line, LINE_COLOR_DEF);
+    }
+
+
+
+
+
+    function drawLineShape(line, color) {
+
+        var lineShape,
+            d1Shape = getDotShape(line.d1),
+            d2Shape = getDotShape(line.d2),
+            newShape = false;
+
+        lineShape = getLineShape(line);
+
+        if(util.isNullOrUndefined(lineShape)) {
+            lineShape = new createjs.Shape();
+            setLineShape(line, lineShape);
+            newShape = true;
+        } else {
+            lineShape.graphics.clear();
+        }
+
+        lineShape.graphics
+            .setStrokeStyle(1)
+            .beginStroke(color)
+            .moveTo(d1Shape.x, d1Shape.y)
+            .lineTo(d2Shape.x, d2Shape.y);
+
+        if(newShape) { _stage.addChild(lineShape); }
+
+
+    }
+
+
+    function onBoxesScored(scoredBoxes){
+
+        var i;
+        for(i = 0; i < scoredBoxes.length; i++ ) {
+            drawScoredBox(scoredBoxes[i]);
+        }
+
+    }
+
+    function drawScoredBox(box) {
+
+        var i,
+            lineShape,
+            rectShape,
+            ulDotShape,
+            lrDotShape,
+            boxW,
+            boxH;
+
+        for(i = 0; i < box.lines.length; i++) {
+            drawLineShape(box.lines[i], LINE_COLOR_BOXED);
+        }
+
+        ulDotShape = getDotShape(box.lines[0].d1);
+        lrDotShape = getDotShape(box.lines[1].d2);
+        boxW = lrDotShape.x - ulDotShape.x;
+        boxH = lrDotShape.y - ulDotShape.y;
+
+        rectShape = new createjs.Shape();
+        rectShape.graphics
+            .beginFill(BOX_COLOR_CONN)
+            .drawRect(ulDotShape.x, ulDotShape.y, boxW, boxH);
+
+        _stage.addChild(rectShape);
+
+    }
+
+
+
+    function setLineShape(line, shape) {
+
+        var lookup,
+            row;
+
+        lookup = getLineShapeLookup(line);
+
+        row = lookup.store[lookup.y];
+        if(util.isNullOrUndefined(row)) {
+            row = {};
+            lookup.store[lookup.y] = row;
+        }
+
+        row[lookup.x] = shape;
+
+    }
+
+    function getLineShape(line) {
+
+        var lookup,
+            row,
+            shape;
+
+        lookup = getLineShapeLookup(line);
+
+
+        if(!lookup.store.hasOwnProperty(lookup.y)) {
+            return null;
+        } else {
+            row = lookup.store[lookup.y];
+        }
+
+        if(!row.hasOwnProperty(lookup.x)) {
+            return null;
+        } else {
+            shape = row[lookup.x];
+        }
+
+
+        return shape;
+
+    }
+
+    function getLineShapeLookup(line) {
+
+        var x,
+            y,
+            store;
+
+        if(util.line.isHLine(line)) {
+            //Horizontal Line.
+            store = _hLineShapes;
+            y = line.d1.y;
+            x = Math.min(line.d1.x, line.d2.x);
+
+        } else {
+            //Vertical Line.
+            store = _vLineShapes;
+            y = Math.min(line.d1.y, line.d2.y);
+            x = line.d1.x;
+
+        }
+
+        return {
+            x: x,
+            y: y,
+            store: store
+        };
+
+
+    }
+
 
     function tick(event) {
         _stage.update();
