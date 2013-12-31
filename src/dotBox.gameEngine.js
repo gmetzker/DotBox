@@ -3,7 +3,7 @@ dotBox = dotBox || {};
 
 /**
  * Game configuration options.
- * @typedef     {Object}    gameConfig
+ * @typedef     {Object}    gameEngineConfig
  * @property    {number}    dotCountLength     - The number of game dots across the length (x-axis) of the board.
  * @property    {number}    dotCountWidth      - The number of game dots across the width (y-axis) of the board.
  * @property    {number}    playerCount        - The number of players.
@@ -33,7 +33,7 @@ dotBox = dotBox || {};
 /**
  * Creates a new game engine.
  * @function gameEngine
- * @param   {gameConfig}    - The game configuration options.
+ * @param   {gameEngineConfig}    - The game configuration options.
  *
  */
 dotBox.gameEngine = function gameEngine(config) {

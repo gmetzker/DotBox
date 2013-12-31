@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>dotBox</title>
+    <script src="lib/jquery/jquery-2.0.3.min.js"></script>
+    <script src="lib/createjs-2013.09.25.min.js" ></script>
+    <script src="lib/Observer-1.0.0.js" ></script>
+
+
+    <script src="src/dotBox.utility.js"></script>
+    <script src="src/dotBox.utility.line.js"></script>
+    <script src="src/dotBox.boxState.js"></script>
+    <script src="src/dotBox.lineState.js"></script>
+    <script src="src/dotBox.gameEngine.js"></script>
+    <script src="src/dotBox.model.js"></script>
+    <script src="src/dotBox.view.js"></script>
+    <script src="src/dotBox.controller.js"></script>
+    <script src="src/dotBox.game.js" ></script>
+
+</head>
+<body>
+    <div id="container"></div>
+</body>
+<script>
+    $(document).ready(function() {
+
+        $('#container').dotBox();
+
+    });
+</script>
+</html>
