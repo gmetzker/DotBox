@@ -7,8 +7,8 @@ dotBox.controller = function (events) {
     var util = dotBox.utility;
 
     //Constants
-    var DOT_COL_COUNT = 15,
-        DOT_ROW_COUNT = 10;
+    var DOT_COL_COUNT = 6,
+        DOT_ROW_COUNT = 6;
 
     //Vars
     var that = {},
@@ -95,7 +95,12 @@ dotBox.controller = function (events) {
 
         var boxIdx,
             result,
-            line;
+            line,
+            playerThisTurn,
+            playerNextTurn;
+
+
+        playerThisTurn = gameEngine.getCurrentPlayer();
 
         line = {d1: d1, d2: d2};
         result = gameEngine.connectLine(line);
@@ -112,10 +117,13 @@ dotBox.controller = function (events) {
         renderScoredBoxesToView(result.boxesScored);
 
 
+        playerNextTurn = gameEngine.getCurrentPlayer();
 
+        if((playerNextTurn !== null) && (playerNextTurn !== playerThisTurn)) {
+            _events.publish("views.playerTurnChanged");
+        }
 
         //TODO:
-        //3.  If any boxes scored fire scored changed.
         //4.  If game over announce winner.
         //5.  If game NOT OVER
         //5b)   If player is different --> fire player changed.
