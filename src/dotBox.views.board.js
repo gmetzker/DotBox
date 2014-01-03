@@ -377,7 +377,25 @@ dotBox.views.board = function (events, $parent) {
             .beginFill(boxColor)
             .drawRect(ulDotShape.x, ulDotShape.y, boxW, boxH);
 
+        var extraSize = 10;
+        var scale = ((boxW + extraSize) / boxW);
+        rectShape.scaleX = scale
+        rectShape.scaleY = scale;
+
+
+        rectShape.x = (-1 * ((ulDotShape.x * scale) - ulDotShape.x)) - (extraSize / 2);
+        rectShape.y = (-1 * ((ulDotShape.y * scale) - ulDotShape.y)) - (extraSize / 2);
+
+
         _stage.addChild(rectShape);
+
+        createjs.Tween.get(rectShape, {override: true}).to({
+            x: 0,
+            y: 0,
+            scaleX: 1,
+            scaleY: 1
+        }, 250);
+
 
     }
 
