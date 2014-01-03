@@ -80,125 +80,118 @@ dotBox.views.score = function(events) {
 
     function drawScoreBoard() {
 
-        var rectShape,
-            lineShape,
-            sbTop,
-            tempShape,
-            boxMargin,
-            boxW,
-            boxH,
-            boxT,
-            boxL,
-            tempTxt,
-            playerFlagShape;
+        var scoreBox,
+            BOARD_TOP,
+            BOX_TOP_MARGIN = 5,
+            BOX_SIDE_MARGIN = 10,
+            BOXW = 75,
+            BOXH,
+            SCORE_BOX_TOP;
+
+        BOARD_TOP = _stage.canvas.height - viewConst.SCORE_BOARD_HEIGHT;
+        BOXH = viewConst.SCORE_BOARD_HEIGHT - (2 * BOX_TOP_MARGIN);
+        SCORE_BOX_TOP = BOARD_TOP + BOX_TOP_MARGIN + 1;
 
         _scoreTxtShapes = [];
         _playerFlagShapes = [];
 
-        sbTop = _stage.canvas.height - viewConst.SCORE_BOARD_HEIGHT;
 
-        rectShape = new createjs.Shape();
-        rectShape.graphics
-            .beginLinearGradientFill([SB_BACK_COLOR1, SB_BACK_COLOR2], [0, 1], 0, sbTop, 0, _stage.canvas.height)
-            .drawRect(0, sbTop, _stage.canvas.width, _stage.canvas.height)
-            .endFill();
+        addScoreboardBackground(BOARD_TOP);
 
-        _stage.addChild(rectShape);
-
-        lineShape = new createjs.Shape();
+        //Player-1
+        scoreBox = addPlayerScoreBox(BOXW, BOXH);
+        scoreBox.x = BOX_SIDE_MARGIN;
+        scoreBox.y = SCORE_BOX_TOP;
+        _stage.addChild(scoreBox);
 
 
-        lineShape.graphics
-            .setStrokeStyle(1)
-            .beginStroke(SB_BORDER_COLOR)
-            .moveTo(0, sbTop)
-            .lineTo(_stage.canvas.width, sbTop);
-
-        _stage.addChild(lineShape);
+        //Player-2
+        scoreBox = addPlayerScoreBox(BOXW, BOXH);
+        scoreBox.x = _stage.canvas.width - BOX_SIDE_MARGIN - BOXW;
+        scoreBox.y = SCORE_BOX_TOP;
+        _stage.addChild(scoreBox);
 
 
-
-        //Add score box for player-0
-        boxMargin = 5;
-        boxL = 10;
-        boxT = sbTop + boxMargin + 1;
-        boxW = 75;
-        boxH = viewConst.SCORE_BOARD_HEIGHT - (2 * boxMargin);
-
-        tempShape = new createjs.Shape();
-        tempShape.graphics
-            .beginStroke(SCORE_NUM_BORDER_COLOR)
-            .beginFill(SCORE_NUM_BACK_COLOR)
-            .drawRoundRect(boxL, boxT, boxW, boxH, 3);
-
-        _stage.addChild(tempShape);
-
-        tempTxt = new createjs.Text("0", "25px Helvetica", SCORE_TXT_COLOR);
-        tempTxt.x = boxL + boxW / 2;
-        tempTxt.y = 1 + boxT + boxH / 2;
-        tempTxt.textAlign = "center";
-        tempTxt.textBaseline = "middle";
-
-        _stage.addChild(tempTxt);
-        _scoreTxtShapes.push(tempTxt);
-
-
-
-        playerFlagShape = new createjs.Shape();
-        playerFlagShape.graphics
-            .beginFill(FLAG_COLOR)
-            .beginStroke(FLAG_BORDER_COLOR)
-            .arc(boxL + (boxW / 2), boxT + boxH + 12, boxW / 4, Math.PI + (Math.PI *.25), Math.PI * 1.75);
-
-        _playerFlagShapes.push(playerFlagShape);
-
-
-        playerFlagShape.alpha = 0;
-
-        _stage.addChild(playerFlagShape);
-
-
-        //Add score box for player-1
-        boxMargin = 5;
-        boxW = 75;
-        boxL = _stage.canvas.width - 10 - boxW;
-        boxT = sbTop + boxMargin + 1;
-        boxH = viewConst.SCORE_BOARD_HEIGHT - (2 * boxMargin);
-
-        tempShape = new createjs.Shape();
-        tempShape.graphics
-            .beginStroke(SCORE_NUM_BORDER_COLOR)
-            .beginFill(SCORE_NUM_BACK_COLOR)
-            .drawRoundRect(boxL, boxT, boxW, boxH, 3);
-
-        _stage.addChild(tempShape);
-
-        tempTxt = new createjs.Text("0", "25px Helvetica", SCORE_TXT_COLOR);
-        tempTxt.x = boxL + boxW / 2;
-        tempTxt.y = 1 + boxT + boxH / 2;
-        tempTxt.textAlign = "center";
-        tempTxt.textBaseline = "middle";
-
-        _stage.addChild(tempTxt);
-        _scoreTxtShapes.push(tempTxt);
-
-        playerFlagShape = new createjs.Shape();
-        playerFlagShape.graphics
-            .beginFill(FLAG_COLOR)
-            .beginStroke(FLAG_BORDER_COLOR)
-            .arc(boxL + (boxW / 2), boxT + boxH + 12, boxW / 4, Math.PI + (Math.PI *.25), Math.PI * 1.75);
-
-        _playerFlagShapes.push(playerFlagShape);
-
-        playerFlagShape.alpha = 0;
-
-        _stage.addChild(playerFlagShape);
 
         setCurrentPlayerShape();
 
     }
 
+    function addScoreboardBackground(top) {
 
+        var tempShape;
+
+
+            //Create the background shape.
+        tempShape = new createjs.Shape();
+
+        tempShape.graphics
+            .beginLinearGradientFill([SB_BACK_COLOR1, SB_BACK_COLOR2], [0, 1], 0, top, 0, _stage.canvas.height)
+            .drawRect(0, top, _stage.canvas.width, _stage.canvas.height)
+            .endFill();
+
+        _stage.addChild(tempShape);
+
+
+        //Create the top border line.
+        tempShape = new createjs.Shape();
+
+        tempShape.graphics
+            .setStrokeStyle(1)
+            .beginStroke(SB_BORDER_COLOR)
+            .moveTo(0, top)
+            .lineTo(_stage.canvas.width, top);
+
+        _stage.addChild(tempShape);
+
+    }
+
+    // Creates a new player score container
+    function addPlayerScoreBox(boxW, boxH) {
+
+        var container = new createjs.Container(),
+            tempShape;
+
+
+        //Add the background rectangle.
+        tempShape = new createjs.Shape();
+        tempShape.graphics
+            .beginStroke(SCORE_NUM_BORDER_COLOR)
+            .beginFill(SCORE_NUM_BACK_COLOR)
+            .drawRoundRect(0, 0, boxW, boxH, 3);
+
+        container.addChild(tempShape);
+
+
+
+        //Add the text shape that contains the current score.
+        tempShape = new createjs.Text("0", "25px Helvetica", SCORE_TXT_COLOR);
+        tempShape.x = boxW / 2;
+        tempShape.y = 1 + (boxH / 2);
+        tempShape.textAlign = "center";
+        tempShape.textBaseline = "middle";
+
+        container.addChild(tempShape);
+        _scoreTxtShapes.push(tempShape);
+
+
+
+        //Add the flag that indicates when it's the players turn.
+        tempShape = new createjs.Shape();
+        tempShape.graphics
+            .beginFill(FLAG_COLOR)
+            .beginStroke(FLAG_BORDER_COLOR)
+            .arc((boxW / 2), boxH + 12, boxW / 4, Math.PI + (Math.PI *.25), Math.PI * 1.75);
+
+        tempShape.alpha = 0;
+
+        _playerFlagShapes.push(tempShape);
+        container.addChild(tempShape);
+
+
+
+        return container;
+    }
 
     function setCurrentPlayerShape() {
 
