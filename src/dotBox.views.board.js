@@ -1,14 +1,12 @@
 var dotBox = dotBox || {};
+dotBox.views = dotBox.views || {};
 
-dotBox.viewConst = {
-    SCORE_BOARD_HEIGHT: 50
-};
 
-dotBox.view = function (events, $parent) {
+dotBox.views.board = function (events, $parent) {
 
     //Alias
     var util = dotBox.utility,
-        viewConst = dotBox.viewConst;
+        viewConst = dotBox.views.const;
 
     //Constants
     var CANVAS_ID_PREFIX = 'dotBoxCanvas_',

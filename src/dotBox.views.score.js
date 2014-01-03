@@ -1,10 +1,11 @@
 var dotBox = dotBox || {};
+dotBox.views = dotBox.views || {};
 
-dotBox.scoreView = function(events) {
+dotBox.views.score = function(events) {
 
     //Alias
     var util = dotBox.utility,
-        viewConst = dotBox.viewConst;
+        viewConst = dotBox.views.const;
 
     //Members
     var that = {},

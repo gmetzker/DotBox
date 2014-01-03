@@ -17,8 +17,8 @@ dotBox.game = function game(parent) {
 
     $parent = getJqueryParent(parent);
     _events = new Observer();
-    _boardView = dotBox.view(_events, $parent);
-    _scoreView = dotBox.scoreView(_events);
+    _boardView = dotBox.views.board(_events, $parent);
+    _scoreView = dotBox.views.score(_events);
     _controller = dotBox.controller(_events);
 
     _controller.startGame();
