@@ -1,9 +1,14 @@
 var dotBox = dotBox || {};
 
+dotBox.viewConst = {
+    SCORE_BOARD_HEIGHT: 50
+};
+
 dotBox.view = function (events, $parent) {
 
     //Alias
-    var util = dotBox.utility;
+    var util = dotBox.utility,
+        viewConst = dotBox.viewConst;
 
     //Constants
     var CANVAS_ID_PREFIX = 'dotBoxCanvas_',
@@ -19,13 +24,7 @@ dotBox.view = function (events, $parent) {
         LINE_COLOR_DEF = 'white',
         LINE_COLOR_BOXED = '#a4e402',
         BOX_COLOR_CONN = 'rgba(164,228,2,.33)',
-        BORDER_SIZE = 2,
-        SCORE_BOARD_HEIGHT = 50,
-        SB_BORDER_COLOR = '#7d7d7d',
-        SB_BACK_COLOR1 = '#5b5b5b',
-        SB_BACK_COLOR2 = '#545454',
-        SCORE_NUM_BACK_COLOR = '#272822',
-        SCORE_TXT_COLOR = '#e7f8f2';
+        BORDER_SIZE = 2;
 
     //Members
     var _stage = null,
@@ -34,9 +33,7 @@ dotBox.view = function (events, $parent) {
         _model,
         _dotShapes,
         _hLineShapes = {},
-        _vLineShapes = {}
-        _pScoreShapes = [],
-        _playerTurnShapes = [];
+        _vLineShapes = {};
 
     addSubscribers();
 
@@ -54,10 +51,6 @@ dotBox.view = function (events, $parent) {
         _events.subscribe('view.lineConnected', onLineConnected);
 
         _events.subscribe('view.boxesScored', onBoxesScored);
-
-        _events.subscribe('views.playerTurnChanged', onPlayerTurnChanged);
-
-
 
     };
 
@@ -79,9 +72,7 @@ dotBox.view = function (events, $parent) {
 
         createStage();
 
-        drawScoreBoard();
-
-        drawInitialView()
+        drawInitialView();
 
         startEventLoop();
 
@@ -128,7 +119,7 @@ dotBox.view = function (events, $parent) {
 
         dotSum = _model.getDotRowCount() * (2 * DOT_RADIUS);
         marginSum = (_model.getDotRowCount() + 1) * DOT_MARGIN;
-        canvasHeight = dotSum + marginSum + SCORE_BOARD_HEIGHT;
+        canvasHeight = dotSum + marginSum + viewConst.SCORE_BOARD_HEIGHT;
 
         $parent.append('<canvas style="background-color: ' + CANVAS_BACK_COLOR +
             '; border: solid ' + BORDER_SIZE + 'px ' + CANVAS_BORDER_COLOR + ';"' +
@@ -140,149 +131,6 @@ dotBox.view = function (events, $parent) {
 
     }
 
-    function drawScoreBoard() {
-
-        var rectShape,
-            lineShape,
-            sbTop,
-            tempShape,
-            boxMargin,
-            boxW,
-            boxH,
-            boxT,
-            boxL,
-            tempTxt,
-            tempTurnShape;
-
-
-
-        sbTop = _stage.canvas.height - SCORE_BOARD_HEIGHT;
-
-        rectShape = new createjs.Shape();
-        rectShape.graphics
-            .beginLinearGradientFill([SB_BACK_COLOR1, SB_BACK_COLOR2], [0, 1], 0, sbTop, 0, _stage.canvas.height)
-            .drawRect(0, sbTop, _stage.canvas.width, _stage.canvas.height)
-            .endFill();
-
-        _stage.addChild(rectShape);
-
-        lineShape = new createjs.Shape();
-
-
-        lineShape.graphics
-            .setStrokeStyle(1)
-            .beginStroke(SB_BORDER_COLOR)
-            .moveTo(0, sbTop)
-            .lineTo(_stage.canvas.width, sbTop);
-
-        _stage.addChild(lineShape);
-
-        _pScoreShapes = [];
-        _playerTurnShapes = [];
-
-        //Add score box for player-0
-        boxMargin = 5;
-        boxL = 10;
-        boxT = sbTop + boxMargin + 1;
-        boxW = 75;
-        boxH = SCORE_BOARD_HEIGHT - (2 * boxMargin);
-
-        tempShape = new createjs.Shape();
-        tempShape.graphics
-            .beginStroke(CANVAS_BORDER_COLOR)
-            .beginFill(SCORE_NUM_BACK_COLOR)
-            .drawRoundRect(boxL, boxT, boxW, boxH, 3);
-
-        _stage.addChild(tempShape);
-
-        tempTxt = new createjs.Text("0", "25px Helvetica", SCORE_TXT_COLOR);
-        tempTxt.x = boxL + boxW / 2;
-        tempTxt.y = 1 + boxT + boxH / 2;
-        tempTxt.textAlign = "center";
-        tempTxt.textBaseline = "middle";
-
-        _stage.addChild(tempTxt);
-        _pScoreShapes.push(tempTxt);
-
-
-
-        tempTurnShape = new createjs.Shape();
-        tempTurnShape.graphics
-            .beginFill(DOT_COLOR_SEL)
-            .beginStroke(DOT_COLOR_CONN)
-            .arc(boxL + (boxW / 2), boxT + boxH + 12, boxW / 4, Math.PI + (Math.PI *.25), Math.PI * 1.75);
-
-        _playerTurnShapes.push(tempTurnShape);
-
-
-        tempTurnShape.alpha = 0;
-
-        _stage.addChild(tempTurnShape);
-
-
-        //Add score box for player-1
-        boxMargin = 5;
-        boxW = 75;
-        boxL = _stage.canvas.width - 10 - boxW;
-        boxT = sbTop + boxMargin + 1;
-        boxH = SCORE_BOARD_HEIGHT - (2 * boxMargin);
-
-        tempShape = new createjs.Shape();
-        tempShape.graphics
-            .beginStroke(CANVAS_BORDER_COLOR)
-            .beginFill(SCORE_NUM_BACK_COLOR)
-            .drawRoundRect(boxL, boxT, boxW, boxH, 3);
-
-        _stage.addChild(tempShape);
-
-        tempTxt = new createjs.Text("0", "25px Helvetica", SCORE_TXT_COLOR);
-        tempTxt.x = boxL + boxW / 2;
-        tempTxt.y = 1 + boxT + boxH / 2;
-        tempTxt.textAlign = "center";
-        tempTxt.textBaseline = "middle";
-
-        _stage.addChild(tempTxt);
-        _pScoreShapes.push(tempTxt);
-
-        tempTurnShape = new createjs.Shape();
-        tempTurnShape.graphics
-            .beginFill(DOT_COLOR_SEL)
-            .beginStroke(DOT_COLOR_CONN)
-            .arc(boxL + (boxW / 2), boxT + boxH + 12, boxW / 4, Math.PI + (Math.PI *.25), Math.PI * 1.75);
-
-        _playerTurnShapes.push(tempTurnShape);
-
-        tempTurnShape.alpha = 0;
-
-        _stage.addChild(tempTurnShape);
-
-        setCurrentPlayerShape();
-
-    }
-
-    function setCurrentPlayerShape() {
-
-        var i,
-            tempShape,
-            playerIdx = _model.getCurrentPlayer();
-
-        for(i = 0; i < _playerTurnShapes.length; i++) {
-
-
-            tempShape = _playerTurnShapes[i];
-            if(i === playerIdx) {
-
-                if(tempShape.alpha === 0) {
-                   createjs.Tween.get(tempShape, {override: false}).to({alpha: 1.0}, 250, createjs.Ease.signIn);
-                }
-
-            } else {
-               createjs.Tween.get(tempShape, {override: false}).to({alpha: 0}, 250, createjs.Ease.signOut);
-            }
-
-        }
-
-    }
 
 
 
@@ -290,6 +138,8 @@ dotBox.view = function (events, $parent) {
     function createStage() {
 
         _stage = new createjs.Stage(_canvasId);
+
+        _events.publish("view.stageInit", _stage, _model);
 
     }
 
@@ -480,17 +330,12 @@ dotBox.view = function (events, $parent) {
 
     function onBoxesScored(scoredBoxes){
 
-        var i,
-            playerScores;
+        var i;
 
         for(i = 0; i < scoredBoxes.length; i++ ) {
             drawBox(scoredBoxes[i]);
         }
 
-        playerScores = _model.getCurrentScores();
-        for(i = 0; i < playerScores.length; i++) {
-            _pScoreShapes[i].text = playerScores[i];
-        }
 
     }
 
@@ -596,9 +441,7 @@ dotBox.view = function (events, $parent) {
 
     }
 
-    function onPlayerTurnChanged() {
-        setCurrentPlayerShape();
-    }
+
 
 
     function tick(event) {
