@@ -114,7 +114,7 @@ dotBox.controller = function (events) {
         _events.publish('view.lineConnected', line);
 
         // If any boxes scored draw them
-        renderScoredBoxesToView(result.boxesScored);
+        renderScoredBoxesToView(result.boxesScored, playerThisTurn);
 
 
         playerNextTurn = gameEngine.getCurrentPlayer();
@@ -130,7 +130,7 @@ dotBox.controller = function (events) {
 
     }
 
-    function renderScoredBoxesToView(scoredBoxes) {
+    function renderScoredBoxesToView(scoredBoxes, playerThisTurn) {
 
         var i,
             closedBoxes;
@@ -146,7 +146,7 @@ dotBox.controller = function (events) {
                 });
 
             }
-            _events.publish('view.boxesScored', closedBoxes);
+            _events.publish('view.boxesScored', closedBoxes, playerThisTurn);
         }
 
     }

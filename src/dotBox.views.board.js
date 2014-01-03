@@ -20,8 +20,10 @@ dotBox.views.board = function (events, $parent) {
         DOT_COLOR_SEL = '#fc1f70',
         DOT_COLOR_CONN = '#E20355',
         LINE_COLOR_DEF = 'white',
-        LINE_COLOR_BOXED = '#a4e402',
-        BOX_COLOR_CONN = 'rgba(164,228,2,.33)',
+        P1_BOX_COLOR = 'rgba(164,228,2,.33)',
+        P1_BOX_BORDER_COLOR = '#a4e402',
+        P2_BOX_COLOR = 'rgba(191, 122, 255, .33)',
+        P2_BOX_BORDER_COLOR = '#bf7aff'
         BORDER_SIZE = 2;
 
     //Members
@@ -326,18 +328,18 @@ dotBox.views.board = function (events, $parent) {
     }
 
 
-    function onBoxesScored(scoredBoxes){
+    function onBoxesScored(scoredBoxes, playerIndex){
 
         var i;
 
         for(i = 0; i < scoredBoxes.length; i++ ) {
-            drawBox(scoredBoxes[i]);
+            drawBox(scoredBoxes[i], playerIndex);
         }
 
 
     }
 
-    function drawBox(box) {
+    function drawBox(box, playerIndex) {
 
         var i,
             lineShape,
@@ -345,10 +347,16 @@ dotBox.views.board = function (events, $parent) {
             ulDotShape,
             lrDotShape,
             boxW,
-            boxH;
+            boxH,
+            boxColor,
+            borderColor;
 
-        for(i = 0; i < box.lines.length; i++) {
-            drawLineShape(box.lines[i], LINE_COLOR_BOXED);
+        if(playerIndex === 0) {
+            boxColor = P1_BOX_COLOR;
+            borderColor = P1_BOX_BORDER_COLOR;
+        } else {
+            boxColor = P2_BOX_COLOR;
+            borderColor = P2_BOX_BORDER_COLOR;
         }
 
         ulDotShape = getDotShape(box.lines[0].d1);
@@ -358,7 +366,8 @@ dotBox.views.board = function (events, $parent) {
 
         rectShape = new createjs.Shape();
         rectShape.graphics
-            .beginFill(BOX_COLOR_CONN)
+            .beginStroke(borderColor)
+            .beginFill(boxColor)
             .drawRect(ulDotShape.x, ulDotShape.y, boxW, boxH);
 
         _stage.addChild(rectShape);
