@@ -21,6 +21,7 @@ dotBox.views.score = function(events) {
     var SB_BACK_COLOR1 = '#5b5b5b',
         SB_BACK_COLOR2 = '#545454',
         SB_BORDER_COLOR = '#7d7d7d',
+        SB_BORDER_COLOR2 = '#323232',
         SCORE_NUM_BACK_COLOR = '#272822'
         SCORE_NUM_BORDER_COLOR = '#3b3d38',
         SCORE_TXT_COLOR = '#e7f8f2',
@@ -141,17 +142,29 @@ dotBox.views.score = function(events) {
             .drawRect(0, top, _stage.canvas.width, _stage.canvas.height)
             .endFill();
 
-        _stage.addChild(tempShape);
+
 
 
         //Create the top border line.
-        tempShape = new createjs.Shape();
+
+
+
+        tempShape.graphics
+            .setStrokeStyle(1)
+            .beginStroke(SB_BORDER_COLOR2)
+            .moveTo(0, top)
+            .lineTo(_stage.canvas.width, top)
+            .endStroke();
+
 
         tempShape.graphics
             .setStrokeStyle(1)
             .beginStroke(SB_BORDER_COLOR)
-            .moveTo(0, top)
-            .lineTo(_stage.canvas.width, top);
+            .moveTo(0, top + 1)
+            .lineTo(_stage.canvas.width, top + 1)
+            .endStroke();
+
+
 
         _stage.addChild(tempShape);
 

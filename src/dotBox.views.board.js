@@ -74,6 +74,8 @@ dotBox.views.board = function (events, $parent) {
 
         drawInitialView();
 
+        _events.publish('views.boardDrawn', _stage, _model);
+
         startEventLoop();
 
     }
@@ -121,12 +123,12 @@ dotBox.views.board = function (events, $parent) {
         marginSum = (_model.getDotRowCount() + 1) * DOT_MARGIN;
         canvasHeight = dotSum + marginSum + viewConst.SCORE_BOARD_HEIGHT;
 
-        $parent.append('<canvas style="background-color: ' + CANVAS_BACK_COLOR +
-            '; border: solid ' + BORDER_SIZE + 'px ' + CANVAS_BORDER_COLOR + ';"' +
+        $parent.append('<canvas style="background-color: ' + CANVAS_BACK_COLOR + ';" ' +
             ' width=' + canvasWidth +
             ' height=' + canvasHeight +
             ' id="' + canvasId + '"></canvas>');
 
+//    ' border: solid ' + BORDER_SIZE + 'px ' + CANVAS_BORDER_COLOR + ';"' +
         _canvasId = canvasId;
 
     }
@@ -199,6 +201,11 @@ dotBox.views.board = function (events, $parent) {
         createjs.Ticker.addEventListener("tick", tick);
         createjs.Ticker.setFPS(60);
 
+    }
+
+
+    function tick(event) {
+        _stage.update();
     }
 
 
@@ -449,11 +456,6 @@ dotBox.views.board = function (events, $parent) {
     }
 
 
-
-
-    function tick(event) {
-        _stage.update();
-    }
 
     return {
 

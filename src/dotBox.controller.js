@@ -117,16 +117,41 @@ dotBox.controller = function (events) {
         renderScoredBoxesToView(result.boxesScored, playerThisTurn);
 
 
-        playerNextTurn = gameEngine.getCurrentPlayer();
+        if(gameEngine.isGameOver()) {
 
-        if((playerNextTurn !== null) && (playerNextTurn !== playerThisTurn)) {
-            _events.publish("views.playerTurnChanged");
+            _events.publish("gameOver", getWinner());
+
+        } else {
+
+            playerNextTurn = gameEngine.getCurrentPlayer();
+
+            if((playerNextTurn !== null) && (playerNextTurn !== playerThisTurn)) {
+                _events.publish("views.playerTurnChanged");
+            }
+
         }
 
-        //TODO:
-        //4.  If game over announce winner.
-        //5.  If game NOT OVER
-        //5b)   If player is different --> fire player changed.
+
+
+    }
+
+    function getWinner() {
+
+        var i,
+            playerWithMax = 0,
+            maxScore = 0,
+            scores;
+
+        scores = _model.getCurrentScores();
+
+        for(i = 0; i < scores.length; i++) {
+            if(scores[i] >= maxScore) {
+                maxScore = scores[i];
+                playerWithMax = i;
+            }
+        }
+
+        return playerWithMax;
 
     }
 
