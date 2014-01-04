@@ -249,12 +249,12 @@ dotBox.views.score = function(events) {
             if(i === playerIdx) {
 
                 if(tempShape.alpha === 0) {
-                    createjs.Tween.get(tempShape, {override: false}).to({alpha: 1.0}, 250, createjs.Ease.signIn);
+                    createjs.Tween.get(tempShape, {override: false}).to({alpha: 1.0}, 250, createjs.Ease.sineIn);
                 }
                 light = true;
                 nameTxtColor = SCORE_TXT_COLOR;
             } else {
-                createjs.Tween.get(tempShape, {override: false}).to({alpha: 0}, 250, createjs.Ease.signOut);
+                createjs.Tween.get(tempShape, {override: false}).to({alpha: 0}, 250, createjs.Ease.sineOut);
                 light = false;
                 nameTxtColor = P_NONTURN_TXT_COLOR;
             }

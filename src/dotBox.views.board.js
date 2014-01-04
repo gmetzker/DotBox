@@ -341,6 +341,7 @@ dotBox.views.board = function (events, $parent) {
 
         for(i = 0; i < scoredBoxes.length; i++ ) {
             drawBox(scoredBoxes[i], playerIndex);
+            pointAnimation(scoredBoxes[i]);
         }
 
 
@@ -395,6 +396,41 @@ dotBox.views.board = function (events, $parent) {
             scaleX: 1,
             scaleY: 1
         }, 250);
+
+
+    }
+
+    function pointAnimation(box) {
+
+        var x,
+            y,
+            tempShape,
+            ds1,
+            ds2;
+
+        ds1 = getDotShape(box.lines[0].d1);
+        ds2 = getDotShape(box.lines[0].d2);
+        x = ds1.x + ((ds2.x - ds1.x) / 2);
+
+        ds1 = getDotShape(box.lines[1].d1);
+        ds2 = getDotShape(box.lines[1].d2);
+        y = ds1.y + ((ds2.y - ds1.y) / 2);
+
+        tempShape = new createjs.Text("+1", "15px Helvetica", SCORE_TXT_COLOR);
+        tempShape.x = x;
+        tempShape.y = y;
+        tempShape.textAlign = "center";
+        tempShape.textBaseline = "middle";
+
+        _stage.addChild(tempShape);
+
+        createjs.Tween.get(tempShape, {override: false})
+            .to({alpha: 0, y: y + 200}, 2500, createjs.Ease.sineOut)
+            .call(function() { _stage.removeChild(tempShape); });
+
+
+        createjs.Tween.get(tempShape, {override: false})
+            .to({scaleX: 1.5, scaleY: 1.5 }, 200, createjs.Ease.elasticInOut);
 
 
     }
