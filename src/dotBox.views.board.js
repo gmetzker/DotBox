@@ -341,8 +341,10 @@ dotBox.views.board = function (events, $parent) {
 
         for(i = 0; i < scoredBoxes.length; i++ ) {
             drawBox(scoredBoxes[i], playerIndex);
-            pointAnimation(scoredBoxes[i]);
+
         }
+
+        pointAnimation(scoredBoxes[0], scoredBoxes.length);
 
 
     }
@@ -400,7 +402,7 @@ dotBox.views.board = function (events, $parent) {
 
     }
 
-    function pointAnimation(box) {
+    function pointAnimation(box, pointCount) {
 
         var x,
             y,
@@ -416,7 +418,7 @@ dotBox.views.board = function (events, $parent) {
         ds2 = getDotShape(box.lines[1].d2);
         y = ds1.y + ((ds2.y - ds1.y) / 2);
 
-        tempShape = new createjs.Text("+1", "15px Helvetica", SCORE_TXT_COLOR);
+        tempShape = new createjs.Text("+" + pointCount, "15px Helvetica", SCORE_TXT_COLOR);
         tempShape.x = x;
         tempShape.y = y;
         tempShape.textAlign = "center";
