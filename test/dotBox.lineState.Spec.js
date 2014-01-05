@@ -1,7 +1,7 @@
 /*global describe, it, expect, dotBox */
 
 
-describe("dotBox.utility.lineSet", function (){
+describe("dotBox.utility.lineSet", function () {
 
     var lineState = dotBox.lineState;
 
