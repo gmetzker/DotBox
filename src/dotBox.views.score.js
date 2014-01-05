@@ -5,7 +5,8 @@ dotBox.views.score = function(events) {
 
     //Alias
     var util = dotBox.utility,
-        viewConst = dotBox.views.const;
+        viewConst = dotBox.views.const,
+        Color = dotBox.views.Color;
 
     //Members
     var that = {},
@@ -13,7 +14,7 @@ dotBox.views.score = function(events) {
         _stage,
         _scoreTxtShapes = []
         _playerFlagShapes = [],
-        _playerLightShapes = [],
+        _playerBg = [],
         _playerNameShapes = [];
 
 
@@ -27,11 +28,7 @@ dotBox.views.score = function(events) {
         SCORE_TXT_COLOR = '#e7f8f2',
         P_NONTURN_TXT_COLOR = '#a69b9d',
         FLAG_COLOR = '#fc1f70',
-        FLAG_BORDER_COLOR = '#E20355'
-        P1_BORDER_COLOR = '#a4e402',
-        P1_BACK_COLOR = 'rgba(164,228,2,.5)',
-        P2_BACK_COLOR = 'rgba(191, 122, 255, .5)',
-        P2_BORDER_COLOR = '#bf7aff'
+        FLAG_BORDER_COLOR = '#E20355',
         P_NONTURN_COLOR = '#40403d',
         SCORE_BOX_W = 75,
         SCORE_BOX_TOP_MARGIN = 5,
@@ -105,7 +102,7 @@ dotBox.views.score = function(events) {
 
         _scoreTxtShapes = [];
         _playerFlagShapes = [];
-        _playerLightShapes = [];
+        _playerBg = [];
         _playerNameShapes = [];
 
         addScoreboardBackground(BOARD_TOP);
@@ -215,10 +212,10 @@ dotBox.views.score = function(events) {
 
 
         tempShape = new createjs.Shape();
-        drawPlayerLightBackground(tempShape, false);
+        drawPlayerBackground(tempShape);
 
         container.addChild(tempShape);
-        _playerLightShapes.push(tempShape);
+        _playerBg.push(tempShape);
 
         //Add player name
         tempShape = new createjs.Text(name, "8pt Helvetica", SCORE_TXT_COLOR);
@@ -239,8 +236,10 @@ dotBox.views.score = function(events) {
         var i,
             tempShape,
             playerIdx = _model.getCurrentPlayer(),
-            light,
-            nameTxtColor;
+            nameTxtColor,
+            targetFillColor,
+            targetStrokeColor,
+            lightShape;
 
         for(i = 0; i < _playerFlagShapes.length; i++) {
 
@@ -251,52 +250,91 @@ dotBox.views.score = function(events) {
                 if(tempShape.alpha === 0) {
                     createjs.Tween.get(tempShape, {override: false}).to({alpha: 1.0}, 250, createjs.Ease.sineIn);
                 }
-                light = true;
                 nameTxtColor = SCORE_TXT_COLOR;
             } else {
                 createjs.Tween.get(tempShape, {override: false}).to({alpha: 0}, 250, createjs.Ease.sineOut);
-                light = false;
                 nameTxtColor = P_NONTURN_TXT_COLOR;
             }
 
-            drawPlayerLightBackground(_playerLightShapes[i], light, i);
+
+            lightShape = _playerBg[i];
+            targetFillColor = getPlayerColor('fill', i, playerIdx);
+            targetStrokeColor = getPlayerColor('stroke', i, playerIdx);
+
+            createjs.Tween
+                .get(lightShape.fillColor, {override: true})
+                .to(targetFillColor, 200);
+
+            createjs.Tween
+                .get(lightShape.strokeColor, {override: true})
+                .to(targetStrokeColor, 200);
+
+
 
             _playerNameShapes[i].color = nameTxtColor;
         }
 
     }
 
-    function drawPlayerLightBackground(shape, lightUp, pIndex) {
-        
-        var backColor,
-            borderColor;
+    function getPlayerColor(colorType, forPlayer, playerOfTurn) {
 
-        if(lightUp) {
-            if(pIndex === 0) {
-                backColor = P1_BACK_COLOR;
-                borderColor = P1_BORDER_COLOR;
+        var isCurrPlayer = (forPlayer === playerOfTurn),
+            resultColor;
 
+
+        if(isCurrPlayer) {
+
+            if(forPlayer === 0) {
+                resultColor = new Color(viewConst.P1_COLOR);
             } else {
-                backColor = P2_BACK_COLOR;
-                borderColor = P2_BORDER_COLOR;
+                resultColor = new Color(viewConst.P2_COLOR);
             }
+
+            if(colorType === 'fill') { resultColor.alpha = 0.5 };
+
+
         } else {
-            backColor = P_NONTURN_COLOR;
-            borderColor = P_NONTURN_COLOR;
+            resultColor = new Color(P_NONTURN_COLOR);
         }
 
-        
-        shape.graphics.clear();
+        return resultColor;
 
+    }
+
+
+    function drawPlayerBackground(shape) {
+
+        var height = Math.round(SCORE_BOX_H * .3);
+
+        //Set custom color objects so we can Tween these.
+        shape.fillColor = new Color(P_NONTURN_COLOR);
+        shape.strokeColor = new Color(P_NONTURN_COLOR);
 
         shape.graphics
-             .beginStroke(borderColor)
-            .beginFill(backColor)
-            .drawRoundRect(0, 0, SCORE_BOX_W , SCORE_BOX_H * .3, 2);
+            .beginStroke(P_NONTURN_COLOR)
+            .beginFill(P_NONTURN_COLOR)
+            .inject(setPlayerColors, shape)
+            .drawRoundRect(0, 0, SCORE_BOX_W , height, 2)
+            .endFill();
 
 
-        
     }
+
+    function setPlayerColors(shape) {
+        var fillColor = shape.fillColor,
+            strokeColor = shape.strokeColor;
+
+        if(!util.isNullOrUndefined(fillColor)) {
+            this.fillStyle = fillColor.toString();
+        }
+        if(!util.isNullOrUndefined(strokeColor)) {
+            this.strokeStyle = strokeColor.toString();
+        }
+
+    }
+
+
+
 
     return that;
 
