@@ -19,6 +19,7 @@ dotBox.views.gameOver = function (events) {
     //Constants
     //noinspection JSLint
     var PNL_H = 40,
+        FONT_SIZE = 18,
         SB_BACK_COLOR1 = '#5b5b5b',
         SB_BACK_COLOR2 = '#545454',
         SB_BORDER_COLOR = '#7d7d7d',
@@ -30,6 +31,7 @@ dotBox.views.gameOver = function (events) {
     events.subscribe('view.stageInit', onStageInit);
 
     events.subscribe('gameOver', onGameOver);
+
 
 
     function onStageInit(stage, model) {
@@ -47,7 +49,18 @@ dotBox.views.gameOver = function (events) {
             _model = model;
         }
 
+        setPixelRatio(_model.pixelRatio);
 
+    }
+
+    function setPixelRatio(pixelRatio) {
+        PNL_H *= pixelRatio;
+        FONT_SIZE *= pixelRatio;
+    }
+
+    function scalePixelValue(value) {
+
+        return value * _model.pixelRatio;
     }
 
 
@@ -81,7 +94,8 @@ dotBox.views.gameOver = function (events) {
 
     function addBackground(container) {
 
-        var tempShape;
+        var tempShape,
+            strokeSize = scalePixelValue(1);
 
 
         //Create the background shape.
@@ -93,14 +107,14 @@ dotBox.views.gameOver = function (events) {
             .endFill();
 
         tempShape.graphics
-            .setStrokeStyle(1)
+            .setStrokeStyle(strokeSize)
             .beginStroke(SB_BORDER_COLOR)
-            .moveTo(0, PNL_H - 1)
-            .lineTo(_stage.canvas.width, PNL_H - 1)
+            .moveTo(0, PNL_H - strokeSize)
+            .lineTo(_stage.canvas.width, PNL_H - strokeSize)
             .endStroke();
 
         tempShape.graphics
-            .setStrokeStyle(1)
+            .setStrokeStyle(strokeSize)
             .beginStroke(SB_BORDER_COLOR2)
             .moveTo(0, PNL_H)
             .lineTo(_stage.canvas.width, PNL_H)
@@ -123,7 +137,7 @@ dotBox.views.gameOver = function (events) {
         var tempShape;
 
         //Add the text shape that contains the current score.
-        tempShape = new createjs.Text(text, "16pt Helvetica", SCORE_TXT_COLOR);
+        tempShape = new createjs.Text(text, FONT_SIZE + "px Helvetica", SCORE_TXT_COLOR);
         tempShape.x = Math.round(_stage.canvas.width / 2);
         tempShape.y = Math.round(PNL_H / 2);
         tempShape.textAlign = "center";

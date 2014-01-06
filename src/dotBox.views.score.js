@@ -36,7 +36,12 @@ dotBox.views.score = function (events) {
         SCORE_BOX_W = 75,
         SCORE_BOX_TOP_MARGIN = 5,
         SCORE_BOX_SIDE_MARGIN = 10,
-        SCORE_BOX_H = viewConst.SCORE_BOARD_HEIGHT - (2 * SCORE_BOX_TOP_MARGIN);
+        SCORE_BOX_H = viewConst.SCORE_BOARD_HEIGHT - (2 * SCORE_BOX_TOP_MARGIN),
+        SCORE_FONT_SIZE = 25,
+        P_NAME_FONT_SIZE = 10,
+        P_NAME_TOP = 9,
+        P_SCORE_TOP_PAD = 6,
+        P_FLAG_PAD = 13;
 
 
     addSubscribers();
@@ -66,8 +71,29 @@ dotBox.views.score = function (events) {
             _model = model;
         }
 
+        setPixelRatios(model.pixelRatio);
+
         drawScoreBoard();
 
+    }
+
+    function setPixelRatios(ratio) {
+
+        SCORE_BOX_W *= ratio;
+        SCORE_BOX_H *= ratio;
+        SCORE_BOX_TOP_MARGIN *= ratio;
+        SCORE_BOX_SIDE_MARGIN *= ratio;
+        SCORE_FONT_SIZE *= ratio;
+        P_NAME_FONT_SIZE *= ratio;
+        P_NAME_TOP *= ratio;
+        P_SCORE_TOP_PAD *= ratio;
+        P_FLAG_PAD *= ratio;
+    }
+
+
+    function scalePixelValue(value) {
+
+        return value * _model.pixelRatio;
     }
 
 
@@ -128,7 +154,8 @@ dotBox.views.score = function (events) {
 
     function addScoreboardBackground(top) {
 
-        var tempShape;
+        var tempShape,
+            strokeSize = scalePixelValue(1);
 
 
             //Create the background shape.
@@ -147,7 +174,7 @@ dotBox.views.score = function (events) {
 
 
         tempShape.graphics
-            .setStrokeStyle(1)
+            .setStrokeStyle(strokeSize)
             .beginStroke(SB_BORDER_COLOR2)
             .moveTo(0, top)
             .lineTo(_stage.canvas.width, top)
@@ -155,10 +182,10 @@ dotBox.views.score = function (events) {
 
 
         tempShape.graphics
-            .setStrokeStyle(1)
+            .setStrokeStyle(strokeSize)
             .beginStroke(SB_BORDER_COLOR)
-            .moveTo(0, top + 1)
-            .lineTo(_stage.canvas.width, top + 1)
+            .moveTo(0, top + strokeSize)
+            .lineTo(_stage.canvas.width, top + strokeSize)
             .endStroke();
 
 
@@ -171,24 +198,26 @@ dotBox.views.score = function (events) {
     function addPlayerScoreBox(name) {
 
         var container = new createjs.Container(),
-            tempShape;
+            tempShape,
+            strokeSize = scalePixelValue(1);
 
 
         //Add the background rectangle.
         tempShape = new createjs.Shape();
         tempShape.graphics
+            .setStrokeStyle(strokeSize)
             .beginStroke(SCORE_NUM_BORDER_COLOR)
             .beginFill(SCORE_NUM_BACK_COLOR)
-            .drawRoundRect(0, 0, SCORE_BOX_W, SCORE_BOX_H, 3);
+            .drawRoundRect(0, 0, SCORE_BOX_W, SCORE_BOX_H, scalePixelValue(2));
 
         container.addChild(tempShape);
 
 
 
         //Add the text shape that contains the current score.
-        tempShape = new createjs.Text("0", "25px Helvetica", viewConst.SCORE_TXT_COLOR);
+        tempShape = new createjs.Text("0", SCORE_FONT_SIZE + "px Helvetica", viewConst.SCORE_TXT_COLOR);
         tempShape.x = SCORE_BOX_W / 2;
-        tempShape.y = 6 + (SCORE_BOX_H / 2);
+        tempShape.y = P_SCORE_TOP_PAD + (SCORE_BOX_H / 2);
         tempShape.textAlign = "center";
         tempShape.textBaseline = "middle";
 
@@ -200,9 +229,10 @@ dotBox.views.score = function (events) {
         //Add the flag that indicates when it's the players turn.
         tempShape = new createjs.Shape();
         tempShape.graphics
+            .setStrokeStyle(strokeSize)
             .beginFill(FLAG_COLOR)
             .beginStroke(FLAG_BORDER_COLOR)
-            .arc((SCORE_BOX_W / 2), SCORE_BOX_H + 12, SCORE_BOX_W / 4, Math.PI + (Math.PI * 0.25), Math.PI * 1.75);
+            .arc((SCORE_BOX_W / 2), SCORE_BOX_H + P_FLAG_PAD, SCORE_BOX_W / 4, Math.PI + (Math.PI * 0.25), Math.PI * 1.75);
 
         tempShape.alpha = 0;
 
@@ -218,9 +248,9 @@ dotBox.views.score = function (events) {
         _playerBg.push(tempShape);
 
         //Add player name
-        tempShape = new createjs.Text(name, "8pt Helvetica", viewConst.SCORE_TXT_COLOR);
+        tempShape = new createjs.Text(name, P_NAME_FONT_SIZE + "px Helvetica", viewConst.SCORE_TXT_COLOR);
         tempShape.x = SCORE_BOX_W / 2;
-        tempShape.y = 10;
+        tempShape.y = P_NAME_TOP;
         tempShape.textAlign = "center";
         tempShape.textBaseline = "middle";
 
@@ -313,10 +343,11 @@ dotBox.views.score = function (events) {
         shape.strokeColor = new Color(P_NON_TURN_COLOR);
 
         shape.graphics
+            .setStrokeStyle(scalePixelValue(2))
             .beginStroke(P_NON_TURN_COLOR)
             .beginFill(P_NON_TURN_COLOR)
             .inject(dotBox.views.setDrawColors, shape)
-            .drawRoundRect(0, 0, SCORE_BOX_W, height, 2)
+            .drawRoundRect(0, 0, SCORE_BOX_W, height, scalePixelValue(2))
             .endFill();
 
 

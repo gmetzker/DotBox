@@ -14,12 +14,15 @@ dotBox.game = function game(parent) {
     var $parent,
         _events,
         _views = [],
-        _controller;
+        _controller,
+        pixelRatio;
 
     $parent = getJqueryParent(parent);
     _events = new Observer();
 
-    _views.push(dotBox.views.board(_events, $parent));
+    pixelRatio = window.devicePixelRatio;
+
+    _views.push(dotBox.views.board(_events, $parent, pixelRatio));
     _views.push(dotBox.views.score(_events));
     _views.push(dotBox.views.gameOver(_events));
     _controller = dotBox.controller(_events);

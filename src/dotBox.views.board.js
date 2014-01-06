@@ -3,7 +3,7 @@ var dotBox = dotBox || {};
 dotBox.views = dotBox.views || {};
 
 
-dotBox.views.board = function (events, $parent) {
+dotBox.views.board = function (events, $parent, pixelRatio) {
 
     //Alias
     var util = dotBox.utility,
@@ -15,6 +15,8 @@ dotBox.views.board = function (events, $parent) {
     var CANVAS_ID_PREFIX = 'dotBoxCanvas_',
         DOT_RADIUS = 5,
         DOT_MARGIN = 20,
+        BOX_SCORED_SIZE_INC = 10,
+        POINT_FONT_SIZE = 13,
         CANVAS_BACK_COLOR = '#272822',
         DOT_COLOR_DEF = '#53d2f1',
         DOT_COLOR_DEF_OUTER = 'rgba(83, 210, 241, .02)',
@@ -67,6 +69,8 @@ dotBox.views.board = function (events, $parent) {
             _model = model;
         }
 
+        setPixelRatios();
+
         createCanvas();
 
         createStage();
@@ -79,7 +83,22 @@ dotBox.views.board = function (events, $parent) {
 
     }
 
+    function setPixelRatios() {
 
+        _model.pixelRatio = pixelRatio;
+
+        DOT_RADIUS *= pixelRatio;
+        DOT_MARGIN *= pixelRatio;
+        BOX_SCORED_SIZE_INC *= pixelRatio;
+        POINT_FONT_SIZE *= pixelRatio;
+        viewConst.SCORE_BOARD_HEIGHT *= pixelRatio;
+
+    }
+
+    function scalePixelValue(value) {
+
+        return value * _model.pixelRatio;
+    }
 
     function createUniqueCanvasId() {
 
@@ -124,12 +143,19 @@ dotBox.views.board = function (events, $parent) {
         marginSum = (_model.getDotRowCount() + 1) * DOT_MARGIN;
         canvasHeight = dotSum + marginSum + viewConst.SCORE_BOARD_HEIGHT;
 
-        $parent.append('<canvas style="background-color: ' + CANVAS_BACK_COLOR + ';" ' +
-            ' width=' + canvasWidth +
-            ' height=' + canvasHeight +
-            ' id="' + canvasId + '"></canvas>');
 
-//    ' border: solid ' + BORDER_SIZE + 'px ' + CANVAS_BORDER_COLOR + ';"' +
+        $parent.append('<canvas style="background-color: ' + CANVAS_BACK_COLOR +
+            '; width: ' + canvasWidth * (1 / pixelRatio) +
+            'px; height: ' + canvasHeight * (1 / pixelRatio) +
+            'px;" width=' + canvasWidth +
+            ' height=' + canvasHeight + '" id="' + canvasId + '"></canvas>');
+
+//        $parent.append('<canvas style="background-color: ' + CANVAS_BACK_COLOR +
+//            '; width: ' + canvasWidth +
+//            'px; height: ' + canvasHeight +
+//            'px;" width=' + canvasWidth * _model.pixelRatio +
+//            ' height=' + canvasHeight * _model.pixelRatio + '" id="' + canvasId + '"></canvas>');
+
         _canvasId = canvasId;
 
     }
@@ -370,7 +396,7 @@ dotBox.views.board = function (events, $parent) {
         }
 
         lineShape.graphics
-            .setStrokeStyle(1)
+            .setStrokeStyle(scalePixelValue(1))
             .beginStroke(color)
             .moveTo(d1Shape.x, d1Shape.y)
             .lineTo(d2Shape.x, d2Shape.y);
@@ -404,8 +430,7 @@ dotBox.views.board = function (events, $parent) {
             boxH,
             boxColor,
             borderColor,
-            scale,
-            extraSize;
+            scale;
 
         if (playerIndex === 0) {
             boxColor = new Color(viewConst.P1_COLOR);
@@ -424,18 +449,18 @@ dotBox.views.board = function (events, $parent) {
 
         rectShape = new createjs.Shape();
         rectShape.graphics
+            .setStrokeStyle(scalePixelValue(1))
             .beginStroke(borderColor)
             .beginFill(boxColor)
             .drawRect(ulDotShape.x, ulDotShape.y, boxW, boxH);
 
-        extraSize = 10;
-        scale = ((boxW + extraSize) / boxW);
+        scale = ((boxW + BOX_SCORED_SIZE_INC) / boxW);
         rectShape.scaleX = scale;
         rectShape.scaleY = scale;
 
 
-        rectShape.x = (-1 * ((ulDotShape.x * scale) - ulDotShape.x)) - (extraSize / 2);
-        rectShape.y = (-1 * ((ulDotShape.y * scale) - ulDotShape.y)) - (extraSize / 2);
+        rectShape.x = (-1 * ((ulDotShape.x * scale) - ulDotShape.x)) - (BOX_SCORED_SIZE_INC / 2);
+        rectShape.y = (-1 * ((ulDotShape.y * scale) - ulDotShape.y)) - (BOX_SCORED_SIZE_INC / 2);
 
 
         _stage.addChild(rectShape);
@@ -466,7 +491,7 @@ dotBox.views.board = function (events, $parent) {
         ds2 = getDotShape(box.lines[1].d2);
         y = ds1.y + ((ds2.y - ds1.y) / 2);
 
-        tempShape = new createjs.Text("+" + pointCount, "15px Helvetica", viewConst.SCORE_TXT_COLOR);
+        tempShape = new createjs.Text("+" + pointCount, POINT_FONT_SIZE + "px Helvetica", viewConst.SCORE_TXT_COLOR);
         tempShape.x = x;
         tempShape.y = y;
         tempShape.textAlign = "center";
