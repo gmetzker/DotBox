@@ -1,3 +1,5 @@
+/*global describe, it, expect, dotBox */
+
 
 var hLineIterator = function hLineIterator(dotCountLength, dotCountWidth) {
 
@@ -7,11 +9,13 @@ var hLineIterator = function hLineIterator(dotCountLength, dotCountWidth) {
 
     function current() {
 
-        if(isComplete) return false;
+        if (isComplete) {
+            return false;
+        }
 
         return {
-            d1 : {x: colIndex, y: rowIndex},
-            d2 : {x: colIndex + 1, y: rowIndex}
+            d1: {x: colIndex, y: rowIndex},
+            d2: {x: colIndex + 1, y: rowIndex}
         };
 
     }
@@ -21,18 +25,23 @@ var hLineIterator = function hLineIterator(dotCountLength, dotCountWidth) {
     }
 
     function isLastRow() {
-        return rowIndex === dotCountWidth - 1
+        return rowIndex === dotCountWidth - 1;
     }
 
     function next() {
 
-        if(isComplete) return null;
+        if (isComplete) {
+            return null;
+        }
 
-        if(isLastRow() && isLastColumn()) {
+        if (isLastRow() && isLastColumn()) {
+
             isComplete = true;
             return null;
-        } else if(isLastColumn()) {
-            rowIndex +=1 ;
+
+        }
+        if (isLastColumn()) {
+            rowIndex += 1;
             colIndex = 0;
         } else {
             colIndex += 1;
@@ -43,8 +52,8 @@ var hLineIterator = function hLineIterator(dotCountLength, dotCountWidth) {
     }
 
     return {
-      next: next,
-      current: current
+        next: next,
+        current: current
     };
 
 
@@ -58,11 +67,13 @@ var vLineIterator = function hLineIterator(dotCountLength, dotCountWidth) {
 
     function current() {
 
-        if(isComplete) return false;
+        if (isComplete) {
+            return false;
+        }
 
         return {
-            d1 : {x: colIndex, y: rowIndex},
-            d2 : {x: colIndex, y: rowIndex + 1}
+            d1: {x: colIndex, y: rowIndex},
+            d2: {x: colIndex, y: rowIndex + 1}
         };
 
     }
@@ -72,18 +83,22 @@ var vLineIterator = function hLineIterator(dotCountLength, dotCountWidth) {
     }
 
     function isLastRow() {
-        return rowIndex === dotCountWidth - 2
+        return rowIndex === dotCountWidth - 2;
     }
 
     function next() {
 
-        if(isComplete) return null;
+        if (isComplete) {
+            return null;
+        }
 
-        if(isLastRow() && isLastColumn()) {
+        if (isLastRow() && isLastColumn()) {
             isComplete = true;
             return null;
-        } else if(isLastColumn()) {
-            rowIndex +=1 ;
+        }
+
+        if (isLastColumn()) {
+            rowIndex += 1;
             colIndex = 0;
         } else {
             colIndex += 1;
@@ -113,7 +128,9 @@ var boxIterator = function boxIterator(dotCountLength, dotCountWidth) {
 
         var boxIndex;
 
-        if(isComplete) return false;
+        if (isComplete) {
+            return false;
+        }
 
         boxIndex = (rowIndex * boxCountLength) + colIndex;
         return {boxIndex: boxIndex};
@@ -125,18 +142,22 @@ var boxIterator = function boxIterator(dotCountLength, dotCountWidth) {
     }
 
     function isLastRow() {
-        return rowIndex === boxCountWidth - 1
+        return rowIndex === boxCountWidth - 1;
     }
 
     function next() {
 
-        if(isComplete) return null;
+        if (isComplete) {
+            return null;
+        }
 
-        if(isLastRow() && isLastColumn()) {
+        if (isLastRow() && isLastColumn()) {
             isComplete = true;
             return null;
-        } else if(isLastColumn()) {
-            rowIndex +=1 ;
+        }
+
+        if (isLastColumn()) {
+            rowIndex += 1;
             colIndex = 0;
         } else {
             colIndex += 1;
@@ -157,53 +178,53 @@ var boxIterator = function boxIterator(dotCountLength, dotCountWidth) {
 
 describe("line iterator", function () {
 
-   it("for horizontal lines should iterate all horizontal lines", function () {
+    it("for horizontal lines should iterate all horizontal lines", function () {
 
-       var i,
-           lDotCount = 3,
-           wDotCount = 4,
-           allIterationResults = [],
-           line,
-           hIt,
-           EXP_RESULTS = [],
-           EXP_RESULT_COUNT,
-           current;
+        var i,
+            lDotCount = 3,
+            wDotCount = 4,
+            allIterationResults = [],
+            line,
+            hIt,
+            EXP_RESULTS = [],
+            EXP_RESULT_COUNT,
+            current;
 
-       hIt = hLineIterator(lDotCount, wDotCount);
+        hIt = hLineIterator(lDotCount, wDotCount);
 
-       EXP_RESULTS.push({d1: {x: 0, y: 0}, d2: {x: 1, y: 0}});
-       EXP_RESULTS.push({d1: {x: 1, y: 0}, d2: {x: 2, y: 0}});
-       EXP_RESULTS.push({d1: {x: 0, y: 1}, d2: {x: 1, y: 1}});
-       EXP_RESULTS.push({d1: {x: 1, y: 1}, d2: {x: 2, y: 1}});
-       EXP_RESULTS.push({d1: {x: 0, y: 2}, d2: {x: 1, y: 2}});
-       EXP_RESULTS.push({d1: {x: 1, y: 2}, d2: {x: 2, y: 2}});
-       EXP_RESULTS.push({d1: {x: 0, y: 3}, d2: {x: 1, y: 3}});
-       EXP_RESULTS.push({d1: {x: 1, y: 3}, d2: {x: 2, y: 3}});
-       EXP_RESULT_COUNT = EXP_RESULTS.length;
+        EXP_RESULTS.push({d1: {x: 0, y: 0}, d2: {x: 1, y: 0}});
+        EXP_RESULTS.push({d1: {x: 1, y: 0}, d2: {x: 2, y: 0}});
+        EXP_RESULTS.push({d1: {x: 0, y: 1}, d2: {x: 1, y: 1}});
+        EXP_RESULTS.push({d1: {x: 1, y: 1}, d2: {x: 2, y: 1}});
+        EXP_RESULTS.push({d1: {x: 0, y: 2}, d2: {x: 1, y: 2}});
+        EXP_RESULTS.push({d1: {x: 1, y: 2}, d2: {x: 2, y: 2}});
+        EXP_RESULTS.push({d1: {x: 0, y: 3}, d2: {x: 1, y: 3}});
+        EXP_RESULTS.push({d1: {x: 1, y: 3}, d2: {x: 2, y: 3}});
+        EXP_RESULT_COUNT = EXP_RESULTS.length;
 
-       while(line = hIt.next())
-       {
-           allIterationResults.push(line);
+        //noinspection JSHint,JSLint
+        while (line = hIt.next()) {
 
-           current = hIt.current();
+            allIterationResults.push(line);
 
-           expect(JSON.stringify(current))
-               .toBe(JSON.stringify(line));
-       }
+            current = hIt.current();
 
-       expect(allIterationResults.length).toBe(EXP_RESULT_COUNT);
+            expect(JSON.stringify(current))
+                .toBe(JSON.stringify(line));
+        }
 
-
-
-       for(i = 0; i < EXP_RESULT_COUNT; i++) {
-           expect(JSON.stringify(allIterationResults[i]))
-               .toBe(JSON.stringify(EXP_RESULTS[i]));
-       }
+        expect(allIterationResults.length).toBe(EXP_RESULT_COUNT);
 
 
-   });
+        for (i = 0; i < EXP_RESULT_COUNT; i++) {
+            expect(JSON.stringify(allIterationResults[i]))
+                .toBe(JSON.stringify(EXP_RESULTS[i]));
+        }
 
-   it("for vertical lines should iterate all vertical lines", function () {
+
+    });
+
+    it("for vertical lines should iterate all vertical lines", function () {
 
         var i,
             lDotCount = 3,
@@ -231,8 +252,8 @@ describe("line iterator", function () {
 
         EXP_RESULT_COUNT = EXP_RESULTS.length;
 
-        while(line = vIt.next())
-        {
+        //noinspection JSHint,JSLint
+        while (line = vIt.next()) {
             allIterationResults.push(line);
 
             current = vIt.current();
@@ -244,8 +265,7 @@ describe("line iterator", function () {
         expect(allIterationResults.length).toBe(EXP_RESULT_COUNT);
 
 
-
-        for(i = 0; i < EXP_RESULT_COUNT; i++) {
+        for (i = 0; i < EXP_RESULT_COUNT; i++) {
             expect(JSON.stringify(allIterationResults[i]))
                 .toBe(JSON.stringify(EXP_RESULTS[i]));
         }
@@ -267,13 +287,14 @@ describe("box iterator", function () {
 
         bIt = boxIterator(4, 4);
 
-        while(box = bIt.next()) {
+        //noinspection JSHint,JSLint
+        while (box = bIt.next()) {
             actualIndexes.push(box.boxIndex);
         }
 
-        expect(actualIndexes.length).toBe(EXP_BOX_COUNT)
+        expect(actualIndexes.length).toBe(EXP_BOX_COUNT);
 
-        for(i = 0; i < EXP_BOX_COUNT; i++) {
+        for (i = 0; i < EXP_BOX_COUNT; i++) {
             expect(actualIndexes[i]).toBe(i);
         }
 
@@ -289,13 +310,14 @@ describe("box iterator", function () {
 
         bIt = boxIterator(3, 4);
 
-        while(box = bIt.next()) {
+        //noinspection JSHint,JSLint
+        while (box = bIt.next()) {
             actualIndexes.push(box.boxIndex);
         }
 
-        expect(actualIndexes.length).toBe(EXP_BOX_COUNT)
+        expect(actualIndexes.length).toBe(EXP_BOX_COUNT);
 
-        for(i = 0; i < EXP_BOX_COUNT; i++) {
+        for (i = 0; i < EXP_BOX_COUNT; i++) {
             expect(actualIndexes[i]).toBe(i);
         }
 

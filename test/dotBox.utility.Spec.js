@@ -5,6 +5,7 @@ describe("dotBox.utility", function () {
 
     it("isNullOrUndefined should return true if value is undefined", function () {
 
+        //noinspection JSHint,JSLint
         var value = undefined,
             actual;
 
@@ -41,17 +42,17 @@ describe("dotBox.utility", function () {
             actual;
 
 
-        value = "hello"
+        value = "hello";
         actual = dotBox.utility.isNullOrUndefined(value);
         expect(actual).toBe(false);
 
 
-        value = 1.24
+        value = 1.24;
         actual = dotBox.utility.isNullOrUndefined(value);
         expect(actual).toBe(false);
 
 
-        value = {}
+        value = {};
         actual = dotBox.utility.isNullOrUndefined(value);
         expect(actual).toBe(false);
 

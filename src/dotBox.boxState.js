@@ -1,5 +1,5 @@
-var dotBox;
-dotBox = dotBox || {};
+
+var dotBox = dotBox || {};
 
 dotBox.boxState = function (dotCountLength, dotCountWidth) {
 
@@ -16,18 +16,18 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
     function configure(dotLength, dotWidth) {
 
         var i,
-            boxCount = (dotLength - 1) * (dotWidth - 1),
-            result;
+            boxCount = (dotLength - 1) * (dotWidth - 1);
 
         _boxStates = [];
 
         //Initialize with all null states.
         //Indicating no player has claimed a box.
-        for(i = 0; i < boxCount; i++) {
+        for (i = 0; i < boxCount; i++) {
             _boxStates[i] = null;
         }
 
     }
+
 
 
 
@@ -37,7 +37,7 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
      * @function            getBoxCount
      * @returns {number}    - The number of configured boxes.
      */
-    function getBoxCount()  {
+    function getBoxCount() {
 
         return _boxStates.length;
 
@@ -52,10 +52,10 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
     function assertIsValidBoxIndex(boxIndex) {
 
         var boxCount = getBoxCount();
-        if(boxIndex < 0) {
-            throw new RangeError("boxIndex must be greater or equal to 0.")
-        } else if(boxIndex >= boxCount) {
-            throw new RangeError("boxIndex must be less than the box count (" + boxCount + ").")
+        if (boxIndex < 0) {
+            throw new RangeError("boxIndex must be greater or equal to 0.");
+        } else if (boxIndex >= boxCount) {
+            throw new RangeError("boxIndex must be less than the box count (" + boxCount + ").");
         }
     }
 
@@ -64,30 +64,26 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
      * @function        isBoxScored
      * @param {number}  boxIndex    - The index of the box that we are checking.
      * @returns {boolean}           - true if the box is already scored/closed,
-     *                                false if the box is unscored/open.
+     *                                false if the box is un-scored/open.
      */
     function isBoxScored(boxIndex) {
 
         assertIsValidBoxIndex(boxIndex);
 
 
-        if( _boxStates[boxIndex] !== null ) {
-            return true;
-        } else {
-            return false;
-        }
+        return _boxStates[boxIndex] !== null;
 
 
     }
 
     /**
-     * Checks to see if the box is open/unscored.
-     * @function              isBoxUnscored
+     * Checks to see if the box is open/un-scored.
+     * @function              isBoxNotScored
      * @param   {number}      boxIndex   - The box index we are checking.
-     * @returns {boolean}                - true if the box is unscored/open
+     * @returns {boolean}                - true if the box is un-scored/open
      *                                   - false if the box is scored/closed
      */
-    function isBoxUnscored(boxIndex) {
+    function isBoxNotScored(boxIndex) {
 
         return !isBoxScored(boxIndex);
 
@@ -125,19 +121,15 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
     /**
      * Checks to see if all boxes are scored/closed.
      * @returns {boolean}   - True if all boxes are scored, false if any
-     *                        box is unscored.
+     *                        box is un-scored.
      */
     function areAllBoxesScored() {
 
         var isScored = function isScored(playerIndex) {
 
-            if(playerIndex === null) {
-                return false;
-            } else {
-                return true;
-            }
+            return playerIndex !== null;
 
-        }
+        };
 
         return _boxStates.every(isScored);
     }
@@ -157,15 +149,15 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
             boxCount,
             playerIndex;
 
-        for(i = 0; i < playerCount; i++) {
+        for (i = 0; i < playerCount; i++) {
 
             playerScores[i] = 0;
 
         }
 
         boxCount = getBoxCount();
-        for(i = 0; i < boxCount; i++) {
-            if(isBoxScored(i)) {
+        for (i = 0; i < boxCount; i++) {
+            if (isBoxScored(i)) {
                 playerIndex = whichPlayerScoredBox(i);
                 playerScores[playerIndex] += 1;
             }
@@ -183,7 +175,7 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
         getBoxCount: getBoxCount,
         areAllBoxesScored: areAllBoxesScored,
         isBoxScored: isBoxScored,
-        isBoxUnscored: isBoxUnscored,
+        isBoxNotScored: isBoxNotScored,
         whichPlayerScoredBox: whichPlayerScoredBox,
         scoreBox: scoreBox,
         getCurrentScores: getCurrentScores

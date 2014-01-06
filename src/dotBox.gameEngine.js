@@ -1,13 +1,12 @@
-var dotBox;
-dotBox = dotBox || {};
+var dotBox = dotBox || {};
 
 /**
  * Game configuration options.
  * @typedef     {Object}    gameEngineConfig
- * @property    {number}    dotCountLength     - The number of game dots across the length (x-axis) of the board.
- * @property    {number}    dotCountWidth      - The number of game dots across the width (y-axis) of the board.
- * @property    {number}    playerCount        - The number of players.
- * @property    {number}    startPlayer        - The index of the player who is starting.  Value must be between
+ * @property    {number=}    dotCountLength     - The number of game dots across the length (x-axis) of the board.
+ * @property    {number=}    dotCountWidth      - The number of game dots across the width (y-axis) of the board.
+ * @property    {number=}    playerCount        - The number of players.
+ * @property    {number=}    startPlayer        - The index of the player who is starting.  Value must be between
  *                                               0 and playerCount - 1.
  */
 
@@ -33,7 +32,7 @@ dotBox = dotBox || {};
 /**
  * Creates a new game engine.
  * @function gameEngine
- * @param   {gameEngineConfig}    - The game configuration options.
+ * @param   {gameEngineConfig=}  config - The game configuration options.
  *
  */
 dotBox.gameEngine = function gameEngine(config) {
@@ -52,8 +51,123 @@ dotBox.gameEngine = function gameEngine(config) {
         _lineState,
         _boxState;
 
-
     configureGame(config);
+
+
+
+
+    /**
+     * Validates the game configuration passed to the constructor.
+     * and assigns member values.
+     * @method
+     * @param   {gameEngineConfig=}    config - The game configuration options.
+     */
+    function configureGame(config) {
+
+        if (!config) {
+            config = {};
+        }
+
+
+        if (util.isNullOrUndefined(config.dotCountLength)) {
+            _dotCountLength = DEFAULT_DOT_COUNT_LENGTH;
+        } else {
+            _dotCountLength = parseInt(config.dotCountLength, 10);
+        }
+
+        if (util.isNullOrUndefined(config.dotCountWidth)) {
+            _dotCountWidth = DEFAULT_DOT_COUNT_WIDTH;
+        } else {
+            _dotCountWidth = parseInt(config.dotCountWidth, 10);
+        }
+
+        if (util.isNullOrUndefined(config.playerCount)) {
+            _playerCount = DEFAULT_PLAYER_COUNT;
+        } else {
+            _playerCount = parseInt(config.playerCount, 10);
+        }
+
+        if (util.isNullOrUndefined(config.startPlayer)) {
+            _currentPlayer = DEFAULT_START_PLAYER;
+        } else {
+            _currentPlayer = parseInt(config.startPlayer, 10);
+        }
+
+        if (isNaN(_dotCountLength)) {
+            throw new TypeError("dotCountLength is not a number.");
+        }
+
+        if (isNaN(_dotCountWidth)) {
+            throw new TypeError("dotCountWidth is not a number.");
+        }
+
+        if (isNaN(_playerCount)) {
+            throw new TypeError("playerCount is not a number.");
+        }
+
+        if (isNaN(_currentPlayer)) {
+            throw new TypeError("startPlayer is not a number.");
+        }
+
+        if (_dotCountLength < 3) {
+            throw new RangeError("dotCountLength must be three or more");
+        }
+
+        if (_dotCountWidth < 3) {
+            throw new RangeError("dotCountWidth must be three or more");
+        }
+
+        if (_playerCount < 2) {
+            throw new RangeError("playerCount must two or more");
+        }
+
+        if ((_currentPlayer < 0) || (_currentPlayer >= _playerCount)) {
+            throw new RangeError("startPlayer must be between 0 and playerCount-1");
+        }
+
+
+        _boxCountLength = _dotCountLength - 1;
+        _boxCountWidth = _dotCountWidth - 1;
+
+        configureDependencies(config);
+
+    }
+
+    function configureDependencies(config) {
+
+
+        // BOX STATE
+
+        if (!util.isNullOrUndefined(config.boxState)) {
+
+            //If we have a box state then assign it.
+            _boxState = config.boxState;
+
+        } else {
+
+            //Default boxState.
+            _boxState = dotBox.boxState(_dotCountLength, _dotCountWidth);
+
+        }
+
+        // LINE SET
+
+        if (!util.isNullOrUndefined(config.lineState)) {
+
+            //If we have a line set then assign it.
+            _lineState = config.lineState;
+
+
+        } else {
+
+            //Assign the default line set.
+            _lineState = dotBox.lineState(_dotCountLength, _dotCountWidth);
+
+        }
+
+
+    }
+
 
     /**
      * Returns the number of players for the game.
@@ -70,11 +184,11 @@ dotBox.gameEngine = function gameEngine(config) {
      */
     function getCurrentPlayer() {
 
-        if(isGameOver()) {
+        if (isGameOver()) {
             return null;
-        } else {
-            return _currentPlayer;
         }
+
+        return _currentPlayer;
     }
 
     /**
@@ -84,14 +198,13 @@ dotBox.gameEngine = function gameEngine(config) {
      */
     function nextPlayer() {
 
-        if(isGameOver()) {
+        if (isGameOver()) {
             return null;
         }
 
-        if(_currentPlayer === _playerCount - 1) {
+        if (_currentPlayer === _playerCount - 1) {
             _currentPlayer = 0;
-        }
-        else {
+        } else {
             _currentPlayer += 1;
         }
 
@@ -106,7 +219,7 @@ dotBox.gameEngine = function gameEngine(config) {
      */
     function getDotCountLength() {
         return _dotCountLength;
-    };
+    }
 
     /**
      * The number of boxes across the game board's length (x-axis).
@@ -115,7 +228,7 @@ dotBox.gameEngine = function gameEngine(config) {
      */
     function getBoxCountLength() {
         return _boxCountLength;
-    };
+    }
 
 
 
@@ -126,7 +239,7 @@ dotBox.gameEngine = function gameEngine(config) {
      */
     function getDotCountWidth() {
         return _dotCountWidth;
-    };
+    }
 
     /**
      * The number of boxes across the game board's width (y-axis).
@@ -135,7 +248,7 @@ dotBox.gameEngine = function gameEngine(config) {
      */
     function getBoxCountWidth() {
         return _boxCountWidth;
-    };
+    }
 
     /**
      * Calculates the total number of boxes on the board.
@@ -168,127 +281,6 @@ dotBox.gameEngine = function gameEngine(config) {
 
     }
 
-
-    /**
-     * Validates the game configuration passed to the constructor.
-     * and assigns member values.
-     * @method
-     * @param   {gameConfig}    The game configuration options.
-     */
-    function configureGame(config)
-    {
-        var i,
-            boxCount;
-
-        if(!config) {
-            config = {};
-        }
-
-
-        if(util.isNullOrUndefined(config.dotCountLength)) {
-            _dotCountLength = DEFAULT_DOT_COUNT_LENGTH;
-        } else {
-            _dotCountLength = parseInt(config.dotCountLength);
-        }
-
-        if(util.isNullOrUndefined(config.dotCountWidth)) {
-            _dotCountWidth = DEFAULT_DOT_COUNT_WIDTH;
-        } else {
-            _dotCountWidth = parseInt(config.dotCountWidth);
-        }
-
-
-       
-
-        if(util.isNullOrUndefined(config.playerCount)) {
-            _playerCount = DEFAULT_PLAYER_COUNT;
-        } else {
-            _playerCount = parseInt(config.playerCount);
-        }
-
-        if(util.isNullOrUndefined(config.startPlayer)) {
-            _currentPlayer = DEFAULT_START_PLAYER
-        } else {
-            _currentPlayer = parseInt(config.startPlayer);
-        }
-
-        if(isNaN(_dotCountLength)) {
-            throw new TypeError("dotCountLength is not a number.")
-        }
-
-        if(isNaN(_dotCountWidth)) {
-            throw new TypeError("dotCountWidth is not a number.")
-        }
-
-        if(isNaN(_playerCount)) {
-            throw new TypeError("playerCount is not a number.")
-        }
-
-        if(isNaN(_currentPlayer)) {
-            throw new TypeError("startPlayer is not a number.")
-        }
-
-        if(_dotCountLength < 3) {
-            throw new RangeError("dotCountLength must be three or more")
-        }
-
-        if(_dotCountWidth < 3) {
-            throw new RangeError("dotCountWidth must be three or more")
-        }
-
-        if(_playerCount < 2) {
-            throw new RangeError("playerCount must two or more")
-        }
-
-        if((_currentPlayer < 0) || (_currentPlayer >= _playerCount)) {
-            throw new RangeError("startPlayer must be between 0 and playerCount-1")
-        }
-
-
-        _boxCountLength = _dotCountLength - 1;
-        _boxCountWidth = _dotCountWidth - 1;
-
-        configureDependencies(config);
-
-    }
-
-    function configureDependencies(config) {
-
-
-        // BOX STATE
-
-        if( !util.isNullOrUndefined(config.boxState)) {
-
-            //If we have a box state then assign it.
-             _boxState = config.boxState;
-
-        } else {
-
-            //Default boxState.
-            _boxState = dotBox.boxState(_dotCountLength, _dotCountWidth);
-
-        }
-
-        // LINE SET
-
-        if( !util.isNullOrUndefined(config.lineState)) {
-
-            //If we have a line set then assign it.
-            _lineState = config.lineState;
-
-
-        } else {
-
-            //Assign the default line set.
-            _lineState = dotBox.lineState(_dotCountLength, _dotCountWidth);
-
-        }
-
-
-
-
-    }
-
     /**
      * Checks to see if the gameMove is a legit move.
      * Throws exceptions if the move is not valid.
@@ -301,8 +293,8 @@ dotBox.gameEngine = function gameEngine(config) {
         //2.  We are checking if he line is already connected
         //    if so disallow the move.
 
-        if(_lineState.connected(line)) {
-            throw new Error("This line is already connected.")
+        if (_lineState.connected(line)) {
+            throw new Error("This line is already connected.");
         }
 
 
@@ -319,7 +311,7 @@ dotBox.gameEngine = function gameEngine(config) {
             result = {},
             playerThisTurn;
 
-        if(isGameOver()) {
+        if (isGameOver()) {
             throw new Error("Cannot make a move when the game is over.");
         }
 
@@ -337,17 +329,17 @@ dotBox.gameEngine = function gameEngine(config) {
         //If so then these are new scores for the player.
         closedBoxesThisTurn = adjacentBoxes
             .filter(_lineState.isBoxClosed)
-            .filter(_boxState.isBoxUnscored);
+            .filter(_boxState.isBoxNotScored);
 
         //Record these boxes for the current player.
-        closedBoxesThisTurn.forEach(function(boxIndex) {
+        closedBoxesThisTurn.forEach(function (boxIndex) {
             _boxState.scoreBox(boxIndex, playerThisTurn);
         });
 
         result.boxesScored = closedBoxesThisTurn;
         result.gameOver = isGameOver();
 
-        if(result.boxesScored.length === 0) {
+        if (result.boxesScored.length === 0) {
             //If no boxes were scored then advance
             //to the next player, and assign it to.
             result.nextPlayer = nextPlayer();
@@ -379,23 +371,19 @@ dotBox.gameEngine = function gameEngine(config) {
      */
     function hasAnyOpenLines(dot) {
 
-        if(dot === undefined) {
-            throw new Error("dot argument was not supplied.")
+        if (dot === undefined) {
+            throw new Error("dot argument was not supplied.");
         }
 
-        if(dot === null) {
-            throw new Error("dot argument was null.")
+        if (dot === null) {
+            throw new Error("dot argument was null.");
         }
 
         var openLines;
 
         openLines = _lineState.getOpenLinesForDot(dot);
 
-        if(openLines.length > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return openLines.length > 0;
 
 
     }
@@ -415,11 +403,11 @@ dotBox.gameEngine = function gameEngine(config) {
             openLines,
             tempDot;
 
-        if(util.isNullOrUndefined(dot1)) {
+        if (util.isNullOrUndefined(dot1)) {
             throw new Error("dot1 argument was null or undefined.");
         }
 
-        if(util.isNullOrUndefined(dot2)) {
+        if (util.isNullOrUndefined(dot2)) {
             throw new Error("dot2 argument was null or undefined.");
         }
 
@@ -429,9 +417,9 @@ dotBox.gameEngine = function gameEngine(config) {
         //If we found the dot in the list of open lines
         //then we can connect it.
 
-        for(i = 0; i < openLines.length; i++) {
+        for (i = 0; i < openLines.length; i++) {
             tempDot = openLines[i].d2;
-            if(tempDot.x === dot2.x && tempDot.y === dot2.y) {
+            if (tempDot.x === dot2.x && tempDot.y === dot2.y) {
                 return true;
             }
         }
@@ -439,6 +427,8 @@ dotBox.gameEngine = function gameEngine(config) {
         return false;
 
     }
+
+
 
     return {
 

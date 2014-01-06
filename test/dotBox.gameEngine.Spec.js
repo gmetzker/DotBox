@@ -1,6 +1,4 @@
-/*global describe, it, expect, dotBox */
-
-
+/*global describe, it, expect, dotBox, vLineIterator, hLineIterator */
 
 
 describe("dotBox.gameEngine", function () {
@@ -11,7 +9,6 @@ describe("dotBox.gameEngine", function () {
         DEFAULT_START_PLAYER = 0;
 
     describe("factory", function () {
-
 
 
         it("should create a new gameEngine", function () {
@@ -45,7 +42,7 @@ describe("dotBox.gameEngine", function () {
 
         it("should have defaults if constructed with no arguments", function () {
 
-            var target,
+            var target = null,
                 act;
 
             act = function () {
@@ -64,10 +61,9 @@ describe("dotBox.gameEngine", function () {
         });
 
 
-
         it("should have defaults if any arguments missing", function () {
 
-            var target,
+            var target = null,
                 act;
 
             act = function () {
@@ -121,7 +117,6 @@ describe("dotBox.gameEngine", function () {
         });
 
 
-
         it("should throw an error if playerCount is not a number", function () {
 
             var target,
@@ -162,7 +157,6 @@ describe("dotBox.gameEngine", function () {
 
             var target,
                 act;
-
 
 
             act = function () {
@@ -217,7 +211,6 @@ describe("dotBox.gameEngine", function () {
         });
 
 
-
         it("should throw an error if playerCount is less than 2", function () {
 
             var target,
@@ -267,7 +260,8 @@ describe("dotBox.gameEngine", function () {
             act = function () {
                 target = dotBox.gameEngine({
                     playerCount: 3,
-                    startPlayer: 3});
+                    startPlayer: 3
+                });
             };
             expect(act).toThrow();
 
@@ -287,7 +281,8 @@ describe("dotBox.gameEngine", function () {
             act = function () {
                 target = dotBox.gameEngine({
                     playerCount: 3,
-                    startPlayer: 4});
+                    startPlayer: 4
+                });
             };
             expect(act).toThrow();
 
@@ -308,7 +303,6 @@ describe("dotBox.gameEngine", function () {
             expect(target.getBoxCountLength()).toBe(expDotCountLength - 1);
 
         });
-
 
 
         it("should be have a box count width one less than dot count", function () {
@@ -343,13 +337,15 @@ describe("dotBox.gameEngine", function () {
             vIt = vLineIterator(config.dotCountLength, config.dotCountWidth);
             hIt = hLineIterator(config.dotCountLength, config.dotCountWidth);
 
-            while(tempLine = vIt.next()) {
+            //noinspection JSHint,JSLint
+            while (tempLine = vIt.next()) {
 
-                expect(target.isLineConnected(tempLine)).toBe(false)
+                expect(target.isLineConnected(tempLine)).toBe(false);
 
             }
 
-            while(tempLine = hIt.next()) {
+            //noinspection JSHint,JSLint
+            while (tempLine = hIt.next()) {
 
                 expect(target.isLineConnected(tempLine)).toBe(false);
 
@@ -361,8 +357,7 @@ describe("dotBox.gameEngine", function () {
 
     function createConfigForGameOver(isGameOver) {
 
-        var i,
-            DOT_COUNT_LENGTH = 4,
+        var DOT_COUNT_LENGTH = 4,
             DOT_COUNT_WIDTH = 4,
             mockBoxState = dotBox.boxState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH),
             config;
@@ -370,11 +365,11 @@ describe("dotBox.gameEngine", function () {
 
         mockBoxState.areAllBoxesScored = function () {
 
-            if( isGameOver === undefined ) {
+            if (isGameOver === undefined) {
                 return true;
-            } else {
-                return isGameOver;
             }
+
+            return isGameOver;
 
         };
 
@@ -387,7 +382,6 @@ describe("dotBox.gameEngine", function () {
         return config;
 
     }
-
 
 
     it("isGameOver should return true if box state has all boxes scored", function () {
@@ -421,8 +415,8 @@ describe("dotBox.gameEngine", function () {
         expect(target.isGameOver()).toBe(false);
 
     });
-    
-    describe("connectLine", function() {
+
+    describe("connectLine", function () {
 
         it("should throw an error if the game is already over", function () {
 
@@ -439,7 +433,9 @@ describe("dotBox.gameEngine", function () {
 
             target = dotBox.gameEngine(config);
 
-            act = function() {  target.connectLine(line); };
+            act = function () {
+                target.connectLine(line);
+            };
 
 
             expect(act).toThrow();
@@ -463,7 +459,7 @@ describe("dotBox.gameEngine", function () {
 
             //Create a mocked lineState that pretends all lines are connected.
             mockLineState = {
-                connected: function(l, v) {
+                connected: function (l, v) {
 
                     expect(l).toBe(line);
                     expect(v).toBeUndefined();
@@ -473,18 +469,17 @@ describe("dotBox.gameEngine", function () {
             };
 
             config = {
-              lineState: mockLineState
+                lineState: mockLineState
             };
-
 
 
             target = dotBox.gameEngine(config);
 
-            act = function() {  target.connectLine(line); };
+            act = function () {
+                target.connectLine(line);
+            };
 
             expect(act).toThrow(expMsg);
-
-
 
 
         });
@@ -506,10 +501,10 @@ describe("dotBox.gameEngine", function () {
             //Create a mocked lineState that throws an error, when
             //it is queried without the set value.
             mockLineState = {
-                connected: function(l, v) {
+                connected: function (l, v) {
 
                     expect(l).toBe(line);
-                    if( v === undefined) {
+                    if (v === undefined) {
                         throw new Error(expMessage);
                     }
                     return false;
@@ -521,14 +516,13 @@ describe("dotBox.gameEngine", function () {
             };
 
 
-
             target = dotBox.gameEngine(config);
 
-            act = function() {  target.connectLine(line); };
+            act = function () {
+                target.connectLine(line);
+            };
 
             expect(act).toThrow(expMessage);
-
-
 
 
         });
@@ -559,7 +553,7 @@ describe("dotBox.gameEngine", function () {
             //This should ensure no boxes are made,
             //and the player should change each turn.
 
-            for(i = 0; i < DOT_EDGE_COUNT - 1; i++) {
+            for (i = 0; i < DOT_EDGE_COUNT - 1; i++) {
 
                 expPlayer = i % 3;
                 expect(target.getCurrentPlayer()).toBe(expPlayer);
@@ -598,33 +592,35 @@ describe("dotBox.gameEngine", function () {
             //Create a mocked lineState that throws an error, when
             //it is queried without the set value.
             mockLineState = {
-                connected: function(l, v) {
+                connected: function (l, v) {
 
 
-                    if( v === undefined) {
+                    if (v === undefined) {
                         //When v is undefined this just a query
                         //to see if line is connected, lets pretend
                         //it's not and return false.
                         return false;
-                    } else {
-                        //Make sure it's the same line.
-                        connectSetCallCount += 1;
-
-                        //Make sure the same line was passed in.
-                        expect(l).toBe(line);
-                        return true;
                     }
+
+                    //Make sure it's the same line.
+                    connectSetCallCount += 1;
+
+                    //Make sure the same line was passed in.
+                    expect(l).toBe(line);
+                    return true;
+
 
 
                 },
-                isBoxClosed: function() {return false; }
+                isBoxClosed: function () {
+                    return false;
+                }
 
             };
 
             config = {
                 lineState: mockLineState
             };
-
 
 
             target = dotBox.gameEngine(config);
@@ -647,20 +643,23 @@ describe("dotBox.gameEngine", function () {
             config = createConfigForGameOver();
 
 
-            config.boxState.areAllBoxesScored = function() {
+            config.boxState.areAllBoxesScored = function () {
 
-                if( isGameOverCallCount === 0) {
+                if (isGameOverCallCount === 0) {
                     isGameOverCallCount += 1;
                     return false;
-                } else {
-                    isGameOverCallCount += 1;
-                    return true;
                 }
+
+                isGameOverCallCount += 1;
+                return true;
+
             };
 
             //Mock the lineState to indicate a closed box.
             config.lineState = dotBox.lineState(4, 4);
-            config.lineState.isBoxClosed = function (index) { return true; };
+            config.lineState.isBoxClosed = function () {
+                return true;
+            };
 
             lastLine = {
                 d1: {x: 0, y: 0},
@@ -678,8 +677,6 @@ describe("dotBox.gameEngine", function () {
             expect(target.getCurrentPlayer()).toBe(null);
 
 
-
-
         });
 
         it("should not change the box state if no boxes scored", function () {
@@ -695,10 +692,9 @@ describe("dotBox.gameEngine", function () {
                 boxState = dotBox.boxState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
 
 
-
             config = {
                 dotCountLength: DOT_COUNT_LENGTH,
-                dotCountWidth:  DOT_COUNT_WIDTH,
+                dotCountWidth: DOT_COUNT_WIDTH,
                 boxState: boxState
             };
 
@@ -715,10 +711,9 @@ describe("dotBox.gameEngine", function () {
 
             expect(result.boxesScored.length).toBe(0);
 
-            for(i = 0; i < BOX_COUNT; i++) {
+            for (i = 0; i < BOX_COUNT; i++) {
                 expect(boxState.isBoxScored(i)).toBe(false);
             }
-
 
 
         });
@@ -733,21 +728,20 @@ describe("dotBox.gameEngine", function () {
                 DOT_COUNT_WIDTH = 4,
                 BOX_COUNT = 9,
                 boxState = dotBox.boxState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH),
-                currentPlayer = 1;
+                currentPlayer = 1,
+                lineState;
 
             lineState = dotBox.lineState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
 
 
             config = {
                 dotCountLength: DOT_COUNT_LENGTH,
-                dotCountWidth:  DOT_COUNT_WIDTH,
+                dotCountWidth: DOT_COUNT_WIDTH,
                 boxState: boxState,
                 lineState: lineState,
                 startPlayer: currentPlayer,
                 playerCount: 2
             };
-
-
 
 
             lineState.connected({
@@ -767,7 +761,6 @@ describe("dotBox.gameEngine", function () {
             }, true);
 
 
-
             target = dotBox.gameEngine(config);
 
 
@@ -782,14 +775,13 @@ describe("dotBox.gameEngine", function () {
 
             expect(boxState.whichPlayerScoredBox(0)).toBe(currentPlayer);
 
-            for(i = 1; i < BOX_COUNT; i++) {
+            for (i = 1; i < BOX_COUNT; i++) {
                 expect(boxState.isBoxScored(i)).toBe(false);
             }
 
             //Player scored so the same player will be the next and current player.
             expect(result.nextPlayer).toBe(currentPlayer);
             expect(target.getCurrentPlayer()).toBe(currentPlayer);
-
 
 
         });
@@ -804,7 +796,8 @@ describe("dotBox.gameEngine", function () {
                 DOT_COUNT_WIDTH = 4,
                 BOX_COUNT = 9,
                 boxState,
-                currentPlayer = 1;
+                currentPlayer = 1,
+                lineState;
 
             boxState = dotBox.boxState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
             lineState = dotBox.lineState(DOT_COUNT_LENGTH, DOT_COUNT_WIDTH);
@@ -812,14 +805,12 @@ describe("dotBox.gameEngine", function () {
 
             config = {
                 dotCountLength: DOT_COUNT_LENGTH,
-                dotCountWidth:  DOT_COUNT_WIDTH,
+                dotCountWidth: DOT_COUNT_WIDTH,
                 boxState: boxState,
                 lineState: lineState,
                 startPlayer: currentPlayer,
                 playerCount: 2
             };
-
-
 
 
             lineState.connected({
@@ -873,7 +864,7 @@ describe("dotBox.gameEngine", function () {
             expect(boxState.whichPlayerScoredBox(0)).toBe(currentPlayer);
             expect(boxState.whichPlayerScoredBox(1)).toBe(currentPlayer);
 
-            for(i = 2; i < BOX_COUNT; i++) {
+            for (i = 2; i < BOX_COUNT; i++) {
 
                 //All other boxes should be unclaimed still.
                 expect(boxState.isBoxScored(i)).toBe(false);
@@ -883,7 +874,6 @@ describe("dotBox.gameEngine", function () {
             //Player scored so the same player will be the next and current player.
             expect(result.nextPlayer).toBe(currentPlayer);
             expect(target.getCurrentPlayer()).toBe(currentPlayer);
-
 
 
         });
@@ -899,10 +889,11 @@ describe("dotBox.gameEngine", function () {
             target,
             mockCurrentScores,
             actCurrentScores,
-            actPlayerCount;
+            actPlayerCount = null,
+            config;
 
         mockCurrentScores = [];
-        for(i = 0; i < playerCount; i++) {
+        for (i = 0; i < playerCount; i++) {
             mockCurrentScores[i] = 2;
         }
         boxState = dotBox.boxState(4, 4);
@@ -938,9 +929,11 @@ describe("dotBox.gameEngine", function () {
                 actResult;
 
             config.lineState = {
-                getOpenLinesForDot : function (dot) {
+                getOpenLinesForDot: function (dot) {
                     getOpenLinesForDotArgList.push(dot);
-                    return [{}];
+                    return [
+                        {}
+                    ];
                 }
             };
 
@@ -955,7 +948,6 @@ describe("dotBox.gameEngine", function () {
             expect(getOpenLinesForDotArgList[0].y).toBe(y);
 
 
-
         });
 
         it("should return false if lineState.getOpenLinesForDot returns no lines", function () {
@@ -968,7 +960,7 @@ describe("dotBox.gameEngine", function () {
                 actResult;
 
             config.lineState = {
-                getOpenLinesForDot : function (dot) {
+                getOpenLinesForDot: function (dot) {
                     getOpenLinesForDotArgList.push(dot);
                     return [];
                 }
@@ -994,7 +986,9 @@ describe("dotBox.gameEngine", function () {
 
             target = dotBox.gameEngine();
 
-            act = function () { target.hasAnyOpenLines(); };
+            act = function () {
+                target.hasAnyOpenLines();
+            };
 
             expect(act).toThrow();
 
@@ -1007,7 +1001,9 @@ describe("dotBox.gameEngine", function () {
 
             target = dotBox.gameEngine();
 
-            act = function () { target.hasAnyOpenLines(null); };
+            act = function () {
+                target.hasAnyOpenLines(null);
+            };
 
             expect(act).toThrow();
 
@@ -1036,7 +1032,7 @@ describe("dotBox.gameEngine", function () {
 
 
             config.lineState = {
-                getOpenLinesForDot : function (dot) {
+                getOpenLinesForDot: function (dot) {
                     getOpenLinesForDotArgList.push(dot);
                     return [];
                 }
@@ -1074,7 +1070,7 @@ describe("dotBox.gameEngine", function () {
 
 
             config.lineState = {
-                getOpenLinesForDot : function (dot) {
+                getOpenLinesForDot: function (dot) {
                     getOpenLinesForDotArgList.push(dot);
                     return [
                         {d1: dot1, d2: {x: 0, y: 0}},
@@ -1115,7 +1111,7 @@ describe("dotBox.gameEngine", function () {
 
 
             config.lineState = {
-                getOpenLinesForDot : function (dot) {
+                getOpenLinesForDot: function (dot) {
                     getOpenLinesForDotArgList.push(dot);
                     return [
                         {d1: dot1, d2: {x: 0, y: 0}},

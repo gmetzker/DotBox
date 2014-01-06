@@ -1,25 +1,22 @@
-var dotBox;
-dotBox = dotBox || {};
+var dotBox = dotBox || {};
 dotBox.utility = dotBox.utility || {};
 
-(function(namespace) {
+(function (namespace) {
 
     namespace.isNullOrUndefined = function (value) {
 
-        if(value === undefined) {
+        if (value === undefined) {
             return true;
         }
 
-        if(value === null) {
-            return true;
-        }
+        return value === null;
 
-        return false;
+
 
 
     };
 
-})(dotBox.utility);
+}(dotBox.utility));
 
 
 

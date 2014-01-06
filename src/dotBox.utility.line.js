@@ -1,9 +1,14 @@
-var dotBox;
-dotBox = dotBox || {};
+
+var dotBox = dotBox || {};
 dotBox.utility = dotBox.utility || {};
 dotBox.utility.line = dotBox.utility.line || {};
 
-(function(namespace){
+(function (namespace) {
+
+
+    namespace.isHLine = isHLine;
+    namespace.getBoxesFromLine = getBoxesFromLine;
+    namespace.getLinesFromBox = getLinesFromBox;
 
     /**
      * Checks to see if the line is horizontal.
@@ -13,11 +18,7 @@ dotBox.utility.line = dotBox.utility.line || {};
      */
     function isHLine(line) {
 
-        if(Math.abs(line.d1.x - line.d2.x) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return Math.abs(line.d1.x - line.d2.x) > 0;
 
     }
 
@@ -26,6 +27,7 @@ dotBox.utility.line = dotBox.utility.line || {};
      * @function        getBoxesFromLine
      * @param {line}    line            - The line we are checking.
      * @param {number}  dotCountLength  - The total number of dots of the game board across the x-axis.
+     * @param {number}  dotCountWidth   - The total number of dots of the game board across the y-axis.
      */
     function getBoxesFromLine(line, dotCountLength, dotCountWidth) {
 
@@ -37,7 +39,7 @@ dotBox.utility.line = dotBox.utility.line || {};
             return (topLeftDot.y * boxCountLength) + topLeftDot.x;
         }
 
-        if(isHLine(line)) {
+        if (isHLine(line)) {
 
             //If it's horizontal then y is the same for both dots.
             topLeftDot.y = line.d1.y;
@@ -46,12 +48,12 @@ dotBox.utility.line = dotBox.utility.line || {};
             topLeftDot.x = Math.min(line.d1.x, line.d2.x);
 
 
-            if( line.d1.y === 0 ) {
+            if (line.d1.y === 0) {
 
                 //Line is on the top edge so we can only get the box below.
                 boxes.push(boxIndex());
 
-            } else if( line.d1.y === dotCountWidth - 1 ) {
+            } else if (line.d1.y === dotCountWidth - 1) {
 
                 //Line is on the bottom edge so we can only get the box above.
                 topLeftDot.y -= 1;
@@ -79,12 +81,12 @@ dotBox.utility.line = dotBox.utility.line || {};
             topLeftDot.y = Math.min(line.d1.y, line.d2.y);
 
 
-            if( line.d1.x === 0 ) {
+            if (line.d1.x === 0) {
 
                 //Line is on the left edge so we can only get the box to the right.
                 boxes.push(boxIndex());
 
-            } else if( line.d1.x === dotCountLength - 1 ) {
+            } else if (line.d1.x === dotCountLength - 1) {
 
                 //Line is on the right edge so we can only get the box to the left.
                 topLeftDot.x -= 1;
@@ -160,11 +162,7 @@ dotBox.utility.line = dotBox.utility.line || {};
 
 
 
-    namespace.isHLine = isHLine;
-    namespace.getBoxesFromLine = getBoxesFromLine;
-    namespace.getLinesFromBox = getLinesFromBox;
 
 
-
-})(dotBox.utility.line);
+}(dotBox.utility.line));
 

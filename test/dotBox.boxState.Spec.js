@@ -39,15 +39,15 @@ describe("dotBox.boxState", function () {
             target,
             playerIndex = 3;
 
-        for(i = 0; i < boxCount; i++) {
+        for (i = 0; i < boxCount; i++) {
 
             target = boxState(dotCountLength, dotCountWidth);
 
             target.scoreBox(i, playerIndex);
 
-            for(j = 0; j < boxCount; j++) {
+            for (j = 0; j < boxCount; j++) {
 
-                if( j === i ) {
+                if (j === i) {
                     expect(target.isBoxScored(j)).toBe(true);
                 } else {
                     expect(target.isBoxScored(j)).toBe(false);
@@ -75,18 +75,18 @@ describe("dotBox.boxState", function () {
             target,
             playerIndex = 3;
 
-        for(i = 0; i < boxCount; i++) {
+        for (i = 0; i < boxCount; i++) {
 
             target = boxState(dotCountLength, dotCountWidth);
 
             target.scoreBox(i, playerIndex);
 
-            for(j = 0; j < boxCount; j++) {
+            for (j = 0; j < boxCount; j++) {
 
-                if( j === i ) {
-                    expect(target.isBoxUnscored(j)).toBe(false);
+                if (j === i) {
+                    expect(target.isBoxNotScored(j)).toBe(false);
                 } else {
-                    expect(target.isBoxUnscored(j)).toBe(true);
+                    expect(target.isBoxNotScored(j)).toBe(true);
                 }
 
 
@@ -108,7 +108,7 @@ describe("dotBox.boxState", function () {
 
         target = boxState(dotCountLength, dotCountWidth);
 
-        for(i = 0; i < boxCount; i++) {
+        for (i = 0; i < boxCount; i++) {
 
             target.scoreBox(i, playerIndex);
 
@@ -133,8 +133,8 @@ describe("dotBox.boxState", function () {
         expect(target.areAllBoxesScored()).toBe(false);
 
 
-        for(i = 0; i < boxCount; i++) {
-            if( i !== 4 ) {
+        for (i = 0; i < boxCount; i++) {
+            if (i !== 4) {
                 target.scoreBox(i, playerIndex);
             }
         }

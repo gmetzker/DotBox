@@ -1,3 +1,5 @@
+/*global  $, jQuery, Observer*/
+
 var dotBox = dotBox || {};
 
 
@@ -24,16 +26,19 @@ dotBox.game = function game(parent) {
 
     _controller.startGame();
 
+
     function getJqueryParent(p) {
 
-        if(p instanceof jQuery) {
+        if (p instanceof jQuery) {
             //Only use the first element
             return $(p[0]);
-        } else if (p instanceof string) {
+        }
+
+        if (typeof p === 'string') {
 
             //If it's a string, assume it's
             //an id add the hash tag if it doesn't have one.
-            if( p.lastIndexOf("#", 0) !== 0 ) {
+            if (p.lastIndexOf("#", 0) !== 0) {
                 p = '#' + p;
             }
 
@@ -47,9 +52,9 @@ dotBox.game = function game(parent) {
 
 
 
-(function ( $ ) {
+(function ($) {
 
-    $.fn.dotBox = function() {
+    $.fn.dotBox = function () {
 
         dotBox.game(this);
 
@@ -57,4 +62,4 @@ dotBox.game = function game(parent) {
 
     };
 
-}( jQuery ));
+}(jQuery));

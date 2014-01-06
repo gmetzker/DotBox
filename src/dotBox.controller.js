@@ -7,16 +7,15 @@ dotBox.controller = function (events) {
     var util = dotBox.utility;
 
     //Constants
+    //noinspection JSLint
     var DOT_COL_COUNT = 6,
         DOT_ROW_COUNT = 6;
 
     //Vars
+    //noinspection JSLint
     var that = {},
         gameEngine,
         model;
-
-    var _model,
-        _events = events;
 
 
 
@@ -25,76 +24,49 @@ dotBox.controller = function (events) {
         dotCountWidth: DOT_ROW_COUNT
     });
 
-    _model = dotBox.model(gameEngine);
+    model = dotBox.model(gameEngine);
 
     addSubscribers();
 
 
-
-
     that.startGame = function startGame() {
-        _events.publish('startGame', _model);
-    }
+        events.publish('startGame', model);
+    };
+
 
     function addSubscribers() {
+        events.subscribe('dotRollOver', onDotRollOver);
 
-        _events.subscribe('dotRollOver', onDotRollOver);
+        events.subscribe('dotRollOut', onDotRollOut);
 
-        _events.subscribe('dotRollOut', onDotRollOut);
-
-        _events.subscribe('dotClick', onDotClick);
-
+        events.subscribe('dotClick', onDotClick);
     }
+
+
 
     function onDotRollOver(dot) {
 
-        var selDot = _model.selectedDot;
 
         //If there are no open lines then exit out.
-        if(!gameEngine.hasAnyOpenLines(dot)) return;
+        if (!gameEngine.hasAnyOpenLines(dot)) { return; }
 
 
-        _model.hoveredDot = dot;
-        _events.publish('view.dotRollOver', dot);
+        model.hoveredDot = dot;
+        events.publish('view.dotRollOver', dot);
 
 
 
     }
 
     function onDotRollOut(dot) {
-        _model.hoveredDot = null;
-        _events.publish('view.dotRollOut', dot);
+        model.hoveredDot = null;
+        events.publish('view.dotRollOut', dot);
     }
 
-    function onDotClick(dot) {
-
-        var selDot = _model.selectedDot;
-
-
-        if(!gameEngine.hasAnyOpenLines(dot)) { return; }
-
-        if( _model.isSelectedDot(dot) ) {
-
-            _model.selectedDot = null;
-            _events.publish('view.dotSelectionChanged', selDot, null);
-
-        } else if((_model.selectedDot !== null) && (_model.canConnectDots(dot))) {
-
-            connectDots(selDot, dot);
-
-        } else {
-
-            _model.selectedDot = dot;
-            _events.publish('view.dotSelectionChanged', selDot, dot);
-        }
-
-
-    }
 
     function connectDots(d1, d2) {
 
-        var boxIdx,
-            result,
+        var result,
             line,
             playerThisTurn,
             playerNextTurn;
@@ -109,28 +81,53 @@ dotBox.controller = function (events) {
 
 
         //Draw the connected line
-        _model.selectedDot = null;
-        _model.hoveredDot = null;
-        _events.publish('view.lineConnected', line);
+        model.selectedDot = null;
+        model.hoveredDot = null;
+        events.publish('view.lineConnected', line);
 
         // If any boxes scored draw them
         renderScoredBoxesToView(result.boxesScored, playerThisTurn);
 
 
-        if(gameEngine.isGameOver()) {
+        if (gameEngine.isGameOver()) {
 
-            _events.publish("gameOver", getWinner());
+            events.publish("gameOver", getWinner());
 
         } else {
 
             playerNextTurn = gameEngine.getCurrentPlayer();
 
-            if((playerNextTurn !== null) && (playerNextTurn !== playerThisTurn)) {
-                _events.publish("views.playerTurnChanged");
+            if ((playerNextTurn !== null) && (playerNextTurn !== playerThisTurn)) {
+                events.publish("views.playerTurnChanged");
             }
 
         }
 
+
+
+    }
+
+    function onDotClick(dot) {
+
+        var selDot = model.selectedDot;
+
+
+        if (!gameEngine.hasAnyOpenLines(dot)) { return; }
+
+        if (model.isSelectedDot(dot)) {
+
+            model.selectedDot = null;
+            events.publish('view.dotSelectionChanged', selDot, null);
+
+        } else if ((model.selectedDot !== null) && (model.canConnectDots(dot))) {
+
+            connectDots(selDot, dot);
+
+        } else {
+
+            model.selectedDot = dot;
+            events.publish('view.dotSelectionChanged', selDot, dot);
+        }
 
 
     }
@@ -142,10 +139,10 @@ dotBox.controller = function (events) {
             maxScore = 0,
             scores;
 
-        scores = _model.getCurrentScores();
+        scores = model.getCurrentScores();
 
-        for(i = 0; i < scores.length; i++) {
-            if(scores[i] >= maxScore) {
+        for (i = 0; i < scores.length; i++) {
+            if (scores[i] >= maxScore) {
                 maxScore = scores[i];
                 playerWithMax = i;
             }
@@ -158,23 +155,27 @@ dotBox.controller = function (events) {
     function renderScoredBoxesToView(scoredBoxes, playerThisTurn) {
 
         var i,
-            closedBoxes;
+            closedBoxes,
+            boxIdx;
 
-        if( scoredBoxes.length > 0) {
+        if (scoredBoxes.length > 0) {
 
             closedBoxes = [];
-            for(i=0; i < scoredBoxes.length; i++){
-                boxIdx = scoredBoxes[i]
+            for (i = 0; i < scoredBoxes.length; i++) {
+                boxIdx = scoredBoxes[i];
                 closedBoxes.push({
                     box: boxIdx,
                     lines: util.line.getLinesFromBox(boxIdx, gameEngine.getDotCountLength())
                 });
 
             }
-            _events.publish('view.boxesScored', closedBoxes, playerThisTurn);
+            events.publish('view.boxesScored', closedBoxes, playerThisTurn);
         }
 
     }
+
+
+
 
     return that;
 

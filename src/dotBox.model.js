@@ -2,8 +2,7 @@ var dotBox = dotBox || {};
 
 dotBox.model = function model(gameEngine) {
 
-    var _gameEngine = gameEngine,
-        that;
+    var that;
 
     that = {
 
@@ -21,56 +20,44 @@ dotBox.model = function model(gameEngine) {
     };
 
     function getDotColCount() {
-        return _gameEngine.getDotCountLength();
+        return gameEngine.getDotCountLength();
     }
 
     function getDotRowCount() {
-        return _gameEngine.getDotCountWidth();
+        return gameEngine.getDotCountWidth();
     }
 
     function isSelectedDot(dot) {
 
-        if( (that.selectedDot !== null) &&
+        return (that.selectedDot !== null) &&
             (dot.x === that.selectedDot.x) &&
-            (dot.y === that.selectedDot.y) ) {
-            return true;
-        } else {
-            return false;
-        }
+            (dot.y === that.selectedDot.y);
     }
 
     function isHoveredDot(dot) {
 
-        if( (that.hoveredDot !== null) &&
+        return (that.hoveredDot !== null) &&
             (dot.x === that.hoveredDot.x) &&
-            (dot.y === that.hoveredDot.y) ) {
-            return true;
-        } else {
-            return false;
-        }
+            (dot.y === that.hoveredDot.y);
     }
 
     function canConnectDots(dot) {
 
-        if( (that.selectedDot !== null) &&
-            _gameEngine.canConnectDots(that.selectedDot, dot)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (that.selectedDot !== null) &&
+            gameEngine.canConnectDots(that.selectedDot, dot);
 
     }
 
     function hasAnyOpenLines(dot) {
-        return _gameEngine.hasAnyOpenLines(dot);
+        return gameEngine.hasAnyOpenLines(dot);
     }
 
     function getCurrentScores() {
-        return _gameEngine.getCurrentScores();
+        return gameEngine.getCurrentScores();
     }
 
     function getCurrentPlayer() {
-        return _gameEngine.getCurrentPlayer();
+        return gameEngine.getCurrentPlayer();
     }
 
 

@@ -1,5 +1,6 @@
 /*global describe, it, expect, dotBox */
 
+//noinspection JSHint,JSLint
 var global = Function('return this')();
 
 describe("dotBox.views.Color", function () {
@@ -10,7 +11,7 @@ describe("dotBox.views.Color", function () {
 
         it("should create a solid white color if no arguments supplied", function () {
 
-            var target,
+            var target = null,
                 act;
 
             act = function () {
@@ -34,6 +35,7 @@ describe("dotBox.views.Color", function () {
             var target;
 
 
+            //noinspection JSLint
             target = Color();
 
             expect(target).not.toBeNull();
@@ -53,6 +55,7 @@ describe("dotBox.views.Color", function () {
             var target;
 
 
+            //noinspection JSLint
             target = Color(10, 20, 30, 0.56);
 
             expect(target).not.toBeNull();
@@ -77,6 +80,7 @@ describe("dotBox.views.Color", function () {
             var target;
 
 
+            //noinspection JSLint
             target = Color('#0a141e');
 
             expect(target).not.toBeNull();
@@ -98,7 +102,7 @@ describe("dotBox.views.Color", function () {
 
         it("should be constructable with a lower case hex html color code", function () {
 
-            var target,
+            var target = null,
                 act;
 
             act = function () {
@@ -121,7 +125,7 @@ describe("dotBox.views.Color", function () {
 
         it("should be constructable with an upper case hex html color code", function () {
 
-            var target,
+            var target = null,
                 act;
 
             act = function () {
@@ -146,7 +150,7 @@ describe("dotBox.views.Color", function () {
 
             it("that has no spaces", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {
@@ -167,7 +171,7 @@ describe("dotBox.views.Color", function () {
 
             it("that has leading or trailing spaces", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {
@@ -188,7 +192,7 @@ describe("dotBox.views.Color", function () {
 
             it("that has inner spaces", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {
@@ -247,7 +251,7 @@ describe("dotBox.views.Color", function () {
 
             it("that has no spaces", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {
@@ -268,7 +272,7 @@ describe("dotBox.views.Color", function () {
 
             it("that has leading or trailing spaces", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {
@@ -289,7 +293,7 @@ describe("dotBox.views.Color", function () {
 
             it("that has inner spaces", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {
@@ -348,7 +352,7 @@ describe("dotBox.views.Color", function () {
 
             it("that have three ints and one float", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {
@@ -366,7 +370,7 @@ describe("dotBox.views.Color", function () {
 
             it("that have four floats", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {
@@ -384,7 +388,7 @@ describe("dotBox.views.Color", function () {
 
             it("that have four strings", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {
@@ -407,7 +411,7 @@ describe("dotBox.views.Color", function () {
 
             it("that have three ints", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {
@@ -425,7 +429,7 @@ describe("dotBox.views.Color", function () {
 
             it("that have three floats", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {
@@ -443,7 +447,7 @@ describe("dotBox.views.Color", function () {
 
             it("that have three strings", function () {
 
-                var target,
+                var target = null,
                     act;
 
                 act = function () {

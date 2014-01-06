@@ -1,5 +1,16 @@
-/*global describe, it, expect, dotBox */
+/*global describe, it, expect, beforeEach, dotBox, hLineIterator, vLineIterator, boxIterator */
 
+function areLinesSame(line1, line2) {
+
+    if (line1.d1.x !== line2.d1.x) { return false; }
+    if (line1.d1.y !== line2.d1.y) { return false; }
+    if (line1.d2.x !== line2.d2.x) { return false; }
+    //noinspection RedundantIfStatementJS
+    if (line1.d2.y !== line2.d2.y) { return false; }
+
+    return true;
+
+}
 
 describe("dotBox.utility.lineSet", function () {
 
@@ -7,7 +18,7 @@ describe("dotBox.utility.lineSet", function () {
 
     it("should construct", function () {
 
-        var target,
+        var target = null,
             act;
 
         act = function () {
@@ -34,7 +45,8 @@ describe("dotBox.utility.lineSet", function () {
 
         target = lineState(dotCountL, dotCountW);
 
-        while(line = hIt.next()) {
+        //noinspection JSHint,JSLint
+        while (line = hIt.next()) {
 
             isConnected = target.connected(line);
             expect(isConnected).toBe(false);
@@ -57,7 +69,8 @@ describe("dotBox.utility.lineSet", function () {
 
         target = lineState(dotCountL, dotCountW);
 
-        while(line = vIt.next()) {
+        //noinspection JSHint,JSLint
+        while (line = vIt.next()) {
 
             isConnected = target.connected(line);
             expect(isConnected).toBe(false);
@@ -85,15 +98,17 @@ describe("dotBox.utility.lineSet", function () {
 
         target = lineState(dotCountL, dotCountW);
 
-        while(line = outerIt.next()) {
+        //noinspection JSHint,JSLint
+        while (line = outerIt.next()) {
 
             target.connected(line, true);
 
             //Iterate over all vertical lines.  They should all be unconnected
             //accept the current line.
-            while(testLine = vIt.next()) {
+            //noinspection JSHint,JSLint
+            while (testLine = vIt.next()) {
 
-                if(areLinesSame(line, testLine)) {
+                if (areLinesSame(line, testLine)) {
                     expect(target.connected(testLine)).toBe(true);
                 } else {
                     expect(target.connected(testLine)).toBe(false);
@@ -102,7 +117,8 @@ describe("dotBox.utility.lineSet", function () {
             }
 
             // All horizontal lines should be unaffected.
-            while(testLine = hIt.next()) {
+            //noinspection JSHint,JSLint
+            while (testLine = hIt.next()) {
                 expect(target.connected(testLine)).toBe(false);
             }
         }
@@ -129,15 +145,17 @@ describe("dotBox.utility.lineSet", function () {
 
         target = lineState(dotCountL, dotCountW);
 
-        while(line = outerIt.next()) {
+        //noinspection JSHint,JSLint
+        while (line = outerIt.next()) {
 
             target.connected(line, true);
 
             //Iterate over all horizontal lines.  They should all be unconnected
             //accept the current line.
-            while(testLine = hIt.next()) {
+            //noinspection JSHint,JSLint
+            while (testLine = hIt.next()) {
 
-                if(areLinesSame(line, testLine)) {
+                if (areLinesSame(line, testLine)) {
                     expect(target.connected(testLine)).toBe(true);
                 } else {
                     expect(target.connected(testLine)).toBe(false);
@@ -146,7 +164,8 @@ describe("dotBox.utility.lineSet", function () {
             }
 
             // All vertical lines should be unaffected.
-            while(testLine = vIt.next()) {
+            //noinspection JSHint,JSLint
+            while (testLine = vIt.next()) {
                 expect(target.connected(testLine)).toBe(false);
             }
         }
@@ -155,7 +174,7 @@ describe("dotBox.utility.lineSet", function () {
 
     });
 
-    describe("line validation", function() {
+    describe("line validation", function () {
 
         it("should fail when line is undefined", function () {
 
@@ -399,6 +418,7 @@ describe("dotBox.utility.lineSet", function () {
 
                 target = lineState(dotCountLength, dotCountWidth);
 
+                //noinspection JSSuspiciousNameCombination
                 line = {d1: {x: 0, y: dotCountWidth}, d2 : {x: 0, y: dotCountWidth - 2}};
 
                 act = function () {
@@ -408,7 +428,7 @@ describe("dotBox.utility.lineSet", function () {
                 expect(act).toThrow();
 
 
-                line = {d1: {x: 0 , y: dotCountWidth + 1}, d2 : {x: 0, y: dotCountWidth - 2}};
+                line = {d1: {x: 0, y: dotCountWidth + 1}, d2 : {x: 0, y: dotCountWidth - 2}};
 
                 act = function () {
                     target.connected(line);
@@ -530,6 +550,7 @@ describe("dotBox.utility.lineSet", function () {
 
                 target = lineState(dotCountLength, dotCountWidth);
 
+                //noinspection JSSuspiciousNameCombination,JSSuspiciousNameCombination,JSSuspiciousNameCombination
                 line = {d2: {x: 0, y: dotCountWidth}, d1 : {x: 0, y: dotCountWidth - 2}};
 
                 act = function () {
@@ -539,7 +560,7 @@ describe("dotBox.utility.lineSet", function () {
                 expect(act).toThrow();
 
 
-                line = {d2: {x: 0 , y: dotCountWidth + 1}, d1 : {x: 0, y: dotCountWidth - 2}};
+                line = {d2: {x: 0, y: dotCountWidth + 1}, d1 : {x: 0, y: dotCountWidth - 2}};
 
                 act = function () {
                     target.connected(line);
@@ -569,10 +590,11 @@ describe("dotBox.utility.lineSet", function () {
 
         bIt = boxIterator(LENGTH, WIDTH);
 
-        while(box = bIt.next()) {
+        //noinspection JSHint,JSLint
+        while (box = bIt.next()) {
 
             isBoxClosed = lineState.isBoxClosed(box.boxIndex);
-            if(box.boxIndex === expClosedBoxIndex) {
+            if (box.boxIndex === expClosedBoxIndex) {
                 expect(isBoxClosed).toBe(true);
             } else {
                 expect(isBoxClosed).toBe(false);
@@ -596,13 +618,13 @@ describe("dotBox.utility.lineSet", function () {
         allSides.push({d1: {x: 1, y: 1}, d2: {x: 1, y: 0}});
         allSides.push({d1: {x: 0, y: 1}, d2: {x: 0, y: 0}});
 
-        for(i = 0; i < 4; i++ ) {
+        for (i = 0; i < 4; i++) {
 
             //Create a fresh state.
             target = lineState(LENGTH, WIDTH);
 
-            for(j = 0; j < 4; j++) {
-                if(j !== i) {
+            for (j = 0; j < 4; j++) {
+                if (j !== i) {
                     //Connect all sides except when j matches i.
                     target.connected(allSides[j], true);
                 }
@@ -622,9 +644,9 @@ describe("dotBox.utility.lineSet", function () {
             WIDTH = 5,
             target = lineState(LEN, WIDTH);
 
-        beforeEach(function() {
+        beforeEach(function () {
             this.addMatchers({
-                toBeSameLine: function(expected) {
+                toBeSameLine: function (expected) {
 
                     return areLinesSame(this.actual, expected);
                 }
@@ -759,7 +781,7 @@ describe("dotBox.utility.lineSet", function () {
             actResults;
 
         //Mock this method.
-        target.getAllLinesForDot = function(dot) {
+        target.getAllLinesForDot = function (dot) {
             callCount_getAllLinesForDot += 1;
             expect(dot.x).toBe(x);
             expect(dot.y).toBe(y);
@@ -771,8 +793,7 @@ describe("dotBox.utility.lineSet", function () {
 
             connectedCallArgs.push(l);
 
-            if(l.id === 2 || l.id === 4) { return true; }
-            else { return false; }
+            return (l.id === 2) || (l.id === 4);
 
         };
 
@@ -794,14 +815,5 @@ describe("dotBox.utility.lineSet", function () {
 
 });
 
-function areLinesSame(line1, line2) {
 
-    if(line1.d1.x !== line2.d1.x) return false;
-    if(line1.d1.y !== line2.d1.y) return false;
-    if(line1.d2.x !== line2.d2.x) return false;
-    if(line1.d2.y !== line2.d2.y) return false;
-
-    return true;
-
-}
 

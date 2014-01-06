@@ -1,4 +1,4 @@
-/*global describe, it, expect, dotBox */
+/*global describe, it, expect, beforeEach, dotBox */
 
 describe("dotBox.utility.line", function () {
 
@@ -6,12 +6,10 @@ describe("dotBox.utility.line", function () {
 
     it("isHLine should return true when there is a change on the x-axis", function () {
 
-        var line = {};
-
-        line = {
+        var line = {
             d1: {x: 0, y: 0},
             d2: {x: 1, y: 0}
-        }
+        };
 
         expect(lineUtil.isHLine(line)).toBe(true);
 
@@ -20,7 +18,7 @@ describe("dotBox.utility.line", function () {
         line = {
             d1: {x: 2, y: 1},
             d2: {x: 0, y: 1}
-        }
+        };
 
         expect(lineUtil.isHLine(line)).toBe(true);
 
@@ -30,12 +28,12 @@ describe("dotBox.utility.line", function () {
     it("isHLine should return false when there only a change on the y-axis", function () {
 
         var lineUtil = dotBox.utility.line,
-            line = {};
+            line;
 
         line = {
             d1: {x: 2, y: 0},
             d2: {x: 2, y: 1}
-        }
+        };
 
         expect(lineUtil.isHLine(line)).toBe(false);
 
@@ -44,7 +42,7 @@ describe("dotBox.utility.line", function () {
         line = {
             d1: {x: 2, y: 2},
             d2: {x: 2, y: 1}
-        }
+        };
 
         expect(lineUtil.isHLine(line)).toBe(false);
 
@@ -238,17 +236,22 @@ describe("dotBox.utility.line", function () {
 
     describe("method getLinesFromBox", function () {
 
-        beforeEach(function() {
+        beforeEach(function () {
+
+            var actual,
+                exp,
+                notText;
+
             this.addMatchers({
 
-                toBeMatchingLine: function(expected) {
-                    var actual = JSON.stringify(this.actual);
-                    var exp = JSON.stringify(expected);
-                    var notText = this.isNot ? " not" : "";
+                toBeMatchingLine: function (expected) {
+                    actual = JSON.stringify(this.actual);
+                    exp = JSON.stringify(expected);
+                    notText = this.isNot ? " not" : "";
 
                     this.message = function () {
                         return "Expected " + actual + " to be same as " + exp;
-                    }
+                    };
 
                     return actual === exp;
                 }
@@ -271,7 +274,7 @@ describe("dotBox.utility.line", function () {
 
             actLines = lineUtil.getLinesFromBox(0, dotCountLength);
 
-            for(i = 0; i < expLines.length; i++) {
+            for (i = 0; i < expLines.length; i++) {
                 expect(actLines[i]).toBeMatchingLine(expLines[i]);
             }
 
@@ -294,7 +297,7 @@ describe("dotBox.utility.line", function () {
 
             actLines = lineUtil.getLinesFromBox(3, dotCountLength);
 
-            for(i = 0; i < expLines.length; i++) {
+            for (i = 0; i < expLines.length; i++) {
                 expect(actLines[i]).toBeMatchingLine(expLines[i]);
             }
 
@@ -317,7 +320,7 @@ describe("dotBox.utility.line", function () {
 
             actLines = lineUtil.getLinesFromBox(7, dotCountLength);
 
-            for(i = 0; i < expLines.length; i++) {
+            for (i = 0; i < expLines.length; i++) {
                 expect(actLines[i]).toBeMatchingLine(expLines[i]);
             }
 

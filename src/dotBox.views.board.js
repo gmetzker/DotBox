@@ -1,3 +1,4 @@
+/*global $, createjs */
 var dotBox = dotBox || {};
 dotBox.views = dotBox.views || {};
 
@@ -6,14 +7,14 @@ dotBox.views.board = function (events, $parent) {
 
     //Alias
     var util = dotBox.utility,
-        viewConst = dotBox.views.const;
+        viewConst = dotBox.views.constants;
 
     //Constants
+    //noinspection JSLint
     var CANVAS_ID_PREFIX = 'dotBoxCanvas_',
         DOT_RADIUS = 5,
         DOT_MARGIN = 20,
         CANVAS_BACK_COLOR = '#272822',
-        CANVAS_BORDER_COLOR = '#3b3d38',
         DOT_COLOR_DEF = '#53d2f1',
         DOT_COLOR_DEF_OUTER = 'rgba(83, 210, 241, .02)',
         DOT_COLOR_HOV = '#89E0F5',
@@ -23,13 +24,12 @@ dotBox.views.board = function (events, $parent) {
         P1_BOX_COLOR = 'rgba(164,228,2,.33)',
         P1_BOX_BORDER_COLOR = '#a4e402',
         P2_BOX_COLOR = 'rgba(191, 122, 255, .33)',
-        P2_BOX_BORDER_COLOR = '#bf7aff'
-        BORDER_SIZE = 2;
+        P2_BOX_BORDER_COLOR = '#bf7aff';
 
     //Members
+    //noinspection JSLint
     var _stage = null,
         _canvasId,
-        _events = events,
         _model,
         _dotShapes,
         _hLineShapes = {},
@@ -40,30 +40,32 @@ dotBox.views.board = function (events, $parent) {
 
     function addSubscribers() {
 
-        _events.subscribe('startGame', onStartGame);
+        events.subscribe('startGame', onStartGame);
 
-        _events.subscribe('view.dotRollOver', onDotRollOver);
+        events.subscribe('view.dotRollOver', onDotRollOver);
 
-        _events.subscribe('view.dotRollOut', onDotRollOut);
+        events.subscribe('view.dotRollOut', onDotRollOut);
 
-        _events.subscribe('view.dotSelectionChanged', onDotSelectionChanged);
+        events.subscribe('view.dotSelectionChanged', onDotSelectionChanged);
 
-        _events.subscribe('view.lineConnected', onLineConnected);
+        events.subscribe('view.lineConnected', onLineConnected);
 
-        _events.subscribe('view.boxesScored', onBoxesScored);
+        events.subscribe('view.boxesScored', onBoxesScored);
 
-    };
+    }
+
+
+
 
     function onStartGame(model) {
 
-        var canvasId;
 
-        if(_stage !== null) {
-            throw new Error("The view method startGame has already been called.")
+        if (_stage !== null) {
+            throw new Error("The view method startGame has already been called.");
         }
 
-        if(util.isNullOrUndefined(model)) {
-            throw new Error("model is null or undefined.")
+        if (util.isNullOrUndefined(model)) {
+            throw new Error("model is null or undefined.");
         } else {
             _model = model;
         }
@@ -74,26 +76,28 @@ dotBox.views.board = function (events, $parent) {
 
         drawInitialView();
 
-        _events.publish('views.boardDrawn', _stage, _model);
+        events.publish('views.boardDrawn', _stage, _model);
 
         startEventLoop();
 
     }
+
+
 
     function createUniqueCanvasId() {
 
         var i = 0,
             unqCanvasId = null,
             tempId,
-            $otherCanvai;
+            $otherCanvases;
 
-        while(unqCanvasId === null) {
+        while (unqCanvasId === null) {
 
             tempId = CANVAS_ID_PREFIX + i;
 
-            $otherCanvai = $('#' + tempId);
+            $otherCanvases = $('#' + tempId);
 
-            if($otherCanvai.length === 0) {
+            if ($otherCanvases.length === 0) {
                 unqCanvasId = tempId;
             }
 
@@ -135,13 +139,11 @@ dotBox.views.board = function (events, $parent) {
 
 
 
-
-
     function createStage() {
 
         _stage = new createjs.Stage(_canvasId);
 
-        _events.publish("view.stageInit", _stage, _model);
+        events.publish("view.stageInit", _stage, _model);
 
     }
 
@@ -156,11 +158,11 @@ dotBox.views.board = function (events, $parent) {
 
         _dotShapes = [];
 
-        for(j = 0; j < dotRowCount; j++) {
+        for (j = 0; j < dotRowCount; j++) {
 
-            for(i = 0; i < dotColCount; i++) {
+            for (i = 0; i < dotColCount; i++) {
 
-                if(i == 0) {
+                if (i === 0) {
                     dotShapeRow = [];
                     _dotShapes.push(dotShapeRow);
                 }
@@ -177,9 +179,9 @@ dotBox.views.board = function (events, $parent) {
                 dotShape.x = (i * (DOT_MARGIN + DOT_RADIUS * 2)) + (DOT_MARGIN + DOT_RADIUS);
                 dotShape.y = (j * (DOT_MARGIN + DOT_RADIUS * 2)) + (DOT_MARGIN + DOT_RADIUS);
 
-                dotShape.on('rollover', function() { _events.publish('dotRollOver', this.dot); });
-                dotShape.on('rollout', function() { _events.publish('dotRollOut', this.dot); });
-                dotShape.on('click', function() { _events.publish('dotClick', this.dot); });
+                dotShape.on('rollover', fireDotRollOver);
+                dotShape.on('rollout', fireDotRollOut);
+                dotShape.on('click', fireDotClick);
 
 
                 dotShapeRow.push(dotShape);
@@ -194,6 +196,16 @@ dotBox.views.board = function (events, $parent) {
 
     }
 
+    function fireDotRollOver() {
+        events.publish('dotRollOver', this.dot);
+    }
+    function fireDotRollOut() {
+        events.publish('dotRollOut', this.dot);
+    }
+    function fireDotClick() {
+        events.publish('dotClick', this.dot);
+    }
+
     function startEventLoop() {
 
         _stage.enableMouseOver(10);
@@ -204,7 +216,7 @@ dotBox.views.board = function (events, $parent) {
     }
 
 
-    function tick(event) {
+    function tick() {
         _stage.update();
     }
 
@@ -214,7 +226,7 @@ dotBox.views.board = function (events, $parent) {
         var dotShape,
             color;
 
-        if(dot instanceof createjs.Shape) {
+        if (dot instanceof createjs.Shape) {
             dotShape = dot;
             dot = dotShape.dot;
         } else {
@@ -224,12 +236,12 @@ dotBox.views.board = function (events, $parent) {
 
         dotShape.graphics.clear();
 
-        if(_model.isSelectedDot(dot)) {
+        if (_model.isSelectedDot(dot)) {
             color = DOT_COLOR_SEL;
-        } else if(_model.isHoveredDot(dot) && _model.canConnectDots(dot)) {
+        } else if (_model.isHoveredDot(dot) && _model.canConnectDots(dot)) {
             color = DOT_COLOR_CONN;
         } else {
-            if(_model.isHoveredDot(dot)) {
+            if (_model.isHoveredDot(dot)) {
                 color = DOT_COLOR_HOV;
             } else {
                 color = DOT_COLOR_DEF;
@@ -239,7 +251,7 @@ dotBox.views.board = function (events, $parent) {
         dotShape.graphics.beginFill(DOT_COLOR_DEF_OUTER).drawCircle(0, 0, DOT_RADIUS * 2.80);
         dotShape.graphics.beginFill(color).drawCircle(0, 0, DOT_RADIUS);
 
-        if(_model.hasAnyOpenLines(dot)) {
+        if (_model.hasAnyOpenLines(dot)) {
             dotShape.cursor = "pointer";
         } else {
             dotShape.cursor = null;
@@ -253,7 +265,7 @@ dotBox.views.board = function (events, $parent) {
     function getDotShape(dot) {
         //DotShapes is indexed as row, col
         return _dotShapes[dot.y][dot.x];
-    };
+    }
 
     function onDotRollOver(dot) {
 
@@ -275,15 +287,15 @@ dotBox.views.board = function (events, $parent) {
 
         var dotShape;
 
-        if( oldDot !== null) {
+        if (oldDot !== null) {
             drawDotShape(oldDot);
         }
 
-        if( newDot !== null) {
+        if (newDot !== null) {
             drawDotShape(newDot);
         }
 
-        if( oldDot !== newDot) {
+        if (oldDot !== newDot) {
             //If dot was unselected, make it not hovered.
             dotShape = getDotShape(newDot !== null ? newDot : oldDot);
             createjs.Tween.get(dotShape, {override: true}).to({scaleX: 1, scaleY: 1}, 150);
@@ -315,7 +327,7 @@ dotBox.views.board = function (events, $parent) {
 
         lineShape = getLineShape(line);
 
-        if(util.isNullOrUndefined(lineShape)) {
+        if (util.isNullOrUndefined(lineShape)) {
             lineShape = new createjs.Shape();
             setLineShape(line, lineShape);
             newShape = true;
@@ -329,17 +341,17 @@ dotBox.views.board = function (events, $parent) {
             .moveTo(d1Shape.x, d1Shape.y)
             .lineTo(d2Shape.x, d2Shape.y);
 
-        if(newShape) { _stage.addChild(lineShape); }
+        if (newShape) { _stage.addChild(lineShape); }
 
 
     }
 
 
-    function onBoxesScored(scoredBoxes, playerIndex){
+    function onBoxesScored(scoredBoxes, playerIndex) {
 
         var i;
 
-        for(i = 0; i < scoredBoxes.length; i++ ) {
+        for (i = 0; i < scoredBoxes.length; i++) {
             drawBox(scoredBoxes[i], playerIndex);
 
         }
@@ -351,17 +363,17 @@ dotBox.views.board = function (events, $parent) {
 
     function drawBox(box, playerIndex) {
 
-        var i,
-            lineShape,
-            rectShape,
+        var rectShape,
             ulDotShape,
             lrDotShape,
             boxW,
             boxH,
             boxColor,
-            borderColor;
+            borderColor,
+            scale,
+            extraSize;
 
-        if(playerIndex === 0) {
+        if (playerIndex === 0) {
             boxColor = P1_BOX_COLOR;
             borderColor = P1_BOX_BORDER_COLOR;
         } else {
@@ -380,9 +392,9 @@ dotBox.views.board = function (events, $parent) {
             .beginFill(boxColor)
             .drawRect(ulDotShape.x, ulDotShape.y, boxW, boxH);
 
-        var extraSize = 10;
-        var scale = ((boxW + extraSize) / boxW);
-        rectShape.scaleX = scale
+        extraSize = 10;
+        scale = ((boxW + extraSize) / boxW);
+        rectShape.scaleX = scale;
         rectShape.scaleY = scale;
 
 
@@ -418,7 +430,7 @@ dotBox.views.board = function (events, $parent) {
         ds2 = getDotShape(box.lines[1].d2);
         y = ds1.y + ((ds2.y - ds1.y) / 2);
 
-        tempShape = new createjs.Text("+" + pointCount, "15px Helvetica", SCORE_TXT_COLOR);
+        tempShape = new createjs.Text("+" + pointCount, "15px Helvetica", viewConst.SCORE_TXT_COLOR);
         tempShape.x = x;
         tempShape.y = y;
         tempShape.textAlign = "center";
@@ -428,7 +440,7 @@ dotBox.views.board = function (events, $parent) {
 
         createjs.Tween.get(tempShape, {override: false})
             .to({alpha: 0, y: y + 200}, 2500, createjs.Ease.sineOut)
-            .call(function() { _stage.removeChild(tempShape); });
+            .call(function () { _stage.removeChild(tempShape); });
 
 
         createjs.Tween.get(tempShape, {override: false})
@@ -447,7 +459,7 @@ dotBox.views.board = function (events, $parent) {
         lookup = getLineShapeLookup(line);
 
         row = lookup.store[lookup.y];
-        if(util.isNullOrUndefined(row)) {
+        if (util.isNullOrUndefined(row)) {
             row = {};
             lookup.store[lookup.y] = row;
         }
@@ -465,18 +477,15 @@ dotBox.views.board = function (events, $parent) {
         lookup = getLineShapeLookup(line);
 
 
-        if(!lookup.store.hasOwnProperty(lookup.y)) {
+        if (!lookup.store.hasOwnProperty(lookup.y)) {
             return null;
-        } else {
-            row = lookup.store[lookup.y];
         }
+        row = lookup.store[lookup.y];
 
-        if(!row.hasOwnProperty(lookup.x)) {
+        if (!row.hasOwnProperty(lookup.x)) {
             return null;
-        } else {
-            shape = row[lookup.x];
         }
-
+        shape = row[lookup.x];
 
         return shape;
 
@@ -488,7 +497,7 @@ dotBox.views.board = function (events, $parent) {
             y,
             store;
 
-        if(util.line.isHLine(line)) {
+        if (util.line.isHLine(line)) {
             //Horizontal Line.
             store = _hLineShapes;
             y = line.d1.y;
@@ -510,7 +519,6 @@ dotBox.views.board = function (events, $parent) {
 
 
     }
-
 
 
     return {

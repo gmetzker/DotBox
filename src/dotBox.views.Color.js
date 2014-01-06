@@ -3,9 +3,11 @@ dotBox.views = dotBox.views || {};
 
 dotBox.views.Color = (function Color() {
 
+    //noinspection JSHint,JSLint
     var Color;
 
-    Color = function Color() {
+    //noinspection JSLint
+    Color = function Color(colorCode) {
 
         var strArg;
 
@@ -14,39 +16,47 @@ dotBox.views.Color = (function Color() {
             return Color.apply(new Color(), arguments);
         }
 
+
+        //noinspection JSPotentiallyInvalidUsageOfThis
         this.red = 255;
+        //noinspection JSPotentiallyInvalidUsageOfThis
         this.blue = 255;
+        //noinspection JSPotentiallyInvalidUsageOfThis
         this.green = 255;
+        //noinspection JSPotentiallyInvalidUsageOfThis
         this.alpha = 1;
 
-        if(arguments.length === 1) {
+        if (arguments.length === 1) {
 
-            strArg = arguments[0].toString();
+            strArg = colorCode.toString();
 
             return parseColorString(strArg);
 
+        }
 
-        } else if(arguments.length === 4) {
+
+        if (arguments.length === 4) {
 
             //Parse for all four rgba codes.
             return parseFourArgs(arguments);
 
-        } else if(arguments.length === 3) {
+        }
+
+        if (arguments.length === 3) {
 
             //Parse for rgb codes
             return parseThreeArgs(arguments);
+        }
 
-        } else if(arguments.length === 0) {
+        if (arguments.length !== 0) {
 
-           //Do nothing.  Defaults already set.
-
-        } else {
             //Weird number of arguments, throw it out.
             throw new Error(arguments.length + ' number of arguments not supported.');
         }
 
 
     };
+
 
     Color.parseHexColorString = parseHexColorString;
 
@@ -56,63 +66,13 @@ dotBox.views.Color = (function Color() {
 
     Color.parseRgbColorString = parseRgbColorString;
 
-    Color.prototype.toString = function toString() {
-
-        var r, g, b;
-        r = Math.round(this.red);
-        g = Math.round(this.green);
-        b = Math.round(this.blue);
-
-        return 'rgba(' + ([r, g, b, this.alpha]).join() + ")";
-
-    };
-
-    Color.prototype.clone = function clone() {
-
-        var colorClone = new Color();
-
-        colorClone.red = this.red;
-        colorClone.green = this.green;
-        colorClone.blue = this.blue;
-        colorClone.alpha = this.alpha;
-
-        return colorClone;
-
-    };
-
-    function parseColorString(value) {
-
-        value = value.trim();
-
-        if((value.lastIndexOf('#', 0) === 0) && (value.length === 7)) {
-
-            //If it begins with a hash tag then assume it's an HTML color code.
-            return parseHexColorString(value);
-
-
-        } else if(value.lastIndexOf('rgba(', 0) === 0) {
-
-            //Parse rgba(r,g,b,a) format.
-            return parseRgbaColorString(value);
-
-        } else if(value.lastIndexOf('rgb(', 0) === 0) {
-
-            //Parse rgb(r,g,b) format.
-            return parseRgbColorString(value);
-
-        } else {
-            throw new Error('Invalid arguments.');
-        }
-
-    }
-
     function parseHexColorString(value) {
         var r, g, b,
             result;
 
-        r = parseInt(value.slice(1,3), 16);
-        g = parseInt(value.slice(3,5), 16);
-        b = parseInt(value.slice(5,7), 16);
+        r = parseInt(value.slice(1, 3), 16);
+        g = parseInt(value.slice(3, 5), 16);
+        b = parseInt(value.slice(5, 7), 16);
 
         result = new Color();
         result.red = r;
@@ -137,7 +97,7 @@ dotBox.views.Color = (function Color() {
 
         comps = value.split(',');
 
-        if(comps.length !== 4) {
+        if (comps.length !== 4) {
             throw new Error("Could not parse rgba() color string.");
         }
 
@@ -173,7 +133,7 @@ dotBox.views.Color = (function Color() {
 
         comps = value.split(',');
 
-        if(comps.length !== 3) {
+        if (comps.length !== 3) {
             throw new Error("Could not parse rgb() color string.");
         }
 
@@ -192,15 +152,18 @@ dotBox.views.Color = (function Color() {
 
     }
 
-    function parseFourArgs(arguments) {
+    function parseFourArgs(args) {
 
         var result,
-            r, g, b, a;
+            r,
+            g,
+            b,
+            a;
 
-        r = Math.round(parseFloat(arguments[0]));
-        g = Math.round(parseFloat(arguments[1]));
-        b = Math.round(parseFloat(arguments[2]));
-        a = parseFloat(arguments[3]);
+        r = Math.round(parseFloat(args[0]));
+        g = Math.round(parseFloat(args[1]));
+        b = Math.round(parseFloat(args[2]));
+        a = parseFloat(args[3]);
 
         result = new Color();
         result.red = r;
@@ -212,14 +175,16 @@ dotBox.views.Color = (function Color() {
 
     }
 
-    function parseThreeArgs(arguments) {
+    function parseThreeArgs(args) {
 
         var result,
-            r, g, b;
+            r,
+            g,
+            b;
 
-        r = Math.round(parseFloat(arguments[0]));
-        g = Math.round(parseFloat(arguments[1]));
-        b = Math.round(parseFloat(arguments[2]));
+        r = Math.round(parseFloat(args[0]));
+        g = Math.round(parseFloat(args[1]));
+        b = Math.round(parseFloat(args[2]));
 
         result = new Color();
         result.red = r;
@@ -229,6 +194,63 @@ dotBox.views.Color = (function Color() {
         return result;
 
     }
+
+    function parseColorString(value) {
+
+        value = value.trim();
+
+        if ((value.lastIndexOf('#', 0) === 0) && (value.length === 7)) {
+
+            //If it begins with a hash tag then assume it's an HTML color code.
+            return parseHexColorString(value);
+
+
+        }
+        if (value.lastIndexOf('rgba(', 0) === 0) {
+
+            //Parse rgba(r,g,b,a) format.
+            return parseRgbaColorString(value);
+
+        }
+
+        if (value.lastIndexOf('rgb(', 0) === 0) {
+
+            //Parse rgb(r,g,b) format.
+            return parseRgbColorString(value);
+
+        }
+
+        throw new Error('Invalid arguments.');
+
+
+    }
+
+
+
+
+    Color.prototype.toString = function toString() {
+
+        var r, g, b;
+        r = Math.round(this.red);
+        g = Math.round(this.green);
+        b = Math.round(this.blue);
+
+        return 'rgba(' + ([r, g, b, this.alpha]).join() + ")";
+
+    };
+
+    Color.prototype.clone = function clone() {
+
+        var colorClone = new Color();
+
+        colorClone.red = this.red;
+        colorClone.green = this.green;
+        colorClone.blue = this.blue;
+        colorClone.alpha = this.alpha;
+
+        return colorClone;
+
+    };
 
     return Color;
 

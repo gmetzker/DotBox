@@ -1,45 +1,45 @@
+/*global createjs */
+
 var dotBox = dotBox || {};
 dotBox.views = dotBox.views || {};
 
-dotBox.views.score = function(events) {
+dotBox.views.score = function (events) {
 
     //Alias
     var util = dotBox.utility,
-        viewConst = dotBox.views.const,
+        viewConst = dotBox.views.constants,
         Color = dotBox.views.Color;
 
     //Members
+    //noinspection JSLint
     var that = {},
         _model,
         _stage,
-        _scoreTxtShapes = []
+        _scoreTxtShapes = [],
         _playerFlagShapes = [],
         _playerBg = [],
         _playerNameShapes = [];
 
 
     //Constants
+    //noinspection JSLint
     var SB_BACK_COLOR1 = '#5b5b5b',
         SB_BACK_COLOR2 = '#545454',
         SB_BORDER_COLOR = '#7d7d7d',
         SB_BORDER_COLOR2 = '#323232',
-        SCORE_NUM_BACK_COLOR = '#272822'
+        SCORE_NUM_BACK_COLOR = '#272822',
         SCORE_NUM_BORDER_COLOR = '#3b3d38',
-        SCORE_TXT_COLOR = '#e7f8f2',
-        P_NONTURN_TXT_COLOR = '#a69b9d',
+        P_NON_TURN_TXT_COLOR = '#a69b9d',
         FLAG_COLOR = '#fc1f70',
         FLAG_BORDER_COLOR = '#E20355',
-        P_NONTURN_COLOR = '#40403d',
+        P_NON_TURN_COLOR = '#40403d',
         SCORE_BOX_W = 75,
         SCORE_BOX_TOP_MARGIN = 5,
         SCORE_BOX_SIDE_MARGIN = 10,
         SCORE_BOX_H = viewConst.SCORE_BOARD_HEIGHT - (2 * SCORE_BOX_TOP_MARGIN);
 
 
-
     addSubscribers();
-
-
 
     function addSubscribers() {
 
@@ -54,14 +54,14 @@ dotBox.views.score = function(events) {
     function onStageInit(stage, model) {
 
 
-        if(util.isNullOrUndefined(stage)) {
-            throw new Error('stage is null or undefined.')
+        if (util.isNullOrUndefined(stage)) {
+            throw new Error('stage is null or undefined.');
         } else {
             _stage = stage;
         }
 
-        if(util.isNullOrUndefined(model)) {
-            throw new Error("model is null or undefined.")
+        if (util.isNullOrUndefined(model)) {
+            throw new Error("model is null or undefined.");
         } else {
             _model = model;
         }
@@ -70,14 +70,15 @@ dotBox.views.score = function(events) {
 
     }
 
-    function onBoxesScored(scoredBoxes){
+
+    function onBoxesScored() {
 
         var i,
             playerScores;
 
         playerScores = _model.getCurrentScores();
 
-        for(i = 0; i < playerScores.length; i++) {
+        for (i = 0; i < playerScores.length; i++) {
             _scoreTxtShapes[i].text = playerScores[i];
         }
 
@@ -97,7 +98,6 @@ dotBox.views.score = function(events) {
             NAME_PREFIX = "PLAYER ";
 
         BOARD_TOP = _stage.canvas.height - viewConst.SCORE_BOARD_HEIGHT;
-        
         SCORE_BOX_TOP = BOARD_TOP + SCORE_BOX_TOP_MARGIN + 1;
 
         _scoreTxtShapes = [];
@@ -186,7 +186,7 @@ dotBox.views.score = function(events) {
 
 
         //Add the text shape that contains the current score.
-        tempShape = new createjs.Text("0", "25px Helvetica", SCORE_TXT_COLOR);
+        tempShape = new createjs.Text("0", "25px Helvetica", viewConst.SCORE_TXT_COLOR);
         tempShape.x = SCORE_BOX_W / 2;
         tempShape.y = 6 + (SCORE_BOX_H / 2);
         tempShape.textAlign = "center";
@@ -202,7 +202,7 @@ dotBox.views.score = function(events) {
         tempShape.graphics
             .beginFill(FLAG_COLOR)
             .beginStroke(FLAG_BORDER_COLOR)
-            .arc((SCORE_BOX_W / 2), SCORE_BOX_H + 12, SCORE_BOX_W / 4, Math.PI + (Math.PI *.25), Math.PI * 1.75);
+            .arc((SCORE_BOX_W / 2), SCORE_BOX_H + 12, SCORE_BOX_W / 4, Math.PI + (Math.PI * 0.25), Math.PI * 1.75);
 
         tempShape.alpha = 0;
 
@@ -218,7 +218,7 @@ dotBox.views.score = function(events) {
         _playerBg.push(tempShape);
 
         //Add player name
-        tempShape = new createjs.Text(name, "8pt Helvetica", SCORE_TXT_COLOR);
+        tempShape = new createjs.Text(name, "8pt Helvetica", viewConst.SCORE_TXT_COLOR);
         tempShape.x = SCORE_BOX_W / 2;
         tempShape.y = 10;
         tempShape.textAlign = "center";
@@ -241,19 +241,19 @@ dotBox.views.score = function(events) {
             targetStrokeColor,
             lightShape;
 
-        for(i = 0; i < _playerFlagShapes.length; i++) {
+        for (i = 0; i < _playerFlagShapes.length; i++) {
 
 
             tempShape = _playerFlagShapes[i];
-            if(i === playerIdx) {
+            if (i === playerIdx) {
 
-                if(tempShape.alpha === 0) {
+                if (tempShape.alpha === 0) {
                     createjs.Tween.get(tempShape, {override: false}).to({alpha: 1.0}, 250, createjs.Ease.sineIn);
                 }
-                nameTxtColor = SCORE_TXT_COLOR;
+                nameTxtColor = viewConst.SCORE_TXT_COLOR;
             } else {
                 createjs.Tween.get(tempShape, {override: false}).to({alpha: 0}, 250, createjs.Ease.sineOut);
-                nameTxtColor = P_NONTURN_TXT_COLOR;
+                nameTxtColor = P_NON_TURN_TXT_COLOR;
             }
 
 
@@ -276,25 +276,27 @@ dotBox.views.score = function(events) {
 
     }
 
+
+
     function getPlayerColor(colorType, forPlayer, playerOfTurn) {
 
         var isCurrPlayer = (forPlayer === playerOfTurn),
             resultColor;
 
 
-        if(isCurrPlayer) {
+        if (isCurrPlayer) {
 
-            if(forPlayer === 0) {
+            if (forPlayer === 0) {
                 resultColor = new Color(viewConst.P1_COLOR);
             } else {
                 resultColor = new Color(viewConst.P2_COLOR);
             }
 
-            if(colorType === 'fill') { resultColor.alpha = 0.5 };
+            if (colorType === 'fill') { resultColor.alpha = 0.5; }
 
 
         } else {
-            resultColor = new Color(P_NONTURN_COLOR);
+            resultColor = new Color(P_NON_TURN_COLOR);
         }
 
         return resultColor;
@@ -304,17 +306,17 @@ dotBox.views.score = function(events) {
 
     function drawPlayerBackground(shape) {
 
-        var height = Math.round(SCORE_BOX_H * .3);
+        var height = Math.round(SCORE_BOX_H * 0.3);
 
         //Set custom color objects so we can Tween these.
-        shape.fillColor = new Color(P_NONTURN_COLOR);
-        shape.strokeColor = new Color(P_NONTURN_COLOR);
+        shape.fillColor = new Color(P_NON_TURN_COLOR);
+        shape.strokeColor = new Color(P_NON_TURN_COLOR);
 
         shape.graphics
-            .beginStroke(P_NONTURN_COLOR)
-            .beginFill(P_NONTURN_COLOR)
+            .beginStroke(P_NON_TURN_COLOR)
+            .beginFill(P_NON_TURN_COLOR)
             .inject(setPlayerColors, shape)
-            .drawRoundRect(0, 0, SCORE_BOX_W , height, 2)
+            .drawRoundRect(0, 0, SCORE_BOX_W, height, 2)
             .endFill();
 
 
@@ -324,15 +326,16 @@ dotBox.views.score = function(events) {
         var fillColor = shape.fillColor,
             strokeColor = shape.strokeColor;
 
-        if(!util.isNullOrUndefined(fillColor)) {
+        if (!util.isNullOrUndefined(fillColor)) {
+            //noinspection JSUnusedGlobalSymbols
             this.fillStyle = fillColor.toString();
         }
-        if(!util.isNullOrUndefined(strokeColor)) {
+        if (!util.isNullOrUndefined(strokeColor)) {
+            //noinspection JSUnusedGlobalSymbols
             this.strokeStyle = strokeColor.toString();
         }
 
     }
-
 
 
 

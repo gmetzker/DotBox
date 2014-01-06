@@ -1,13 +1,15 @@
+/*global createjs */
+
 var dotBox = dotBox || {};
 dotBox.views = dotBox.views || {};
 
-dotBox.views.gameOver = function(events) {
+dotBox.views.gameOver = function (events) {
 
     //Alias
-    var util = dotBox.utility,
-        viewConst = dotBox.views.const;
+    var util = dotBox.utility;
 
     //Members
+    //noinspection JSLint
     var that = {},
         _model,
         _stage,
@@ -15,48 +17,39 @@ dotBox.views.gameOver = function(events) {
 
 
     //Constants
+    //noinspection JSLint
     var PNL_H = 40,
         SB_BACK_COLOR1 = '#5b5b5b',
         SB_BACK_COLOR2 = '#545454',
-        SB_BORDER_COLOR = '#7d7d7d',
         SB_BORDER_COLOR = '#7d7d7d',
         SB_BORDER_COLOR2 = '#323232',
         SCORE_TXT_COLOR = 'white';
 
 
 
-    addSubscribers();
+    events.subscribe('view.stageInit', onStageInit);
 
+    events.subscribe('gameOver', onGameOver);
 
-
-    function addSubscribers() {
-
-        events.subscribe('view.stageInit', onStageInit);
-      //  events.subscribe('views.boardDrawn', onStageInit);
-
-
-        events.subscribe('gameOver', onGameOver);
-
-
-    }
 
     function onStageInit(stage, model) {
 
 
-        if(util.isNullOrUndefined(stage)) {
-            throw new Error('stage is null or undefined.')
+        if (util.isNullOrUndefined(stage)) {
+            throw new Error('stage is null or undefined.');
         } else {
             _stage = stage;
         }
 
-        if(util.isNullOrUndefined(model)) {
-            throw new Error("model is null or undefined.")
+        if (util.isNullOrUndefined(model)) {
+            throw new Error("model is null or undefined.");
         } else {
             _model = model;
         }
 
 
     }
+
 
     function onGameOver(winner) {
 
@@ -65,6 +58,7 @@ dotBox.views.gameOver = function(events) {
         addGameOverPanel(playerName);
 
     }
+
 
     function addGameOverPanel(playerName) {
 
@@ -79,9 +73,10 @@ dotBox.views.gameOver = function(events) {
 
 
 
-        createjs.Tween.get(_gameOverPanel, {override: true}).to({y: 0}, 200, createjs.Ease.sineInS);
+        createjs.Tween.get(_gameOverPanel, {override: true}).to({y: 0}, 200, createjs.Ease.sineIn);
 
     }
+
 
 
     function addBackground(container) {
@@ -101,13 +96,13 @@ dotBox.views.gameOver = function(events) {
             .setStrokeStyle(1)
             .beginStroke(SB_BORDER_COLOR)
             .moveTo(0, PNL_H - 1)
-            .lineTo(_stage.canvas.width, PNL_H -1)
+            .lineTo(_stage.canvas.width, PNL_H - 1)
             .endStroke();
 
         tempShape.graphics
             .setStrokeStyle(1)
             .beginStroke(SB_BORDER_COLOR2)
-            .moveTo(0, PNL_H )
+            .moveTo(0, PNL_H)
             .lineTo(_stage.canvas.width, PNL_H)
             .endStroke();
 
@@ -120,13 +115,16 @@ dotBox.views.gameOver = function(events) {
 
     }
 
+
+
+
     function addText(container, text) {
 
-        var tempShape
+        var tempShape;
 
         //Add the text shape that contains the current score.
         tempShape = new createjs.Text(text, "16pt Helvetica", SCORE_TXT_COLOR);
-        tempShape.x = Math.round( _stage.canvas.width / 2 );
+        tempShape.x = Math.round(_stage.canvas.width / 2);
         tempShape.y = Math.round(PNL_H / 2);
         tempShape.textAlign = "center";
         tempShape.textBaseline = "middle";
@@ -136,8 +134,6 @@ dotBox.views.gameOver = function(events) {
 
         return tempShape;
     }
-
-
 
 
 
