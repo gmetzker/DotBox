@@ -292,7 +292,7 @@ dotBox.views.score = function (events) {
                 resultColor = new Color(viewConst.P2_COLOR);
             }
 
-            if (colorType === 'fill') { resultColor.alpha = 0.5; }
+            if (colorType === 'fill') { resultColor.alpha = 0.33; }
 
 
         } else {

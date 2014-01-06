@@ -7,7 +7,8 @@ dotBox.views.board = function (events, $parent) {
 
     //Alias
     var util = dotBox.utility,
-        viewConst = dotBox.views.constants;
+        viewConst = dotBox.views.constants,
+        Color = dotBox.views.Color;
 
     //Constants
     //noinspection JSLint
@@ -20,11 +21,7 @@ dotBox.views.board = function (events, $parent) {
         DOT_COLOR_HOV = '#89E0F5',
         DOT_COLOR_SEL = '#fc1f70',
         DOT_COLOR_CONN = '#E20355',
-        LINE_COLOR_DEF = 'white',
-        P1_BOX_COLOR = 'rgba(164,228,2,.33)',
-        P1_BOX_BORDER_COLOR = '#a4e402',
-        P2_BOX_COLOR = 'rgba(191, 122, 255, .33)',
-        P2_BOX_BORDER_COLOR = '#bf7aff';
+        LINE_COLOR_DEF = 'white';
 
     //Members
     //noinspection JSLint
@@ -374,12 +371,14 @@ dotBox.views.board = function (events, $parent) {
             extraSize;
 
         if (playerIndex === 0) {
-            boxColor = P1_BOX_COLOR;
-            borderColor = P1_BOX_BORDER_COLOR;
+            boxColor = new Color(viewConst.P1_COLOR);
+            borderColor = viewConst.P1_COLOR;
         } else {
-            boxColor = P2_BOX_COLOR;
-            borderColor = P2_BOX_BORDER_COLOR;
+            boxColor = new Color(viewConst.P2_COLOR);
+            borderColor = viewConst.P2_COLOR;
         }
+        boxColor.alpha = 0.33;
+        boxColor = boxColor.toString();
 
         ulDotShape = getDotShape(box.lines[0].d1);
         lrDotShape = getDotShape(box.lines[1].d2);
