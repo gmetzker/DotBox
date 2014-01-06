@@ -9,3 +9,19 @@ dotBox.views.constants = {
     SCORE_TXT_COLOR: '#E7F8F2'
 
 };
+
+dotBox.views.setDrawColors = function setDrawColors(shape) {
+
+    var fillColor = shape.fillColor,
+        strokeColor = shape.strokeColor;
+
+    if (!dotBox.utility.isNullOrUndefined(fillColor)) {
+        //noinspection JSUnusedGlobalSymbols
+        this.fillStyle = fillColor.toString();
+    }
+    if (!dotBox.utility.isNullOrUndefined(strokeColor)) {
+        //noinspection JSUnusedGlobalSymbols
+        this.strokeStyle = strokeColor.toString();
+    }
+
+};

@@ -217,36 +217,71 @@ dotBox.views.board = function (events, $parent) {
         _stage.update();
     }
 
+    function getDotColor(dot) {
+
+        var coreColor,
+            color;
+
+        if (_model.isSelectedDot(dot)) {
+
+            coreColor = DOT_COLOR_SEL;
+
+        } else if (_model.isHoveredDot(dot) && _model.canConnectDots(dot)) {
+
+            coreColor = DOT_COLOR_CONN;
+
+        } else {
+
+            if (_model.isHoveredDot(dot)) {
+                coreColor = DOT_COLOR_HOV;
+            } else {
+                coreColor = DOT_COLOR_DEF;
+            }
+
+        }
+
+        color = new Color(coreColor);
+        return color;
+    }
 
     function drawDotShape(dot) {
 
         var dotShape,
-            color;
+            color,
+            drawToShape;
+
+
 
         if (dot instanceof createjs.Shape) {
             dotShape = dot;
             dot = dotShape.dot;
+            drawToShape = true;
         } else {
             dotShape = getDotShape(dot);
+            drawToShape = false;
         }
 
+        color = getDotColor(dot);
 
-        dotShape.graphics.clear();
+        if (drawToShape) {
 
-        if (_model.isSelectedDot(dot)) {
-            color = DOT_COLOR_SEL;
-        } else if (_model.isHoveredDot(dot) && _model.canConnectDots(dot)) {
-            color = DOT_COLOR_CONN;
+            dotShape.graphics
+                .beginFill(DOT_COLOR_DEF_OUTER)
+                .drawCircle(0, 0, DOT_RADIUS * 2.80);
+
+            dotShape.fillColor = color;
+            dotShape.graphics
+                .beginFill(color)
+                .inject(dotBox.views.setDrawColors, dotShape)
+                .drawCircle(0, 0, DOT_RADIUS)
+                .endFill();
+
         } else {
-            if (_model.isHoveredDot(dot)) {
-                color = DOT_COLOR_HOV;
-            } else {
-                color = DOT_COLOR_DEF;
-            }
+            createjs.Tween.get(dotShape.fillColor, {override: true}).to(color, 250);
         }
 
-        dotShape.graphics.beginFill(DOT_COLOR_DEF_OUTER).drawCircle(0, 0, DOT_RADIUS * 2.80);
-        dotShape.graphics.beginFill(color).drawCircle(0, 0, DOT_RADIUS);
+
+
 
         if (_model.hasAnyOpenLines(dot)) {
             dotShape.cursor = "pointer";
@@ -258,6 +293,8 @@ dotBox.views.board = function (events, $parent) {
         return dotShape;
 
     }
+
+
 
     function getDotShape(dot) {
         //DotShapes is indexed as row, col

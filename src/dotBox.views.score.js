@@ -315,27 +315,13 @@ dotBox.views.score = function (events) {
         shape.graphics
             .beginStroke(P_NON_TURN_COLOR)
             .beginFill(P_NON_TURN_COLOR)
-            .inject(setPlayerColors, shape)
+            .inject(dotBox.views.setDrawColors, shape)
             .drawRoundRect(0, 0, SCORE_BOX_W, height, 2)
             .endFill();
 
 
     }
 
-    function setPlayerColors(shape) {
-        var fillColor = shape.fillColor,
-            strokeColor = shape.strokeColor;
-
-        if (!util.isNullOrUndefined(fillColor)) {
-            //noinspection JSUnusedGlobalSymbols
-            this.fillStyle = fillColor.toString();
-        }
-        if (!util.isNullOrUndefined(strokeColor)) {
-            //noinspection JSUnusedGlobalSymbols
-            this.strokeStyle = strokeColor.toString();
-        }
-
-    }
 
 
 
