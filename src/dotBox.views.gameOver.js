@@ -3,7 +3,7 @@
 var dotBox = dotBox || {};
 dotBox.views = dotBox.views || {};
 
-dotBox.views.gameOver = function (events) {
+dotBox.views.gameOver = function (viewContext, model) {
 
     //Alias
     var util = dotBox.utility;
@@ -11,15 +11,15 @@ dotBox.views.gameOver = function (events) {
     //Members
     //noinspection JSLint
     var that = {},
-        _model,
-        _stage,
-        _gameOverPanel;
+        gameOverPanel;
 
 
     //Constants
     //noinspection JSLint
-    var PNL_H = 40,
-        FONT_SIZE = 18,
+    var pixelConst = viewContext.scaleAllPixelProps({
+            PNL_H: 40,
+            FONT_SIZE: 18
+        }),
         SB_BACK_COLOR1 = '#5b5b5b',
         SB_BACK_COLOR2 = '#545454',
         SB_BORDER_COLOR = '#7d7d7d',
@@ -28,40 +28,18 @@ dotBox.views.gameOver = function (events) {
 
 
 
-    events.subscribe('view.stageInit', onStageInit);
-
-    events.subscribe('gameOver', onGameOver);
-
-
-
-    function onStageInit(stage, model) {
-
-
-        if (util.isNullOrUndefined(stage)) {
-            throw new Error('stage is null or undefined.');
-        } else {
-            _stage = stage;
-        }
-
-        if (util.isNullOrUndefined(model)) {
-            throw new Error("model is null or undefined.");
-        } else {
-            _model = model;
-        }
-
-        setPixelRatio(_model.pixelRatio);
-
+    if (util.isNullOrUndefined(viewContext)) {
+        throw new Error('viewContext is null or undefined.');
     }
 
-    function setPixelRatio(pixelRatio) {
-        PNL_H *= pixelRatio;
-        FONT_SIZE *= pixelRatio;
+    if (util.isNullOrUndefined(model)) {
+        throw new Error("model is null or undefined.");
     }
 
-    function scalePixelValue(value) {
 
-        return value * _model.pixelRatio;
-    }
+    viewContext.observer.subscribe('gameOver', onGameOver);
+    //viewContext.observer.subscribe('dotClick', function () { onGameOver(1); });
+
 
 
     function onGameOver(winner) {
@@ -75,18 +53,20 @@ dotBox.views.gameOver = function (events) {
 
     function addGameOverPanel(playerName) {
 
-        _gameOverPanel = new createjs.Container();
-        _gameOverPanel.x = 0;
-        _gameOverPanel.y = -1 * PNL_H;
+        gameOverPanel = new createjs.Container();
+        gameOverPanel.x = 0;
+        gameOverPanel.y = -1 * pixelConst.PNL_H;
 
-        addBackground(_gameOverPanel);
-        addText(_gameOverPanel, playerName + " wins!");
+        addBackground(gameOverPanel);
+        addText(gameOverPanel, playerName + " wins!");
 
-        _stage.addChild(_gameOverPanel);
+        viewContext.stage.addChild(gameOverPanel);
 
 
 
-        createjs.Tween.get(_gameOverPanel, {override: true}).to({y: 0}, 200, createjs.Ease.sineIn);
+        createjs.Tween
+            .get(gameOverPanel, {override: true})
+            .to({y: 0}, 200, createjs.Ease.sineIn);
 
     }
 
@@ -95,34 +75,31 @@ dotBox.views.gameOver = function (events) {
     function addBackground(container) {
 
         var tempShape,
-            strokeSize = scalePixelValue(1);
+            STROKE_SIZE = viewContext.scalePixel(1),
+            width = viewContext.width();
 
 
         //Create the background shape.
         tempShape = new createjs.Shape();
 
         tempShape.graphics
-            .beginLinearGradientFill([SB_BACK_COLOR2, SB_BACK_COLOR1], [0, 1], 0, 0, 0, PNL_H)
-            .drawRect(0, 0, _stage.canvas.width, PNL_H)
+            .beginLinearGradientFill([SB_BACK_COLOR2, SB_BACK_COLOR1], [0, 1], 0, 0, 0, pixelConst.PNL_H)
+            .drawRect(0, 0, width, pixelConst.PNL_H)
             .endFill();
 
         tempShape.graphics
-            .setStrokeStyle(strokeSize)
+            .setStrokeStyle(STROKE_SIZE)
             .beginStroke(SB_BORDER_COLOR)
-            .moveTo(0, PNL_H - strokeSize)
-            .lineTo(_stage.canvas.width, PNL_H - strokeSize)
+            .moveTo(0, pixelConst.PNL_H - STROKE_SIZE)
+            .lineTo(width, pixelConst.PNL_H - STROKE_SIZE)
             .endStroke();
 
         tempShape.graphics
-            .setStrokeStyle(strokeSize)
+            .setStrokeStyle(STROKE_SIZE)
             .beginStroke(SB_BORDER_COLOR2)
-            .moveTo(0, PNL_H)
-            .lineTo(_stage.canvas.width, PNL_H)
+            .moveTo(0, pixelConst.PNL_H)
+            .lineTo(width, pixelConst.PNL_H)
             .endStroke();
-
-
-
-
 
 
         container.addChild(tempShape);
@@ -137,9 +114,9 @@ dotBox.views.gameOver = function (events) {
         var tempShape;
 
         //Add the text shape that contains the current score.
-        tempShape = new createjs.Text(text, FONT_SIZE + "px Helvetica", SCORE_TXT_COLOR);
-        tempShape.x = Math.round(_stage.canvas.width / 2);
-        tempShape.y = Math.round(PNL_H / 2);
+        tempShape = new createjs.Text(text, pixelConst.FONT_SIZE + "px Helvetica", SCORE_TXT_COLOR);
+        tempShape.x = Math.round(viewContext.width() / 2);
+        tempShape.y = Math.round(pixelConst.PNL_H / 2);
         tempShape.textAlign = "center";
         tempShape.textBaseline = "middle";
 

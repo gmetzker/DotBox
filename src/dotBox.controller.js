@@ -13,7 +13,7 @@ dotBox.controller = function (events) {
 
     //Vars
     //noinspection JSLint
-    var that = {},
+    var that,
         gameEngine,
         model;
 
@@ -29,9 +29,14 @@ dotBox.controller = function (events) {
     addSubscribers();
 
 
-    that.startGame = function startGame() {
-        events.publish('startGame', model);
+    that = {
+        startGame: startGame,
+        model: model
     };
+
+    function startGame() {
+        events.publish('startGame', model);
+    }
 
 
     function addSubscribers() {

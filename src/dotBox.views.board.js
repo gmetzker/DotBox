@@ -3,21 +3,30 @@ var dotBox = dotBox || {};
 dotBox.views = dotBox.views || {};
 
 
-dotBox.views.board = function (events, $parent, pixelRatio) {
+dotBox.views.board = function (viewContext, model) {
 
     //Alias
     var util = dotBox.utility,
         viewConst = dotBox.views.constants,
         Color = dotBox.views.Color;
 
+
+    if (util.isNullOrUndefined(viewContext)) {
+        throw new Error("viewContext is null or undefined.");
+    }
+
+    if (util.isNullOrUndefined(model)) {
+        throw new Error("model is null or undefined.");
+    }
+
+
     //Constants
     //noinspection JSLint
-    var CANVAS_ID_PREFIX = 'dotBoxCanvas_',
-        DOT_RADIUS = 5,
-        DOT_MARGIN = 20,
-        BOX_SCORED_SIZE_INC = 10,
-        POINT_FONT_SIZE = 13,
-        CANVAS_BACK_COLOR = '#272822',
+    var pixelConst = viewContext.scaleAllPixelProps({
+            DOT_RADIUS: 5,
+            DOT_MARGIN: 20,
+            POINT_FONT_SIZE: 13
+        }),
         DOT_COLOR_DEF = '#53d2f1',
         DOT_COLOR_DEF_OUTER = 'rgba(83, 210, 241, .02)',
         DOT_COLOR_HOV = '#89E0F5',
@@ -27,159 +36,94 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
 
     //Members
     //noinspection JSLint
-    var _stage = null,
-        _canvasId,
-        _model,
-        _dotShapes,
-        _hLineShapes = {},
-        _vLineShapes = {};
+    var dotShapes,
+        hLineShapes = {},
+        vLineShapes = {};
 
+
+    reserveCanvasSize();
     addSubscribers();
 
 
+    function reserveCanvasSize() {
+
+        var size,
+            dotSum,
+            marginSum;
+
+        size = {
+            height: 0,
+            width: 0
+        };
+
+
+        dotSum = model.getDotColCount() * (2 * pixelConst.DOT_RADIUS);
+        marginSum = (model.getDotColCount() + 1) * pixelConst.DOT_MARGIN;
+        size.width = dotSum + marginSum;
+
+        dotSum = model.getDotRowCount() * (2 * pixelConst.DOT_RADIUS);
+        marginSum = (model.getDotRowCount() + 1) * pixelConst.DOT_MARGIN;
+        size.height = dotSum + marginSum;
+
+
+        viewContext.observer.publish("view.reserveCanvasSize", size);
+    }
+
     function addSubscribers() {
 
-        events.subscribe('startGame', onStartGame);
+        viewContext.observer.subscribe('startGame', onStartGame);
 
-        events.subscribe('view.dotRollOver', onDotRollOver);
+        viewContext.observer.subscribe('view.dotRollOver', onDotRollOver);
 
-        events.subscribe('view.dotRollOut', onDotRollOut);
+        viewContext.observer.subscribe('view.dotRollOut', onDotRollOut);
 
-        events.subscribe('view.dotSelectionChanged', onDotSelectionChanged);
+        viewContext.observer.subscribe('view.dotSelectionChanged', onDotSelectionChanged);
 
-        events.subscribe('view.lineConnected', onLineConnected);
+        viewContext.observer.subscribe('view.lineConnected', onLineConnected);
 
-        events.subscribe('view.boxesScored', onBoxesScored);
+        viewContext.observer.subscribe('view.boxesScored', onBoxesScored);
 
     }
 
 
-
-
-    function onStartGame(model) {
-
-
-        if (_stage !== null) {
-            throw new Error("The view method startGame has already been called.");
-        }
-
-        if (util.isNullOrUndefined(model)) {
-            throw new Error("model is null or undefined.");
-        } else {
-            _model = model;
-        }
-
-        setPixelRatios();
-
-        createCanvas();
-
-        createStage();
+    function onStartGame() {
 
         drawInitialView();
-
-        events.publish('views.boardDrawn', _stage, _model);
 
         startEventLoop();
 
     }
 
-    function setPixelRatios() {
 
-        _model.pixelRatio = pixelRatio;
+    function drawBackground() {
 
-        DOT_RADIUS *= pixelRatio;
-        DOT_MARGIN *= pixelRatio;
-        BOX_SCORED_SIZE_INC *= pixelRatio;
-        POINT_FONT_SIZE *= pixelRatio;
-        viewConst.SCORE_BOARD_HEIGHT *= pixelRatio;
+        var bgShape,
+            BOARD_BACK_COLOR = '#272822';
+
+        bgShape = new createjs.Shape();
+        bgShape.graphics
+            .beginFill(BOARD_BACK_COLOR)
+            .drawRect(0, 0, viewContext.width(), viewContext.height());
+
+        viewContext.stage.addChild(bgShape);
+
 
     }
 
-    function scalePixelValue(value) {
-
-        return value * _model.pixelRatio;
-    }
-
-    function createUniqueCanvasId() {
-
-        var i = 0,
-            unqCanvasId = null,
-            tempId,
-            $otherCanvases;
-
-        while (unqCanvasId === null) {
-
-            tempId = CANVAS_ID_PREFIX + i;
-
-            $otherCanvases = $('#' + tempId);
-
-            if ($otherCanvases.length === 0) {
-                unqCanvasId = tempId;
-            }
-
-            i += 1;
-
-        }
-
-        return unqCanvasId;
-
-    }
-
-    function createCanvas() {
-
-        var canvasId,
-            dotSum,
-            marginSum,
-            canvasWidth,
-            canvasHeight;
-
-        canvasId = createUniqueCanvasId();
-
-        dotSum = _model.getDotColCount() * (2 * DOT_RADIUS);
-        marginSum = (_model.getDotColCount() + 1) * DOT_MARGIN;
-        canvasWidth = dotSum + marginSum;
-
-        dotSum = _model.getDotRowCount() * (2 * DOT_RADIUS);
-        marginSum = (_model.getDotRowCount() + 1) * DOT_MARGIN;
-        canvasHeight = dotSum + marginSum + viewConst.SCORE_BOARD_HEIGHT;
-
-
-        $parent.append('<canvas style="background-color: ' + CANVAS_BACK_COLOR +
-            '; width: ' + canvasWidth * (1 / pixelRatio) +
-            'px; height: ' + canvasHeight * (1 / pixelRatio) +
-            'px;" width=' + canvasWidth +
-            ' height=' + canvasHeight + '" id="' + canvasId + '"></canvas>');
-
-//        $parent.append('<canvas style="background-color: ' + CANVAS_BACK_COLOR +
-//            '; width: ' + canvasWidth +
-//            'px; height: ' + canvasHeight +
-//            'px;" width=' + canvasWidth * _model.pixelRatio +
-//            ' height=' + canvasHeight * _model.pixelRatio + '" id="' + canvasId + '"></canvas>');
-
-        _canvasId = canvasId;
-
-    }
-
-
-
-    function createStage() {
-
-        _stage = new createjs.Stage(_canvasId);
-
-        events.publish("view.stageInit", _stage, _model);
-
-    }
 
     function drawInitialView() {
 
         var i,
             j,
             dotShape,
-            dotRowCount = _model.getDotRowCount(),
-            dotColCount  = _model.getDotColCount(),
+            dotRowCount = model.getDotRowCount(),
+            dotColCount  = model.getDotColCount(),
             dotShapeRow;
 
-        _dotShapes = [];
+        drawBackground();
+
+
+        dotShapes = [];
 
         for (j = 0; j < dotRowCount; j++) {
 
@@ -187,7 +131,7 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
 
                 if (i === 0) {
                     dotShapeRow = [];
-                    _dotShapes.push(dotShapeRow);
+                    dotShapes.push(dotShapeRow);
                 }
 
 
@@ -199,8 +143,8 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
 
                 drawDotShape(dotShape);
 
-                dotShape.x = (i * (DOT_MARGIN + DOT_RADIUS * 2)) + (DOT_MARGIN + DOT_RADIUS);
-                dotShape.y = (j * (DOT_MARGIN + DOT_RADIUS * 2)) + (DOT_MARGIN + DOT_RADIUS);
+                dotShape.x = (i * (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS * 2)) + (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS);
+                dotShape.y = (j * (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS * 2)) + (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS);
 
                 dotShape.on('rollover', fireDotRollOver);
                 dotShape.on('rollout', fireDotRollOut);
@@ -208,30 +152,30 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
 
 
                 dotShapeRow.push(dotShape);
-                _stage.addChild(dotShape);
+                viewContext.stage.addChild(dotShape);
 
             }
         }
 
 
 
-        _stage.update();
+        viewContext.stage.update();
 
     }
 
     function fireDotRollOver() {
-        events.publish('dotRollOver', this.dot);
+        viewContext.observer.publish('dotRollOver', this.dot);
     }
     function fireDotRollOut() {
-        events.publish('dotRollOut', this.dot);
+        viewContext.observer.publish('dotRollOut', this.dot);
     }
     function fireDotClick() {
-        events.publish('dotClick', this.dot);
+        viewContext.observer.publish('dotClick', this.dot);
     }
 
     function startEventLoop() {
 
-        _stage.enableMouseOver(10);
+        viewContext.stage.enableMouseOver(10);
 
         createjs.Ticker.addEventListener("tick", tick);
         createjs.Ticker.setFPS(60);
@@ -240,7 +184,7 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
 
 
     function tick() {
-        _stage.update();
+        viewContext.stage.update();
     }
 
     function getDotColor(dot) {
@@ -248,17 +192,17 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
         var coreColor,
             color;
 
-        if (_model.isSelectedDot(dot)) {
+        if (model.isSelectedDot(dot)) {
 
             coreColor = DOT_COLOR_SEL;
 
-        } else if (_model.isHoveredDot(dot) && _model.canConnectDots(dot)) {
+        } else if (model.isHoveredDot(dot) && model.canConnectDots(dot)) {
 
             coreColor = DOT_COLOR_CONN;
 
         } else {
 
-            if (_model.isHoveredDot(dot)) {
+            if (model.isHoveredDot(dot)) {
                 coreColor = DOT_COLOR_HOV;
             } else {
                 coreColor = DOT_COLOR_DEF;
@@ -293,23 +237,23 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
 
             dotShape.graphics
                 .beginFill(DOT_COLOR_DEF_OUTER)
-                .drawCircle(0, 0, DOT_RADIUS * 2.80);
+                .drawCircle(0, 0, pixelConst.DOT_RADIUS * 2.80);
 
             dotShape.fillColor = color;
             dotShape.graphics
                 .beginFill(color)
-                .inject(dotBox.views.setDrawColors, dotShape)
-                .drawCircle(0, 0, DOT_RADIUS)
+                .inject(viewContext.setDrawColors, dotShape)
+                .drawCircle(0, 0, pixelConst.DOT_RADIUS)
                 .endFill();
 
         } else {
-            createjs.Tween.get(dotShape.fillColor, {override: true}).to(color, 250);
+            createjs.Tween
+                .get(dotShape.fillColor, {override: true})
+                .to(color, 250);
         }
 
 
-
-
-        if (_model.hasAnyOpenLines(dot)) {
+        if (model.hasAnyOpenLines(dot)) {
             dotShape.cursor = "pointer";
         } else {
             dotShape.cursor = null;
@@ -324,7 +268,7 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
 
     function getDotShape(dot) {
         //DotShapes is indexed as row, col
-        return _dotShapes[dot.y][dot.x];
+        return dotShapes[dot.y][dot.x];
     }
 
     function onDotRollOver(dot) {
@@ -383,7 +327,8 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
         var lineShape,
             d1Shape = getDotShape(line.d1),
             d2Shape = getDotShape(line.d2),
-            newShape = false;
+            newShape = false,
+            LINE_SIZE = viewContext.scalePixel(1);
 
         lineShape = getLineShape(line);
 
@@ -396,12 +341,12 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
         }
 
         lineShape.graphics
-            .setStrokeStyle(scalePixelValue(1))
+            .setStrokeStyle(LINE_SIZE)
             .beginStroke(color)
             .moveTo(d1Shape.x, d1Shape.y)
             .lineTo(d2Shape.x, d2Shape.y);
 
-        if (newShape) { _stage.addChild(lineShape); }
+        if (newShape) { viewContext.stage.addChild(lineShape); }
 
 
     }
@@ -430,7 +375,9 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
             boxH,
             boxColor,
             borderColor,
-            scale;
+            scale,
+            BOX_SCORED_SIZE_INC = viewContext.scalePixel(10),
+            BORDER_SIZE = viewContext.scalePixel(1);
 
         if (playerIndex === 0) {
             boxColor = new Color(viewConst.P1_COLOR);
@@ -449,7 +396,7 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
 
         rectShape = new createjs.Shape();
         rectShape.graphics
-            .setStrokeStyle(scalePixelValue(1))
+            .setStrokeStyle(BORDER_SIZE)
             .beginStroke(borderColor)
             .beginFill(boxColor)
             .drawRect(ulDotShape.x, ulDotShape.y, boxW, boxH);
@@ -463,14 +410,15 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
         rectShape.y = (-1 * ((ulDotShape.y * scale) - ulDotShape.y)) - (BOX_SCORED_SIZE_INC / 2);
 
 
-        _stage.addChild(rectShape);
+        viewContext.stage.addChild(rectShape);
 
-        createjs.Tween.get(rectShape, {override: true}).to({
-            x: 0,
-            y: 0,
-            scaleX: 1,
-            scaleY: 1
-        }, 250);
+        createjs.Tween.get(rectShape, {override: true})
+            .to({
+                x: 0,
+                y: 0,
+                scaleX: 1,
+                scaleY: 1
+            }, 250);
 
 
     }
@@ -491,20 +439,22 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
         ds2 = getDotShape(box.lines[1].d2);
         y = ds1.y + ((ds2.y - ds1.y) / 2);
 
-        tempShape = new createjs.Text("+" + pointCount, POINT_FONT_SIZE + "px Helvetica", viewConst.SCORE_TXT_COLOR);
+        tempShape = new createjs.Text("+" + pointCount, pixelConst.POINT_FONT_SIZE + "px Helvetica", viewConst.SCORE_TXT_COLOR);
         tempShape.x = x;
         tempShape.y = y;
         tempShape.textAlign = "center";
         tempShape.textBaseline = "middle";
 
-        _stage.addChild(tempShape);
+        viewContext.stage.addChild(tempShape);
 
-        createjs.Tween.get(tempShape, {override: false})
+        createjs.Tween
+            .get(tempShape, {override: false})
             .to({alpha: 0, y: y + 200}, 2500, createjs.Ease.sineOut)
-            .call(function () { _stage.removeChild(tempShape); });
+            .call(function () { viewContext.stage.removeChild(tempShape); });
 
 
-        createjs.Tween.get(tempShape, {override: false})
+        createjs.Tween
+            .get(tempShape, {override: false})
             .to({scaleX: 1.5, scaleY: 1.5 }, 200, createjs.Ease.elasticInOut);
 
 
@@ -560,13 +510,13 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
 
         if (util.line.isHLine(line)) {
             //Horizontal Line.
-            store = _hLineShapes;
+            store = hLineShapes;
             y = line.d1.y;
             x = Math.min(line.d1.x, line.d2.x);
 
         } else {
             //Vertical Line.
-            store = _vLineShapes;
+            store = vLineShapes;
             y = Math.min(line.d1.y, line.d2.y);
             x = line.d1.x;
 
@@ -585,9 +535,6 @@ dotBox.views.board = function (events, $parent, pixelRatio) {
     return {
 
     };
-
-
-
 
 
 

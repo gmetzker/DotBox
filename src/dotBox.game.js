@@ -11,23 +11,31 @@ var dotBox = dotBox || {};
 */
 dotBox.game = function game(parent) {
 
-    var $parent,
-        _events,
-        _views = [],
-        _controller,
+    var observer,
+        viewContext,
+        views = [],
+        controller,
+        model,
         pixelRatio;
 
-    $parent = getJqueryParent(parent);
-    _events = new Observer();
-
+    observer = new Observer();
     pixelRatio = window.devicePixelRatio;
+    viewContext = dotBox.views.viewContext(observer, pixelRatio);
 
-    _views.push(dotBox.views.board(_events, $parent, pixelRatio));
-    _views.push(dotBox.views.score(_events));
-    _views.push(dotBox.views.gameOver(_events));
-    _controller = dotBox.controller(_events);
+    controller = dotBox.controller(observer);
+    model = controller.model;
 
-    _controller.startGame();
+    //Create views first before initializing the canvas.
+    //This way the views can reserve their canvas height/width.
+    views.push(dotBox.views.board(viewContext, model));
+    views.push(dotBox.views.score(viewContext, model));
+    views.push(dotBox.views.gameOver(viewContext, model));
+
+
+    viewContext.initCanvasStage(getJqueryParent(parent));
+
+    controller.startGame();
+
 
 
     function getJqueryParent(p) {
