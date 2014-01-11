@@ -419,7 +419,7 @@ dotBox.gameEngine = function gameEngine(config) {
 
         for (i = 0; i < openLines.length; i++) {
             tempDot = openLines[i].d2;
-            if (tempDot.x === dot2.x && tempDot.y === dot2.y) {
+            if (util.areSameDot(tempDot, dot2)) {
                 return true;
             }
         }

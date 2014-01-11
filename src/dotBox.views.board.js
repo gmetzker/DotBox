@@ -28,7 +28,6 @@ dotBox.views.board = function (viewContext, model) {
             POINT_FONT_SIZE: 13
         }),
         DOT_COLOR_DEF = '#53d2f1',
-        DOT_COLOR_DEF_OUTER = 'rgba(83, 210, 241, .02)',
         DOT_COLOR_HOV = '#89E0F5',
         DOT_COLOR_SEL = '#fc1f70',
         DOT_COLOR_CONN = '#E20355',
@@ -38,11 +37,14 @@ dotBox.views.board = function (viewContext, model) {
     //noinspection JSLint
     var dotShapes,
         hLineShapes = {},
-        vLineShapes = {};
+        vLineShapes = {},
+        mouseOverIntervalId,
+        lastDotUnderMouse = null;
 
 
     reserveCanvasSize();
     addSubscribers();
+
 
 
     function reserveCanvasSize() {
@@ -146,8 +148,7 @@ dotBox.views.board = function (viewContext, model) {
                 dotShape.x = (i * (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS * 2)) + (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS);
                 dotShape.y = (j * (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS * 2)) + (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS);
 
-                dotShape.on('rollover', fireDotRollOver);
-                dotShape.on('rollout', fireDotRollOut);
+
                 dotShape.on('click', fireDotClick);
 
 
@@ -163,11 +164,17 @@ dotBox.views.board = function (viewContext, model) {
 
     }
 
-    function fireDotRollOver() {
-        viewContext.observer.publish('dotRollOver', this.dot);
+
+
+    function fireDotRollOver(dot) {
+        if (!util.isNullOrUndefined(dot)) {
+            viewContext.observer.publish('dotRollOver', dot);
+        }
     }
-    function fireDotRollOut() {
-        viewContext.observer.publish('dotRollOut', this.dot);
+    function fireDotRollOut(dot) {
+        if (!util.isNullOrUndefined(dot)) {
+            viewContext.observer.publish('dotRollOut', dot);
+        }
     }
     function fireDotClick() {
         viewContext.observer.publish('dotClick', this.dot);
@@ -175,13 +182,62 @@ dotBox.views.board = function (viewContext, model) {
 
     function startEventLoop() {
 
-        viewContext.stage.enableMouseOver(10);
+        enableMouseOver(20);
 
         createjs.Ticker.addEventListener("tick", tick);
         createjs.Ticker.setFPS(60);
 
     }
 
+    function enableMouseOver(frequency) {
+
+        if (mouseOverIntervalId) {
+
+            clearInterval(mouseOverIntervalId);
+            //noinspection JSUnusedAssignment
+            mouseOverIntervalId = null;
+
+        }
+
+        if (frequency === null) {
+            frequency = 20;
+        } else if (frequency <= 0) {
+            return;
+        }
+        mouseOverIntervalId = setInterval(mouseOverTick, 1000 / Math.min(50, frequency));
+
+    }
+
+    function mouseOverTick() {
+
+        var prevDotUnderMouse = lastDotUnderMouse,
+            dotUnderMouse = getDotFromUnderMouse(pixelConst.DOT_RADIUS * 2.5);
+           // dotIfInRollOverArea = getDotFromUnderMouse(pixelConst.DOT_RADIUS * 2.5);
+
+
+
+        if (!util.areSameDot(prevDotUnderMouse, dotUnderMouse)) {
+
+            if (!util.isNullOrUndefined(dotUnderMouse) && model.hasAnyOpenLines(dotUnderMouse)) {
+                setCursor("pointer");
+            } else {
+                setCursor("");
+            }
+
+            lastDotUnderMouse = dotUnderMouse;
+
+            fireDotRollOut(prevDotUnderMouse);
+
+            fireDotRollOver(dotUnderMouse);
+
+        }
+
+
+    }
+
+    function setCursor(cursor) {
+        viewContext.stage.canvas.style.cursor = cursor;
+    }
 
     function tick() {
         viewContext.stage.update();
@@ -235,10 +291,6 @@ dotBox.views.board = function (viewContext, model) {
 
         if (drawToShape) {
 
-            dotShape.graphics
-                .beginFill(DOT_COLOR_DEF_OUTER)
-                .drawCircle(0, 0, pixelConst.DOT_RADIUS * 2.80);
-
             dotShape.fillColor = color;
             dotShape.graphics
                 .beginFill(color)
@@ -250,13 +302,6 @@ dotBox.views.board = function (viewContext, model) {
             createjs.Tween
                 .get(dotShape.fillColor, {override: true})
                 .to(color, 250);
-        }
-
-
-        if (model.hasAnyOpenLines(dot)) {
-            dotShape.cursor = "pointer";
-        } else {
-            dotShape.cursor = null;
         }
 
 
@@ -302,7 +347,16 @@ dotBox.views.board = function (viewContext, model) {
         if (oldDot !== newDot) {
             //If dot was unselected, make it not hovered.
             dotShape = getDotShape(newDot !== null ? newDot : oldDot);
-            createjs.Tween.get(dotShape, {override: true}).to({scaleX: 1, scaleY: 1}, 150);
+            createjs.Tween
+                .get(dotShape, {override: true})
+                .to({scaleX: 1, scaleY: 1}, 150)
+                .call(function () {
+                    var dotUnder = getDotFromUnderMouse(pixelConst.DOT_RADIUS);
+                    if (util.isNullOrUndefined(dotUnder)) {
+                        setCursor("");
+                    }
+                });
+
         }
 
     }
@@ -346,7 +400,36 @@ dotBox.views.board = function (viewContext, model) {
             .moveTo(d1Shape.x, d1Shape.y)
             .lineTo(d2Shape.x, d2Shape.y);
 
-        if (newShape) { viewContext.stage.addChild(lineShape); }
+
+
+        if (newShape) {
+
+            lineShape.on('click', onShapeClick);
+            viewContext.stage.addChild(lineShape);
+        }
+
+
+    }
+
+    function onShapeClick(e) {
+
+        var objectsUnder,
+            dotShapes,
+            isDotShape;
+
+        objectsUnder = viewContext.stage.getObjectsUnderPoint(e.stageX, e.stageY);
+
+        isDotShape = function isDotShape(shape) {
+
+            return !util.isNullOrUndefined(shape.dot);
+
+        };
+
+        dotShapes = objectsUnder.filter(isDotShape);
+
+        if (dotShapes.length > 0) {
+            fireDotClick.apply(dotShapes[0]);
+        }
 
 
     }
@@ -410,6 +493,7 @@ dotBox.views.board = function (viewContext, model) {
         rectShape.y = (-1 * ((ulDotShape.y * scale) - ulDotShape.y)) - (BOX_SCORED_SIZE_INC / 2);
 
 
+        rectShape.on('click', onShapeClick);
         viewContext.stage.addChild(rectShape);
 
         createjs.Tween.get(rectShape, {override: true})
@@ -530,6 +614,74 @@ dotBox.views.board = function (viewContext, model) {
 
 
     }
+
+
+
+    function getDotIndex(value, dotCount) {
+
+        var index,
+            boundarySize;
+
+        boundarySize = (2 * pixelConst.DOT_RADIUS) + pixelConst.DOT_MARGIN;
+        index = Math.floor((value - (pixelConst.DOT_MARGIN / 2)) / boundarySize);
+
+        if ((index < 0) || (index >= dotCount)) {
+            return null;
+        }
+
+        return index;
+
+    }
+    function isInCircle(point, origin, radius) {
+
+        var sqrDist,
+            sqrRad;
+
+        sqrDist = Math.pow((origin.x - point.x), 2) + Math.pow((origin.y - point.y), 2);
+
+        sqrRad = Math.pow(radius, 2);
+
+        return sqrDist <= sqrRad;
+
+    }
+
+
+    function getDotFromUnderMouse(hitRadius) {
+
+        var xIndex,
+            yIndex,
+            dot,
+            shape,
+            mousePoint;
+
+        mousePoint = {
+            x: viewContext.stage.mouseX,
+            y: viewContext.stage.mouseY
+        };
+
+        if (!viewContext.stage.mouseInBounds) { return null; }
+
+        xIndex = getDotIndex(mousePoint.x, model.getDotColCount());
+        if (xIndex === null) { return null; }
+
+        yIndex = getDotIndex(mousePoint.y, model.getDotRowCount());
+        if (yIndex === null) { return null; }
+
+        dot = {
+            x: xIndex,
+            y: yIndex
+        };
+
+        shape = getDotShape(dot);
+        if (!isInCircle(mousePoint, {x: shape.x, y: shape.y}, hitRadius)) {
+            dot = null;
+        }
+
+        return dot;
+
+    }
+
+
 
 
     return {

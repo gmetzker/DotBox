@@ -2,7 +2,8 @@ var dotBox = dotBox || {};
 
 dotBox.model = function model(gameEngine) {
 
-    var that;
+    var util = dotBox.utility,
+        that;
 
     that = {
 
@@ -29,16 +30,12 @@ dotBox.model = function model(gameEngine) {
 
     function isSelectedDot(dot) {
 
-        return (that.selectedDot !== null) &&
-            (dot.x === that.selectedDot.x) &&
-            (dot.y === that.selectedDot.y);
+        return (that.selectedDot !== null) && util.areSameDot(dot, that.selectedDot);
     }
 
     function isHoveredDot(dot) {
 
-        return (that.hoveredDot !== null) &&
-            (dot.x === that.hoveredDot.x) &&
-            (dot.y === that.hoveredDot.y);
+        return (that.hoveredDot !== null) && util.areSameDot(dot, that.hoveredDot);
     }
 
     function canConnectDots(dot) {
