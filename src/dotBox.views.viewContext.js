@@ -7,10 +7,11 @@ dotBox.views = dotBox.views || {};
 /**
  * @class viewContext
  * @classdesc Creates a new viewContext object.
- * @param {Observer} observer
- * @param {number} pixelRatio
+ * @param {Observer} observer       - The Observer instance used for broadcasting events and binding to the controller.
+ * @param {number}   pixelRatio
+ * @param {number}   playerCount    - The number of players in the game.
  */
-dotBox.views.viewContext = function viewContext(observer, pixelRatio) {
+dotBox.views.viewContext = function viewContext(observer, pixelRatio, playerCount) {
 
     var util = dotBox.utility,
         that,
@@ -41,7 +42,8 @@ dotBox.views.viewContext = function viewContext(observer, pixelRatio) {
         scaleAllPixelProps: scaleAllPixelProps,
         setDrawColors: setDrawColors,
         width: width,
-        height: height
+        height: height,
+        playerNames: buildPlayerNames(playerCount)
     };
 
 
@@ -199,6 +201,18 @@ dotBox.views.viewContext = function viewContext(observer, pixelRatio) {
         canvasId = createCanvas($parent);
 
         createStage(canvasId);
+
+    }
+
+    function buildPlayerNames(count) {
+        var i,
+            names = [];
+
+        for (i = 0; i < count; i++) {
+            names.push('PLAYER ' + (i + 1));
+        }
+
+        return names;
 
     }
 

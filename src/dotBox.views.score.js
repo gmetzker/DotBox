@@ -95,7 +95,6 @@ dotBox.views.score = function (viewContext, model) {
         var scoreBox,
             BOARD_TOP,
             SCORE_BOX_TOP,
-            NAME_PREFIX = "PLAYER ",
             SCORE_BOX_SIDE_MARGIN = viewContext.scalePixel(10),
             SCORE_BOX_TOP_MARGIN = viewContext.scalePixel(5),
             SCORE_BOX_H = pixelConst.SCORE_BOARD_HEIGHT - (2 * SCORE_BOX_TOP_MARGIN);
@@ -111,14 +110,14 @@ dotBox.views.score = function (viewContext, model) {
         addScoreboardBackground(BOARD_TOP);
 
         //Player-1
-        scoreBox = addPlayerScoreBox(NAME_PREFIX + '1', SCORE_BOX_H);
+        scoreBox = addPlayerScoreBox(viewContext.playerNames[0], SCORE_BOX_H);
         scoreBox.x = SCORE_BOX_SIDE_MARGIN;
         scoreBox.y = SCORE_BOX_TOP;
         viewContext.stage.addChild(scoreBox);
 
 
         //Player-2
-        scoreBox = addPlayerScoreBox(NAME_PREFIX + '2', SCORE_BOX_H);
+        scoreBox = addPlayerScoreBox(viewContext.playerNames[1], SCORE_BOX_H);
         scoreBox.x = viewContext.width() - SCORE_BOX_SIDE_MARGIN - pixelConst.SCORE_BOX_W;
         scoreBox.y = SCORE_BOX_TOP;
         viewContext.stage.addChild(scoreBox);

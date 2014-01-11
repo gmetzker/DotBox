@@ -38,13 +38,13 @@ dotBox.views.gameOver = function (viewContext, model) {
 
 
     viewContext.observer.subscribe('gameOver', onGameOver);
-    //viewContext.observer.subscribe('dotClick', function () { onGameOver(1); });
+   // viewContext.observer.subscribe('dotClick', function () { onGameOver(0); });
 
 
 
     function onGameOver(winner) {
 
-        var playerName = "Player " + (winner + 1);
+        var playerName = viewContext.playerNames[winner];
 
         addGameOverPanel(playerName);
 

@@ -20,7 +20,7 @@ dotBox.game = function game(parent) {
 
     observer = new Observer();
     pixelRatio = window.devicePixelRatio;
-    viewContext = dotBox.views.viewContext(observer, pixelRatio);
+    viewContext = dotBox.views.viewContext(observer, pixelRatio, 2);
 
     controller = dotBox.controller(observer);
     model = controller.model;
