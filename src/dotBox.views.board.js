@@ -22,11 +22,7 @@ dotBox.views.board = function (viewContext, model) {
 
     //Constants
     //noinspection JSLint
-    var pixelConst = viewContext.scaleAllPixelProps({
-            DOT_RADIUS: 5,
-            DOT_MARGIN: 20,
-            POINT_FONT_SIZE: 13
-        }),
+    var pixelSizes = viewContext.pixelSizes,
         DOT_COLOR_DEF = '#53d2f1',
         DOT_COLOR_HOV = '#89E0F5',
         DOT_COLOR_SEL = '#fc1f70',
@@ -59,12 +55,12 @@ dotBox.views.board = function (viewContext, model) {
         };
 
 
-        dotSum = model.getDotColCount() * (2 * pixelConst.DOT_RADIUS);
-        marginSum = (model.getDotColCount() + 1) * pixelConst.DOT_MARGIN;
+        dotSum = model.getDotColCount() * (2 * pixelSizes.DOT_RADIUS);
+        marginSum = (model.getDotColCount() + 1) * pixelSizes.DOT_MARGIN;
         size.width = dotSum + marginSum;
 
-        dotSum = model.getDotRowCount() * (2 * pixelConst.DOT_RADIUS);
-        marginSum = (model.getDotRowCount() + 1) * pixelConst.DOT_MARGIN;
+        dotSum = model.getDotRowCount() * (2 * pixelSizes.DOT_RADIUS);
+        marginSum = (model.getDotRowCount() + 1) * pixelSizes.DOT_MARGIN;
         size.height = dotSum + marginSum;
 
 
@@ -85,6 +81,7 @@ dotBox.views.board = function (viewContext, model) {
 
         viewContext.observer.subscribe('view.boxesScored', onBoxesScored);
 
+
     }
 
 
@@ -99,12 +96,11 @@ dotBox.views.board = function (viewContext, model) {
 
     function drawBackground() {
 
-        var bgShape,
-            BOARD_BACK_COLOR = '#272822';
+        var bgShape;
 
         bgShape = new createjs.Shape();
         bgShape.graphics
-            .beginFill(BOARD_BACK_COLOR)
+            .beginFill(viewConst.BOARD_BACK_COLOR)
             .drawRect(0, 0, viewContext.width(), viewContext.height());
 
         viewContext.stage.addChild(bgShape);
@@ -145,8 +141,8 @@ dotBox.views.board = function (viewContext, model) {
 
                 drawDotShape(dotShape);
 
-                dotShape.x = (i * (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS * 2)) + (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS);
-                dotShape.y = (j * (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS * 2)) + (pixelConst.DOT_MARGIN + pixelConst.DOT_RADIUS);
+                dotShape.x = (i * (pixelSizes.DOT_MARGIN + pixelSizes.DOT_RADIUS * 2)) + (pixelSizes.DOT_MARGIN + pixelSizes.DOT_RADIUS);
+                dotShape.y = (j * (pixelSizes.DOT_MARGIN + pixelSizes.DOT_RADIUS * 2)) + (pixelSizes.DOT_MARGIN + pixelSizes.DOT_RADIUS);
 
 
                 dotShape.on('click', fireDotClick);
@@ -211,8 +207,8 @@ dotBox.views.board = function (viewContext, model) {
     function mouseOverTick() {
 
         var prevDotUnderMouse = lastDotUnderMouse,
-            dotUnderMouse = getDotFromUnderMouse(pixelConst.DOT_RADIUS * 2.5);
-           // dotIfInRollOverArea = getDotFromUnderMouse(pixelConst.DOT_RADIUS * 2.5);
+            dotUnderMouse = getDotFromUnderMouse(pixelSizes.DOT_RADIUS * 2.5);
+           // dotIfInRollOverArea = getDotFromUnderMouse(pixelSizes.DOT_RADIUS * 2.5);
 
 
 
@@ -295,7 +291,7 @@ dotBox.views.board = function (viewContext, model) {
             dotShape.graphics
                 .beginFill(color)
                 .inject(viewContext.setDrawColors, dotShape)
-                .drawCircle(0, 0, pixelConst.DOT_RADIUS)
+                .drawCircle(0, 0, pixelSizes.DOT_RADIUS)
                 .endFill();
 
         } else {
@@ -351,7 +347,7 @@ dotBox.views.board = function (viewContext, model) {
                 .get(dotShape, {override: true})
                 .to({scaleX: 1, scaleY: 1}, 150)
                 .call(function () {
-                    var dotUnder = getDotFromUnderMouse(pixelConst.DOT_RADIUS);
+                    var dotUnder = getDotFromUnderMouse(pixelSizes.DOT_RADIUS);
                     if (util.isNullOrUndefined(dotUnder)) {
                         setCursor("");
                     }
@@ -462,13 +458,9 @@ dotBox.views.board = function (viewContext, model) {
             BOX_SCORED_SIZE_INC = viewContext.scalePixel(10),
             BORDER_SIZE = viewContext.scalePixel(1);
 
-        if (playerIndex === 0) {
-            boxColor = new Color(viewConst.P1_COLOR);
-            borderColor = viewConst.P1_COLOR;
-        } else {
-            boxColor = new Color(viewConst.P2_COLOR);
-            borderColor = viewConst.P2_COLOR;
-        }
+        borderColor = viewContext.getPlayerColor(playerIndex);
+        boxColor = new Color(borderColor);
+
         boxColor.alpha = 0.33;
         boxColor = boxColor.toString();
 
@@ -492,9 +484,13 @@ dotBox.views.board = function (viewContext, model) {
         rectShape.x = (-1 * ((ulDotShape.x * scale) - ulDotShape.x)) - (BOX_SCORED_SIZE_INC / 2);
         rectShape.y = (-1 * ((ulDotShape.y * scale) - ulDotShape.y)) - (BOX_SCORED_SIZE_INC / 2);
 
+        rectShape.upperLeft = {x: ulDotShape.x, y: ulDotShape.y};
 
         rectShape.on('click', onShapeClick);
         viewContext.stage.addChild(rectShape);
+
+
+        viewContext.boxShapes[box.box] = rectShape;
 
         createjs.Tween.get(rectShape, {override: true})
             .to({
@@ -523,7 +519,7 @@ dotBox.views.board = function (viewContext, model) {
         ds2 = getDotShape(box.lines[1].d2);
         y = ds1.y + ((ds2.y - ds1.y) / 2);
 
-        tempShape = new createjs.Text("+" + pointCount, pixelConst.POINT_FONT_SIZE + "px Helvetica", viewConst.SCORE_TXT_COLOR);
+        tempShape = new createjs.Text("+" + pointCount, pixelSizes.POINT_FONT_SIZE + "px Helvetica", viewConst.SCORE_TXT_COLOR);
         tempShape.x = x;
         tempShape.y = y;
         tempShape.textAlign = "center";
@@ -533,7 +529,7 @@ dotBox.views.board = function (viewContext, model) {
 
         createjs.Tween
             .get(tempShape, {override: false})
-            .to({alpha: 0, y: y + 200}, 2500, createjs.Ease.sineOut)
+            .to({alpha: 0, y: y + viewContext.scalePixel(200)}, 2500, createjs.Ease.sineOut)
             .call(function () { viewContext.stage.removeChild(tempShape); });
 
 
@@ -622,8 +618,8 @@ dotBox.views.board = function (viewContext, model) {
         var index,
             boundarySize;
 
-        boundarySize = (2 * pixelConst.DOT_RADIUS) + pixelConst.DOT_MARGIN;
-        index = Math.floor((value - (pixelConst.DOT_MARGIN / 2)) / boundarySize);
+        boundarySize = (2 * pixelSizes.DOT_RADIUS) + pixelSizes.DOT_MARGIN;
+        index = Math.floor((value - (pixelSizes.DOT_MARGIN / 2)) / boundarySize);
 
         if ((index < 0) || (index >= dotCount)) {
             return null;

@@ -36,6 +36,31 @@ dotBox.utility = dotBox.utility || {};
 
     };
 
+
+    /**
+     * Gets a random integer from in to max (inclusive).
+     * @param {number} min  - The inclusive minimum value for the range.
+     * @param {number} max  - The inclusive maximum value for the range.
+     * @returns {number}    - A random integer in the range min to max.
+     */
+    namespace.getRandom = function getRandom(min, max) {
+        return min + Math.floor(Math.random() * (max - min + 1));
+    };
+
+    /**
+     * Returns a random item in the array.
+     * @param {*[]} arr - An array of stuff.
+     * @returns {*}     - A random item in the array.
+     */
+    namespace.getRandomItem = function getRandomItem(arr) {
+
+        var rIndex;
+
+        rIndex = namespace.getRandom(0, arr.length - 1);
+        return arr[rIndex];
+
+    };
+
 }(dotBox.utility));
 
 

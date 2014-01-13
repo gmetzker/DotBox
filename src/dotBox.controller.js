@@ -36,6 +36,8 @@ dotBox.controller = function (events) {
 
     function startGame() {
         events.publish('startGame', model);
+
+        //connectRandomLines(0.98);
     }
 
 
@@ -117,7 +119,7 @@ dotBox.controller = function (events) {
         var selDot = model.selectedDot;
 
 
-        if (!gameEngine.hasAnyOpenLines(dot)) { return; }
+        if (!gameEngine.hasAnyOpenLines(dot)) { return null; }
 
         if (model.isSelectedDot(dot)) {
 
@@ -179,6 +181,74 @@ dotBox.controller = function (events) {
 
     }
 
+
+    function getRandomDot() {
+
+        var x,
+            y,
+            dotColCount = gameEngine.getDotCountLength(),
+            dotRowCount = gameEngine.getDotCountWidth();
+
+        x = util.getRandom(0, dotColCount - 1);
+        y = util.getRandom(0, dotRowCount - 1);
+
+        return {
+            x: x,
+            y: y
+        };
+
+    }
+
+    function getRandomOpenLine() {
+
+        var openLines = null,
+            line,
+            dot;
+
+        if (gameEngine.isGameOver()) { return; }
+
+        while (openLines === null) {
+            dot = getRandomDot();
+            openLines = gameEngine.getOpenLinesForDot(dot);
+            if ((openLines !== null) && openLines.length === 0) {
+                openLines = null;
+            }
+        }
+
+        line = util.getRandomItem(openLines);
+
+        return line;
+
+    }
+
+    function connectRandomLine() {
+
+        var line = getRandomOpenLine();
+
+        if (util.isNullOrUndefined(line)) { return; }
+
+        connectDots(line.d1, line.d2);
+
+    }
+
+    function connectRandomLines(percent) {
+
+        var i,
+            totalLineCount,
+            targetLineCount;
+
+        if ((percent < 0) || (percent > 1)) {
+            throw new Error('percent must be between 0 and 1');
+        }
+        totalLineCount = gameEngine.getTotalLineCount();
+        targetLineCount = Math.floor(totalLineCount * percent);
+
+
+        for (i = 0; i < targetLineCount; i++) {
+            connectRandomLine();
+        }
+
+    }
 
 
 

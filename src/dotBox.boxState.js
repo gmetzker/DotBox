@@ -168,6 +168,26 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
 
     }
 
+    function getPlayerBoxes(playerIndex) {
+
+        var boxIndex,
+            boxCount,
+            playerBoxes = [],
+            playerForBox;
+
+        boxCount = getBoxCount();
+        for (boxIndex = 0; boxIndex < boxCount; boxIndex++) {
+            playerForBox = whichPlayerScoredBox(boxIndex);
+            if (playerForBox === playerIndex) {
+                playerBoxes.push(boxIndex);
+            }
+
+        }
+
+        return playerBoxes;
+
+    }
+
 
 
     return {
@@ -178,7 +198,8 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
         isBoxNotScored: isBoxNotScored,
         whichPlayerScoredBox: whichPlayerScoredBox,
         scoreBox: scoreBox,
-        getCurrentScores: getCurrentScores
+        getCurrentScores: getCurrentScores,
+        getPlayerBoxes: getPlayerBoxes
 
     };
 

@@ -32,10 +32,10 @@ dotBox.views.score = function (viewContext, model) {
         P_NON_TURN_COLOR = '#40403d',
         pixelConst = viewContext.scaleAllPixelProps({
             SCORE_BOX_W: 75,
-            SCORE_BOARD_HEIGHT: 65,
             SCORE_FONT_SIZE: 25,
             P_NAME_FONT_SIZE: 10
-        });
+        }),
+        SCORE_BOARD_HEIGHT = viewContext.pixelSizes.SCORE_BOARD_HEIGHT;
 
     if (util.isNullOrUndefined(viewContext)) {
         throw new Error("viewContext is null or undefined.");
@@ -51,7 +51,7 @@ dotBox.views.score = function (viewContext, model) {
 
     function reserveCanvasSize() {
 
-        viewContext.observer.publish("view.reserveCanvasSize", { height: pixelConst.SCORE_BOARD_HEIGHT });
+        viewContext.observer.publish("view.reserveCanvasSize", { height: SCORE_BOARD_HEIGHT });
 
     }
 
@@ -97,9 +97,9 @@ dotBox.views.score = function (viewContext, model) {
             SCORE_BOX_TOP,
             SCORE_BOX_SIDE_MARGIN = viewContext.scalePixel(10),
             SCORE_BOX_TOP_MARGIN = viewContext.scalePixel(5),
-            SCORE_BOX_H = pixelConst.SCORE_BOARD_HEIGHT - (2 * SCORE_BOX_TOP_MARGIN);
+            SCORE_BOX_H = SCORE_BOARD_HEIGHT - (2 * SCORE_BOX_TOP_MARGIN);
 
-        BOARD_TOP = viewContext.height() - pixelConst.SCORE_BOARD_HEIGHT;
+        BOARD_TOP = viewContext.height() - SCORE_BOARD_HEIGHT;
         SCORE_BOX_TOP = BOARD_TOP + SCORE_BOX_TOP_MARGIN + 1;
 
         scoreTxtShapes = [];

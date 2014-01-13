@@ -49,7 +49,7 @@ dotBox.gameEngine = function gameEngine(config) {
         _boxCountWidth,
         _currentPlayer,
         _lineState,
-        _boxState;
+        _boxState = null;
 
     configureGame(config);
 
@@ -428,6 +428,19 @@ dotBox.gameEngine = function gameEngine(config) {
 
     }
 
+    function getPlayerBoxes() {
+        return _boxState.getPlayerBoxes.apply(_boxState, arguments);
+    }
+
+    function getOpenLinesForDot() {
+        return _lineState.getOpenLinesForDot.apply(_lineState, arguments);
+    }
+
+    function getTotalLineCount() {
+
+        return _lineState.getTotalLineCount.apply(getTotalLineCount, arguments);
+    }
+
 
 
     return {
@@ -444,7 +457,10 @@ dotBox.gameEngine = function gameEngine(config) {
         connectLine: connectLine,
         isGameOver: isGameOver,
         hasAnyOpenLines: hasAnyOpenLines,
-        canConnectDots: canConnectDots
+        canConnectDots: canConnectDots,
+        getPlayerBoxes: getPlayerBoxes,
+        getOpenLinesForDot: getOpenLinesForDot,
+        getTotalLineCount: getTotalLineCount
 
     };
 

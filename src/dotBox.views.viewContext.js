@@ -15,7 +15,9 @@ dotBox.views.viewContext = function viewContext(observer, pixelRatio, playerCoun
 
     var util = dotBox.utility,
         that,
-        reservedCanvasSize;
+        reservedCanvasSize,
+        boxShapes = {},
+        pixelSizes;
 
     if (util.isNullOrUndefined(observer)) {
         throw new Error('observer parameter is required.');
@@ -30,6 +32,15 @@ dotBox.views.viewContext = function viewContext(observer, pixelRatio, playerCoun
         width: 0
     };
 
+    pixelSizes = scaleAllPixelProps({
+        DOT_RADIUS: 5,
+        DOT_MARGIN: 20,
+        POINT_FONT_SIZE: 13,
+        SCORE_BOARD_HEIGHT: 65
+    });
+
+
+
     observer.subscribe("view.reserveCanvasSize", onReserveCanvasSize);
 
 
@@ -37,13 +48,16 @@ dotBox.views.viewContext = function viewContext(observer, pixelRatio, playerCoun
         observer: observer,
         pixelRatio: pixelRatio,
         stage: null,
+        boxShapes: boxShapes,
+        pixelSizes: pixelSizes,
         initCanvasStage: initCanvasStage,
         scalePixel: scalePixel,
         scaleAllPixelProps: scaleAllPixelProps,
         setDrawColors: setDrawColors,
         width: width,
         height: height,
-        playerNames: buildPlayerNames(playerCount)
+        playerNames: buildPlayerNames(playerCount),
+        getPlayerColor: getPlayerColor
     };
 
 
@@ -217,6 +231,21 @@ dotBox.views.viewContext = function viewContext(observer, pixelRatio, playerCoun
     }
 
 
+    function getPlayerColor(player) {
+
+        switch (player) {
+
+        case 0:
+            return dotBox.views.constants.P1_COLOR;
+
+        case 1:
+            return dotBox.views.constants.P2_COLOR;
+
+        default:
+            return dotBox.views.constants.PX_COLOR;
+
+        }
+    }
 
 
     return that;

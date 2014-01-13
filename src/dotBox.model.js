@@ -16,7 +16,8 @@ dotBox.model = function model(gameEngine) {
         getDotRowCount: getDotRowCount,
         hasAnyOpenLines: hasAnyOpenLines,
         getCurrentScores: getCurrentScores,
-        getCurrentPlayer: getCurrentPlayer
+        getCurrentPlayer: getCurrentPlayer,
+        getPlayerBoxes: getPlayerBoxes
 
     };
 
@@ -55,6 +56,12 @@ dotBox.model = function model(gameEngine) {
 
     function getCurrentPlayer() {
         return gameEngine.getCurrentPlayer();
+    }
+
+    function getPlayerBoxes() {
+
+        return gameEngine.getPlayerBoxes.apply(gameEngine, arguments);
+
     }
 
 
