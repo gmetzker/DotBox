@@ -59,6 +59,9 @@ dotBox.views.score = function (viewContext, model) {
 
         viewContext.observer.subscribe('startGame', onStartGame);
 
+        viewContext.observer.subscribe('gameOver', onGameOver);
+
+
         viewContext.observer.subscribe('view.boxesScored', onBoxesScored);
 
         viewContext.observer.subscribe('views.playerTurnChanged', onPlayerTurnChanged);
@@ -242,12 +245,17 @@ dotBox.views.score = function (viewContext, model) {
 
         return container;
     }
-
     function setCurrentPlayerShape() {
+
+        setActivePlayer(model.getCurrentPlayer());
+
+    }
+
+
+    function setActivePlayer(playerIndex) {
 
         var i,
             tempShape,
-            playerIdx = model.getCurrentPlayer(),
             nameTxtColor,
             targetFillColor,
             targetStrokeColor,
@@ -257,7 +265,7 @@ dotBox.views.score = function (viewContext, model) {
 
 
             tempShape = playerFlagShapes[i];
-            if (i === playerIdx) {
+            if (i === playerIndex) {
 
                 if (tempShape.alpha === 0) {
                     createjs.Tween.get(tempShape, {override: false}).to({alpha: 1.0}, 250, createjs.Ease.sineIn);
@@ -270,8 +278,8 @@ dotBox.views.score = function (viewContext, model) {
 
 
             lightShape = playerBg[i];
-            targetFillColor = getPlayerColor('fill', i, playerIdx);
-            targetStrokeColor = getPlayerColor('stroke', i, playerIdx);
+            targetFillColor = getPlayerColor('fill', i, playerIndex);
+            targetStrokeColor = getPlayerColor('stroke', i, playerIndex);
 
             createjs.Tween
                 .get(lightShape.fillColor, {override: true})
@@ -335,6 +343,10 @@ dotBox.views.score = function (viewContext, model) {
             .endFill();
 
 
+    }
+
+    function onGameOver(winner) {
+        setActivePlayer(winner);
     }
 
 

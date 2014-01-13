@@ -37,7 +37,7 @@ dotBox.controller = function (events) {
     function startGame() {
         events.publish('startGame', model);
 
-        //connectRandomLines(0.98);
+      //  connectRandomLines(0.95);
     }
 
 
