@@ -7,6 +7,7 @@ dotBox.views.board = function (viewContext, model) {
 
     //Alias
     var util = dotBox.utility,
+        lineUtil = dotBox.utility.line,
         viewConst = dotBox.views.constants,
         Color = dotBox.views.Color;
 
@@ -388,7 +389,7 @@ dotBox.views.board = function (viewContext, model) {
 
     }
 
-    function onLineConnected(line) {
+    function onLineConnected(line, haveScoredBoxes) {
 
         var dotShape;
 
@@ -396,20 +397,22 @@ dotBox.views.board = function (viewContext, model) {
         dotShape = drawDotShape(line.d2);
         createjs.Tween.get(dotShape, {override: true}).to({scaleX: 1, scaleY: 1}, 150);
 
-        drawLineShape(line, LINE_COLOR_DEF);
+        drawLineShape(line, LINE_COLOR_DEF, haveScoredBoxes);
     }
 
 
 
 
 
-    function drawLineShape(line, color) {
+    function drawLineShape(line, color, haveScoredBoxes) {
 
         var lineShape,
             d1Shape = getDotShape(line.d1),
             d2Shape = getDotShape(line.d2),
             newShape = false,
-            LINE_SIZE = viewContext.scalePixel(1);
+            LINE_SIZE = viewContext.scalePixel(1),
+            targetProps = null,
+            initLineScale;
 
         lineShape = getLineShape(line);
 
@@ -431,8 +434,57 @@ dotBox.views.board = function (viewContext, model) {
 
         if (newShape) {
 
+            initLineScale = 0.1;
+
+            if (lineUtil.isHLine(line)) {
+
+                lineShape.scaleX = initLineScale;
+                lineShape.x = d1Shape.x - (d1Shape.x * initLineScale);
+
+                targetProps = {scaleX : 1.0, x: 0};
+            } else {
+                lineShape.scaleY = initLineScale;
+                lineShape.y = d1Shape.y - (d1Shape.y * initLineScale);
+                targetProps = {scaleY : 1.0, y: 0};
+            }
+
             lineShape.on('click', onShapeClick);
             viewContext.stage.addChild(lineShape);
+
+            createjs.Tween
+                .get(lineShape, {override: true})
+                .to(targetProps, 300)
+                .call(function () {
+
+                    var explodeShape;
+
+                    //If we have scored boxes then don't explode.
+                    if (haveScoredBoxes) { return; }
+
+                    explodeShape = new createjs.Shape();
+                    explodeShape.graphics
+                        .setStrokeStyle(viewContext.scalePixel(1))
+                        .beginStroke(LINE_COLOR_DEF)
+                        .drawCircle(0, 0, viewContext.pixelSizes.DOT_RADIUS);
+
+                    explodeShape.x = d2Shape.x;
+                    explodeShape.y = d2Shape.y;
+
+                    explodeShape.scaleX = 0;
+                    explodeShape.scaleY = 0;
+                    viewContext.stage.addChild(explodeShape);
+
+                    createjs.Tween
+                        .get(explodeShape)
+                        .to({scaleX: 1.5, scaleY: 1.5}, 150)
+                        .to({scaleX: 5, scaleY: 5, alpha: 0}, 1000, createjs.Ease.sineOut)
+                        .call(function () {
+                            viewContext.stage.removeChild(explodeShape);
+                        });
+
+
+
+                });
         }
 
 
@@ -516,6 +568,7 @@ dotBox.views.board = function (viewContext, model) {
         rectShape.y = (-1 * ((ulDotShape.y * scale) - ulDotShape.y)) - (BOX_SCORED_SIZE_INC / 2);
 
         rectShape.upperLeft = {x: ulDotShape.x, y: ulDotShape.y};
+        rectShape.alpha = 0;
 
         rectShape.on('click', onShapeClick);
         viewContext.stage.addChild(rectShape);
@@ -524,12 +577,14 @@ dotBox.views.board = function (viewContext, model) {
         viewContext.boxShapes[box.box] = rectShape;
 
         createjs.Tween.get(rectShape, {override: true})
+            .wait(350)
+            .to({alpha: 1}, 0)
             .to({
                 x: 0,
                 y: 0,
                 scaleX: 1,
                 scaleY: 1
-            }, 250);
+            }, 350);
 
 
     }
@@ -718,7 +773,7 @@ dotBox.views.board = function (viewContext, model) {
     function onEndRemoteTurn(playerIndex, move) {
 
         var ANIMATION_TIME = 150,
-            delay1 = util.getRandom(Math.floor(ANIMATION_TIME / 2), 1250),
+            delay1 = util.getRandom(700, 1250),
             hoverDelay1 = util.getRandom(ANIMATION_TIME + 20, 750),
             delay2 = util.getRandom(500, 750),
             hoverDelay2 = util.getRandom(Math.floor(ANIMATION_TIME / 2), 750);

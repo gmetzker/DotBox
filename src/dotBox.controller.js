@@ -95,7 +95,8 @@ dotBox.controller = function (observer, config) {
         var result,
             line,
             playerThisTurn,
-            playerNextTurn;
+            playerNextTurn,
+            haveScoredBoxes;
 
 
         playerThisTurn = gameEngine.getCurrentPlayer();
@@ -104,12 +105,15 @@ dotBox.controller = function (observer, config) {
         result = gameEngine.connectLine(line);
 
 
+        haveScoredBoxes = result.boxesScored.length > 0;
 
 
         //Draw the connected line
         model.selectedDot = null;
         model.hoveredDot = null;
-        observer.publish('view.lineConnected', line);
+
+
+        observer.publish('view.lineConnected', line, haveScoredBoxes);
 
         // If any boxes scored draw them
         renderScoredBoxesToView(result.boxesScored, playerThisTurn);
