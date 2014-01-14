@@ -264,7 +264,7 @@ dotBox.controller = function (observer, config) {
             totalLineCount,
             targetLineCount;
 
-        model.isQuickStarting = true;
+
 
         if ((percent < 0) || (percent > 1)) {
             throw new Error('percent must be between 0 and 1');
@@ -274,8 +274,12 @@ dotBox.controller = function (observer, config) {
         totalLineCount = gameEngine.getTotalLineCount();
         targetLineCount = Math.floor(totalLineCount * percent);
 
+        if (targetLineCount > 0) {
+            model.isQuickStarting = true;
+        }
 
         for (i = 0; i < targetLineCount; i++) {
+
             connectRandomLine();
         }
 
