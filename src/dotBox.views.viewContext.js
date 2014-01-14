@@ -9,9 +9,8 @@ dotBox.views = dotBox.views || {};
  * @classdesc Creates a new viewContext object.
  * @param {Observer} observer       - The Observer instance used for broadcasting events and binding to the controller.
  * @param {number}   pixelRatio
- * @param {number}   playerCount    - The number of players in the game.
  */
-dotBox.views.viewContext = function viewContext(observer, pixelRatio, playerCount) {
+dotBox.views.viewContext = function viewContext(observer, pixelRatio) {
 
     var util = dotBox.utility,
         that,
@@ -56,7 +55,6 @@ dotBox.views.viewContext = function viewContext(observer, pixelRatio, playerCoun
         setDrawColors: setDrawColors,
         width: width,
         height: height,
-        playerNames: buildPlayerNames(playerCount),
         getPlayerColor: getPlayerColor
     };
 
@@ -218,17 +216,6 @@ dotBox.views.viewContext = function viewContext(observer, pixelRatio, playerCoun
 
     }
 
-    function buildPlayerNames(count) {
-        var i,
-            names = [];
-
-        for (i = 0; i < count; i++) {
-            names.push('PLAYER ' + (i + 1));
-        }
-
-        return names;
-
-    }
 
 
     function getPlayerColor(player) {

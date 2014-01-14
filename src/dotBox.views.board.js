@@ -35,7 +35,8 @@ dotBox.views.board = function (viewContext, model) {
         hLineShapes = {},
         vLineShapes = {},
         mouseOverIntervalId,
-        lastDotUnderMouse = null;
+        lastDotUnderMouse = null,
+        waitingForRemotePlayer = false;
 
 
     reserveCanvasSize();
@@ -80,6 +81,12 @@ dotBox.views.board = function (viewContext, model) {
         viewContext.observer.subscribe('view.lineConnected', onLineConnected);
 
         viewContext.observer.subscribe('view.boxesScored', onBoxesScored);
+
+        viewContext.observer.subscribe('startRemoteTurn', onStartRemoteTurn);
+
+        viewContext.observer.subscribe('endRemoteTurn', onEndRemoteTurn);
+
+
 
 
     }
@@ -145,7 +152,7 @@ dotBox.views.board = function (viewContext, model) {
                 dotShape.y = (j * (pixelSizes.DOT_MARGIN + pixelSizes.DOT_RADIUS * 2)) + (pixelSizes.DOT_MARGIN + pixelSizes.DOT_RADIUS);
 
 
-                dotShape.on('click', fireDotClick);
+                dotShape.on('click', onDotClick);
 
 
                 dotShapeRow.push(dotShape);
@@ -162,19 +169,36 @@ dotBox.views.board = function (viewContext, model) {
 
 
 
-    function fireDotRollOver(dot) {
+    function publishDotRollOver(dot) {
+
         if (!util.isNullOrUndefined(dot)) {
             viewContext.observer.publish('dotRollOver', dot);
         }
     }
-    function fireDotRollOut(dot) {
+
+
+
+    function publishDotRollOut(dot) {
         if (!util.isNullOrUndefined(dot)) {
             viewContext.observer.publish('dotRollOut', dot);
         }
     }
-    function fireDotClick() {
-        viewContext.observer.publish('dotClick', this.dot);
+
+
+    function onDotClick() {
+
+        if (!waitingForRemotePlayer) {
+            publishDotClick(this.dot);
+        }
     }
+
+    function publishDotClick(dot) {
+
+        viewContext.observer.publish('dotClick', dot);
+
+    }
+
+
 
     function startEventLoop() {
 
@@ -214,17 +238,24 @@ dotBox.views.board = function (viewContext, model) {
 
         if (!util.areSameDot(prevDotUnderMouse, dotUnderMouse)) {
 
-            if (!util.isNullOrUndefined(dotUnderMouse) && model.hasAnyOpenLines(dotUnderMouse)) {
-                setCursor("pointer");
-            } else {
-                setCursor("");
+            if (!waitingForRemotePlayer) {
+
+                if (!util.isNullOrUndefined(dotUnderMouse) && model.hasAnyOpenLines(dotUnderMouse)) {
+                    setCursor("pointer");
+                } else {
+                    setCursor("");
+                }
+
             }
 
             lastDotUnderMouse = dotUnderMouse;
 
-            fireDotRollOut(prevDotUnderMouse);
+            if (!waitingForRemotePlayer) {
 
-            fireDotRollOver(dotUnderMouse);
+                publishDotRollOut(prevDotUnderMouse);
+
+                publishDotRollOver(dotUnderMouse);
+            }
 
         }
 
@@ -424,7 +455,7 @@ dotBox.views.board = function (viewContext, model) {
         dotShapes = objectsUnder.filter(isDotShape);
 
         if (dotShapes.length > 0) {
-            fireDotClick.apply(dotShapes[0]);
+            onDotClick.apply(dotShapes[0]);
         }
 
 
@@ -674,6 +705,60 @@ dotBox.views.board = function (viewContext, model) {
         }
 
         return dot;
+
+    }
+
+    function onStartRemoteTurn(playerIndex) {
+
+        setCursor("wait");
+        waitingForRemotePlayer = true;
+
+    }
+
+    function onEndRemoteTurn(playerIndex, move) {
+
+        var ANIMATION_TIME = 150,
+            delay1 = util.getRandom(Math.floor(ANIMATION_TIME / 2), 1250),
+            hoverDelay1 = util.getRandom(ANIMATION_TIME + 20, 750),
+            delay2 = util.getRandom(500, 750),
+            hoverDelay2 = util.getRandom(Math.floor(ANIMATION_TIME / 2), 750);
+
+        setTimeout(function () {
+
+            publishDotRollOver(move.d1);
+
+            setTimeout(function () {
+
+                publishDotClick(move.d1);
+                publishDotRollOut(move.d1);
+
+                setTimeout(function () {
+
+                    publishDotRollOver(move.d2);
+
+                    setTimeout(function () {
+
+                        waitingForRemotePlayer = false;
+                        setCursor(null);
+
+                        publishDotClick(move.d2);
+                        publishDotRollOut(move.d2);
+
+                    }, hoverDelay2);
+
+                }, delay2);
+
+
+            }, hoverDelay1);
+
+
+        }, delay1);
+
+
+
+
+
+
 
     }
 

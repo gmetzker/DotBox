@@ -19,6 +19,7 @@
     <script src="src/dotBox.views.board.js"></script>
     <script src="src/dotBox.views.score.js"></script>
     <script src="src/dotBox.views.gameOver.js"></script>
+    <script src="src/dotBox.ai.pureRandom.js"></script>
     <script src="src/dotBox.controller.js"></script>
     <script src="src/dotBox.game.js" ></script>
 
@@ -32,7 +33,16 @@
 <script>
     $(document).ready(function() {
 
-        $('#container').dotBox();
+        var config;
+
+        config = {
+            dotColCount: 6,
+            dotRowCount: 6,
+            useAi: true,
+            preMovePercent:.75
+        };
+
+        $('#container').dotBox(config);
        // dotBox.game('container');
 
     });

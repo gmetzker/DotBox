@@ -113,14 +113,14 @@ dotBox.views.score = function (viewContext, model) {
         addScoreboardBackground(BOARD_TOP);
 
         //Player-1
-        scoreBox = addPlayerScoreBox(viewContext.playerNames[0], SCORE_BOX_H);
+        scoreBox = addPlayerScoreBox(model.gameConfig.playerNames[0], SCORE_BOX_H);
         scoreBox.x = SCORE_BOX_SIDE_MARGIN;
         scoreBox.y = SCORE_BOX_TOP;
         viewContext.stage.addChild(scoreBox);
 
 
         //Player-2
-        scoreBox = addPlayerScoreBox(viewContext.playerNames[1], SCORE_BOX_H);
+        scoreBox = addPlayerScoreBox(model.gameConfig.playerNames[1], SCORE_BOX_H);
         scoreBox.x = viewContext.width() - SCORE_BOX_SIDE_MARGIN - pixelConst.SCORE_BOX_W;
         scoreBox.y = SCORE_BOX_TOP;
         viewContext.stage.addChild(scoreBox);
@@ -267,12 +267,12 @@ dotBox.views.score = function (viewContext, model) {
             tempShape = playerFlagShapes[i];
             if (i === playerIndex) {
 
-                if (tempShape.alpha === 0) {
-                    createjs.Tween.get(tempShape, {override: false}).to({alpha: 1.0}, 250, createjs.Ease.sineIn);
-                }
+
+                createjs.Tween.get(tempShape, {override: true}).to({alpha: 1.0}, 250, createjs.Ease.sineIn);
+
                 nameTxtColor = viewConst.SCORE_TXT_COLOR;
             } else {
-                createjs.Tween.get(tempShape, {override: false}).to({alpha: 0}, 250, createjs.Ease.sineOut);
+                createjs.Tween.get(tempShape, {override: true}).to({alpha: 0}, 250, createjs.Ease.sineOut);
                 nameTxtColor = P_NON_TURN_TXT_COLOR;
             }
 

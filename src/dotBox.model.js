@@ -1,6 +1,6 @@
 var dotBox = dotBox || {};
 
-dotBox.model = function model(gameEngine) {
+dotBox.model = function model(gameEngine, gameConfig) {
 
     var util = dotBox.utility,
         that;
@@ -17,7 +17,8 @@ dotBox.model = function model(gameEngine) {
         hasAnyOpenLines: hasAnyOpenLines,
         getCurrentScores: getCurrentScores,
         getCurrentPlayer: getCurrentPlayer,
-        getPlayerBoxes: getPlayerBoxes
+        getPlayerBoxes: getPlayerBoxes,
+        gameConfig: gameConfig
 
     };
 

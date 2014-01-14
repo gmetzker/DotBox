@@ -1,52 +1,71 @@
 var dotBox = dotBox || {};
 
-dotBox.controller = function (events) {
+
+
+/**
+ * Creates a new controller class
+ * @param   {Observer}    observer   - Used to send/receive events.
+ * @param   {gameConfig}  config     - Config used to setup the game.
+ * @returns {dotBox.controller}      - The controller class.
+ */
+dotBox.controller = function (observer, config) {
 
 
     //Alias
     var util = dotBox.utility;
 
-    //Constants
-    //noinspection JSLint
-    var DOT_COL_COUNT = 6,
-        DOT_ROW_COUNT = 6;
 
     //Vars
     //noinspection JSLint
     var that,
         gameEngine,
-        model;
+        model = null,
+        aiPlayer;
 
-
-
-    gameEngine = dotBox.gameEngine({
-        dotCountLength: DOT_COL_COUNT,
-        dotCountWidth: DOT_ROW_COUNT
-    });
-
-    model = dotBox.model(gameEngine);
-
-    addSubscribers();
-
+    init();
 
     that = {
         startGame: startGame,
         model: model
     };
 
-    function startGame() {
-        events.publish('startGame', model);
 
-      //  connectRandomLines(0.95);
+
+    function init() {
+
+        gameEngine = dotBox.gameEngine({
+            dotCountLength: config.dotColCount,
+            dotCountWidth: config.dotRowCount
+        });
+
+        assignPlayerNames();
+
+        if (config.useAi) {
+            aiPlayer = dotBox.ai.pureRandom(1, gameEngine);
+        }
+
+        model = dotBox.model(gameEngine, config);
+
+        addSubscribers();
+
+    }
+
+    function startGame() {
+        observer.publish('startGame', model);
+
+        if (!util.isNullOrUndefined(config.preMovePercent)) {
+            connectRandomLines(config.preMovePercent);
+        }
     }
 
 
     function addSubscribers() {
-        events.subscribe('dotRollOver', onDotRollOver);
+        observer.subscribe('dotRollOver', onDotRollOver);
 
-        events.subscribe('dotRollOut', onDotRollOut);
+        observer.subscribe('dotRollOut', onDotRollOut);
 
-        events.subscribe('dotClick', onDotClick);
+        observer.subscribe('dotClick', onDotClick);
+
     }
 
 
@@ -59,7 +78,7 @@ dotBox.controller = function (events) {
 
 
         model.hoveredDot = dot;
-        events.publish('view.dotRollOver', dot);
+        observer.publish('view.dotRollOver', dot);
 
 
 
@@ -67,11 +86,11 @@ dotBox.controller = function (events) {
 
     function onDotRollOut(dot) {
         model.hoveredDot = null;
-        events.publish('view.dotRollOut', dot);
+        observer.publish('view.dotRollOut', dot);
     }
 
 
-    function connectDots(d1, d2) {
+    function connectDots(d1, d2, isInit) {
 
         var result,
             line,
@@ -90,7 +109,7 @@ dotBox.controller = function (events) {
         //Draw the connected line
         model.selectedDot = null;
         model.hoveredDot = null;
-        events.publish('view.lineConnected', line);
+        observer.publish('view.lineConnected', line);
 
         // If any boxes scored draw them
         renderScoredBoxesToView(result.boxesScored, playerThisTurn);
@@ -98,14 +117,18 @@ dotBox.controller = function (events) {
 
         if (gameEngine.isGameOver()) {
 
-            events.publish("gameOver", getWinner());
+            observer.publish("gameOver", getWinner());
 
         } else {
 
             playerNextTurn = gameEngine.getCurrentPlayer();
 
             if ((playerNextTurn !== null) && (playerNextTurn !== playerThisTurn)) {
-                events.publish("views.playerTurnChanged");
+                observer.publish("views.playerTurnChanged");
+            }
+
+            if (!isInit && isPlayerAi(playerNextTurn)) {
+                makeAiMove(playerNextTurn);
             }
 
         }
@@ -124,7 +147,7 @@ dotBox.controller = function (events) {
         if (model.isSelectedDot(dot)) {
 
             model.selectedDot = null;
-            events.publish('view.dotSelectionChanged', selDot, null);
+            observer.publish('view.dotSelectionChanged', selDot, null);
 
         } else if ((model.selectedDot !== null) && (model.canConnectDots(dot))) {
 
@@ -133,7 +156,7 @@ dotBox.controller = function (events) {
         } else {
 
             model.selectedDot = dot;
-            events.publish('view.dotSelectionChanged', selDot, dot);
+            observer.publish('view.dotSelectionChanged', selDot, dot);
         }
 
 
@@ -176,7 +199,7 @@ dotBox.controller = function (events) {
                 });
 
             }
-            events.publish('view.boxesScored', closedBoxes, playerThisTurn);
+            observer.publish('view.boxesScored', closedBoxes, playerThisTurn);
         }
 
     }
@@ -227,7 +250,7 @@ dotBox.controller = function (events) {
 
         if (util.isNullOrUndefined(line)) { return; }
 
-        connectDots(line.d1, line.d2);
+        connectDots(line.d1, line.d2, true);
 
     }
 
@@ -239,6 +262,8 @@ dotBox.controller = function (events) {
 
         if ((percent < 0) || (percent > 1)) {
             throw new Error('percent must be between 0 and 1');
+        } else if (percent === 0) {
+            return;
         }
         totalLineCount = gameEngine.getTotalLineCount();
         targetLineCount = Math.floor(totalLineCount * percent);
@@ -249,6 +274,64 @@ dotBox.controller = function (events) {
         }
 
     }
+
+    function assignPlayerNames() {
+
+        var finalNames = [];
+
+        if (util.isNullOrUndefined(config.playerNames)) {
+            config.playerNames = [];
+        }
+
+        if (config.playerNames.length < 1 ||
+                util.isNullOrUndefined(config.playerNames[0]) ||
+                config.playerNames[0].length === 0) {
+
+            finalNames.push('PLAYER 1');
+
+
+        } else {
+            finalNames.push(config.playerNames[0]);
+        }
+
+
+        if (config.playerNames.length < 2 ||
+                util.isNullOrUndefined(config.playerNames[1]) ||
+                config.playerNames[1].length === 0) {
+
+            if (config.useAi) {
+                finalNames.push('HAL9000');
+            } else {
+                finalNames.push('PLAYER 2');
+            }
+
+        } else {
+            finalNames.push(config.playerNames[1]);
+        }
+
+        config.playerNames = finalNames;
+
+    }
+
+    function isPlayerAi(playerIndex) {
+
+        if (!config.useAi) { return false; }
+
+        return playerIndex === 1;
+    }
+
+    function makeAiMove(playerIndex) {
+
+        observer.publish("startRemoteTurn", playerIndex);
+        aiPlayer.makeMove(function (move) {
+
+
+            observer.publish("endRemoteTurn", playerIndex, move);
+        });
+
+
+    }
+
 
 
 

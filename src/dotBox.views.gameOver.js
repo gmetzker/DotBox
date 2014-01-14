@@ -50,8 +50,8 @@ dotBox.views.gameOver = function (viewContext, model) {
             looserIndex = 0;
         }
 
-        winnerName = viewContext.playerNames[winner];
-        looserName = viewContext.playerNames[looserIndex];
+        winnerName = model.gameConfig.playerNames[winner];
+        looserName = model.gameConfig.playerNames[looserIndex];
         winnerColor = viewContext.getPlayerColor(winner);
         looserColor = viewContext.getPlayerColor(looserIndex);
 

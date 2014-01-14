@@ -2,14 +2,28 @@
 
 var dotBox = dotBox || {};
 
+/**
+ * @typedef     {Object}        gameConfig
+ * @property    {number}        dotColCount         - The number of dot columns.
+ * @property    {number}        dotRowCount         - The number of dot rows.
+ * @property    {boolean}       useAi               - True will use the Ai for player 2.
+ * @property    {number}        preMovePercent      - A percent value between 0 and 1.  If the value is non-zero
+ *                                                    then the game will be pre-initialized a number of moves
+ *                                                    equal to the given percent.
+ * @property    {string[]}      playerNames         - The names of the players.
+ */
 
 
 /**
-* Creates a new dotBox game and adds it to the container specified by
-* config.parentId.
-* @function    game
+ * Starts a new game and adds the game canvas to the given parent container.
+ * @function    game
+ * @param  {jQuery|string}  parent  - A jQuery object that contains the parent
+ *                                    to add the game canvas to, or the id of
+ *                                    the parent container to add the canvas to.
+ *
+ * @param  {gameConfig}     config  - The game config with size and ai parameters.
 */
-dotBox.game = function game(parent) {
+dotBox.game = function game(parent, config) {
 
     var observer,
         viewContext,
@@ -22,7 +36,7 @@ dotBox.game = function game(parent) {
     pixelRatio = window.devicePixelRatio;
     viewContext = dotBox.views.viewContext(observer, pixelRatio, 2);
 
-    controller = dotBox.controller(observer);
+    controller = dotBox.controller(observer, config);
     model = controller.model;
 
     //Create views first before initializing the canvas.
@@ -65,9 +79,9 @@ dotBox.game = function game(parent) {
 
 (function ($) {
 
-    $.fn.dotBox = function () {
+    $.fn.dotBox = function (config) {
 
-        dotBox.game(this);
+        dotBox.game(this, config);
 
         return this;
 
