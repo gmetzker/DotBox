@@ -273,6 +273,10 @@ dotBox.controller = function (observer, config) {
             connectRandomLine();
         }
 
+        if (isPlayerAi(gameEngine.getCurrentPlayer())) {
+            makeAiMove(gameEngine.getCurrentPlayer());
+        }
+
     }
 
     function assignPlayerNames() {
