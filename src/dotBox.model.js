@@ -3,7 +3,8 @@ var dotBox = dotBox || {};
 dotBox.model = function model(gameEngine, gameConfig) {
 
     var util = dotBox.utility,
-        that;
+        that,
+        isQuickStarting = false;
 
     that = {
 
@@ -18,7 +19,8 @@ dotBox.model = function model(gameEngine, gameConfig) {
         getCurrentScores: getCurrentScores,
         getCurrentPlayer: getCurrentPlayer,
         getPlayerBoxes: getPlayerBoxes,
-        gameConfig: gameConfig
+        gameConfig: gameConfig,
+        isQuickStarting: isQuickStarting
 
     };
 

@@ -54,7 +54,7 @@ dotBox.controller = function (observer, config) {
         observer.publish('startGame', model);
 
         if (!util.isNullOrUndefined(config.preMovePercent)) {
-            connectRandomLines(config.preMovePercent);
+            quickStart(config.preMovePercent);
         }
     }
 
@@ -90,7 +90,7 @@ dotBox.controller = function (observer, config) {
     }
 
 
-    function connectDots(d1, d2, isInit) {
+    function connectDots(d1, d2) {
 
         var result,
             line,
@@ -131,7 +131,7 @@ dotBox.controller = function (observer, config) {
                 observer.publish("views.playerTurnChanged");
             }
 
-            if (!isInit && isPlayerAi(playerNextTurn)) {
+            if (!model.isQuickStarting && isPlayerAi(playerNextTurn)) {
                 makeAiMove(playerNextTurn);
             }
 
@@ -254,15 +254,17 @@ dotBox.controller = function (observer, config) {
 
         if (util.isNullOrUndefined(line)) { return; }
 
-        connectDots(line.d1, line.d2, true);
+        connectDots(line.d1, line.d2);
 
     }
 
-    function connectRandomLines(percent) {
+    function quickStart(percent) {
 
         var i,
             totalLineCount,
             targetLineCount;
+
+        model.isQuickStarting = true;
 
         if ((percent < 0) || (percent > 1)) {
             throw new Error('percent must be between 0 and 1');
@@ -276,6 +278,8 @@ dotBox.controller = function (observer, config) {
         for (i = 0; i < targetLineCount; i++) {
             connectRandomLine();
         }
+
+        model.isQuickStarting = false;
 
         if (isPlayerAi(gameEngine.getCurrentPlayer())) {
             makeAiMove(gameEngine.getCurrentPlayer());

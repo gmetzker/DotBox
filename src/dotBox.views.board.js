@@ -412,7 +412,8 @@ dotBox.views.board = function (viewContext, model) {
             newShape = false,
             LINE_SIZE = viewContext.scalePixel(1),
             targetProps = null,
-            initLineScale;
+            initLineScale,
+            quickStarting;
 
         lineShape = getLineShape(line);
 
@@ -430,6 +431,7 @@ dotBox.views.board = function (viewContext, model) {
             .moveTo(d1Shape.x, d1Shape.y)
             .lineTo(d2Shape.x, d2Shape.y);
 
+        quickStarting = model.isQuickStarting;
 
 
         if (newShape) {
@@ -458,8 +460,8 @@ dotBox.views.board = function (viewContext, model) {
 
                     var explodeShape;
 
-                    //If we have scored boxes then don't explode.
-                    if (haveScoredBoxes) { return; }
+                    //If we are doing a quick start or have scored boxes then don't explode.
+                    if (quickStarting || haveScoredBoxes) { return; }
 
                     explodeShape = new createjs.Shape();
                     explodeShape.graphics
@@ -597,6 +599,8 @@ dotBox.views.board = function (viewContext, model) {
             ds1,
             ds2;
 
+        if (model.isQuickStarting) { return; }
+
         ds1 = getDotShape(box.lines[0].d1);
         ds2 = getDotShape(box.lines[0].d2);
         x = ds1.x + ((ds2.x - ds1.x) / 2);
@@ -611,16 +615,21 @@ dotBox.views.board = function (viewContext, model) {
         tempShape.textAlign = "center";
         tempShape.textBaseline = "middle";
 
+        tempShape.alpha = 0;
+
         viewContext.stage.addChild(tempShape);
 
         createjs.Tween
             .get(tempShape, {override: false})
-            .to({alpha: 0, y: y + viewContext.scalePixel(200)}, 2500, createjs.Ease.sineOut)
+            .wait(550)
+            .to({alpha: 1}, 0)
+            .to({alpha: 0, y: viewContext.height() + viewContext.scalePixel(50)}, 3000, createjs.Ease.sineOut)
             .call(function () { viewContext.stage.removeChild(tempShape); });
 
 
         createjs.Tween
             .get(tempShape, {override: false})
+            .wait(550)
             .to({scaleX: 1.5, scaleY: 1.5 }, 200, createjs.Ease.elasticInOut);
 
 
