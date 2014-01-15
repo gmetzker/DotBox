@@ -42,8 +42,9 @@ dotBox.controller = function (observer, config) {
 
         if (config.useAi) {
             //aiPlayer = dotBox.ai.singleBoxCloser(1, gameEngine);
-            aiPlayer = new dotBox.ai.AiPlayer(1, gameEngine);
-           // aiPlayer = new dotBox.ai.SingleBoxCloser(1, gameEngine);
+            //aiPlayer = new dotBox.ai.AiPlayer(1, gameEngine);
+            aiPlayer = new dotBox.ai.SingleBoxCloser(1, gameEngine);
+            //  aiPlayer = new dotBox.ai.AvoidThirdSide(1, gameEngine);
         }
 
         model = dotBox.model(gameEngine, config);

@@ -772,6 +772,7 @@ dotBox.views.board = function (viewContext, model) {
 
     }
 
+    //noinspection JSUnusedLocalSymbols
     function onStartRemoteTurn(playerIndex) {
 
         setCursor("wait");
@@ -779,6 +780,7 @@ dotBox.views.board = function (viewContext, model) {
 
     }
 
+    //noinspection JSUnusedLocalSymbols
     function onEndRemoteTurn(playerIndex, move) {
 
         var ANIMATION_TIME = 150,

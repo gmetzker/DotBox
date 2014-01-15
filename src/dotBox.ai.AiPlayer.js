@@ -9,6 +9,7 @@ dotBox.ai.AiPlayer = function AiPlayer(playerIndex, gameEngine) {
         return AiPlayer.apply(new AiPlayer(), arguments);
     }
 
+    //noinspection JSUnusedGlobalSymbols
     this.playerIndex = playerIndex;
     this.gameEngine = gameEngine;
 

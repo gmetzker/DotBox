@@ -21,7 +21,7 @@
     <script src="src/dotBox.views.gameOver.js"></script>
     <script src="src/dotBox.ai.utility.js"></script>
     <script src="src/dotBox.ai.AiPlayer.js"></script>
-    <script src="src/dotBox.ai.pureRandom.js"></script>
+    <script src="src/dotBox.ai.AvoidThirdSide.js"></script>
     <script src="src/dotBox.ai.SingleBoxCloser.js"></script>
     <script src="src/dotBox.controller.js"></script>
     <script src="src/dotBox.game.js" ></script>
@@ -42,7 +42,7 @@
             dotColCount: 6,
             dotRowCount: 6,
             useAi: true,
-            preMovePercent: 0
+            preMovePercent: 0.35
         };
 
         $('#container').dotBox(config);

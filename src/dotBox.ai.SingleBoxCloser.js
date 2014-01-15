@@ -3,29 +3,43 @@ var dotBox = dotBox || {};
 dotBox.ai = dotBox.ai || {};
 
 
-dotBox.ai.SingleBoxCloser = function SingleBoxCloser() {
-    dotBox.ai.AiPlayer.apply(this, arguments);
-};
+dotBox.ai.SingleBoxCloser = (function () {
 
-dotBox.ai.SingleBoxCloser.prototype = new dotBox.ai.AiPlayer();
+    var util = dotBox.utility,
+        SingleBoxCloser;
 
-dotBox.ai.SingleBoxCloser.prototype.move = function move() {
+    SingleBoxCloser = function SingleBoxCloser(playerIndex, gameEngine) {
 
-    var closeableBoxes,
-        rndClosedBox;
+        if (!(this instanceof SingleBoxCloser)) {
+            //Pass arguments to this constructor.
+            return SingleBoxCloser.apply(new SingleBoxCloser(), arguments);
+        }
 
-    closeableBoxes = dotBox.ai.utility.findCloseableBoxes(this.gameEngine);
+        //noinspection JSUnusedGlobalSymbols
+        this.playerIndex = playerIndex;
+        this.gameEngine = gameEngine;
+    };
 
-    if (closeableBoxes.length > 0) {
+    util.inherit(SingleBoxCloser, dotBox.ai.AvoidThirdSide);
 
-        rndClosedBox = dotBox.utility.getRandomItem(closeableBoxes);
-        return rndClosedBox.openLine;
+    SingleBoxCloser.prototype.move = function move() {
 
-    }
+        var closeableBoxes,
+            rndClosedBox;
 
-    return this.getRandomOpenLine();
+        closeableBoxes = dotBox.ai.utility.findCloseableBoxes(this.gameEngine);
 
-};
+        if (closeableBoxes.length > 0) {
 
+            rndClosedBox = util.getRandomItem(closeableBoxes);
+            return rndClosedBox.openLine;
 
+        }
 
+        return SingleBoxCloser.uber.move.apply(this);
+
+    };
+
+    return SingleBoxCloser;
+
+}());

@@ -3,34 +3,120 @@ var dotBox = dotBox || {};
 dotBox.ai = dotBox.ai || {};
 dotBox.ai.utility = dotBox.ai.utility || {};
 
-dotBox.ai.utility.findCloseableBoxes = function (gameEngine) {
+(function (namespace) {
 
-    var results = [],
-        boxIndex,
-        boxCount = gameEngine.getBoxCount(),
-        lineStates;
+    var util = dotBox.utility;
 
 
-    for (boxIndex = 0; boxIndex < boxCount; boxIndex++) {
+    function findCloseableBoxes(gameEngine) {
 
-        if (!gameEngine.isBoxScored(boxIndex)) {
+        var results = [],
+            boxIndex,
+            boxCount = gameEngine.getBoxCount(),
+            lineStates;
 
-            lineStates = gameEngine.getLineStatesForBox(boxIndex);
 
-            if (lineStates.open.length === 1) {
+        for (boxIndex = 0; boxIndex < boxCount; boxIndex++) {
 
-                console.log('CloseableBox @ ' + boxIndex);
-                results.push({
-                    boxIndex: boxIndex,
-                    openLine: lineStates.open[0]
-                });
+            if (!gameEngine.isBoxScored(boxIndex)) {
+
+                lineStates = gameEngine.getLineStatesForBox(boxIndex);
+
+                if (lineStates.open.length === 1) {
+
+                    results.push({
+                        boxIndex: boxIndex,
+                        openLine: lineStates.open[0]
+                    });
+
+                }
 
             }
 
         }
 
+
+        return results;
+
     }
 
-    return results;
+    function boxHasThreeOrMoreOpen(boxIndex, gameEngine) {
 
-};
+        var lineStates;
+
+        lineStates = gameEngine.getLineStatesForBox(boxIndex);
+
+        return lineStates.open.length >= 3;
+
+    }
+
+    function getAllOpenLines(gameEngine) {
+
+        var allOpen = [],
+            iterator,
+            itAndAddIfOpen;
+
+
+
+        itAndAddIfOpen = function (it) {
+            var line;
+
+            //noinspection JSHint,JSLint
+            while (line = it.next()) {
+
+                if (!gameEngine.isLineConnected(line)) {
+                    allOpen.push(line);
+                }
+            }
+
+        };
+
+        iterator = util.hLineIterator(gameEngine.getDotCountLength(), gameEngine.getDotCountWidth());
+        itAndAddIfOpen(iterator);
+
+        iterator = util.vLineIterator(gameEngine.getDotCountLength(), gameEngine.getDotCountWidth());
+        itAndAddIfOpen(iterator);
+
+
+        return allOpen;
+    }
+
+    function findNonThirdSideLines(gameEngine) {
+
+        var i,
+            allOpen,
+            adjacentBoxes,
+            line,
+            dotL = gameEngine.getDotCountLength(),
+            dotW = gameEngine.getDotCountWidth(),
+            resultLines = [],
+            boxIsWideOpen;
+
+        allOpen = getAllOpenLines(gameEngine);
+
+        boxIsWideOpen = function (bIndex) {
+            return boxHasThreeOrMoreOpen(bIndex, gameEngine);
+        };
+
+        for (i = 0; i < allOpen.length; i++) {
+            line = allOpen[i];
+            adjacentBoxes = util.line.getBoxesFromLine(line, dotL, dotW);
+
+            if (adjacentBoxes.every(boxIsWideOpen)) {
+                resultLines.push(line);
+            }
+        }
+
+        return resultLines;
+
+    }
+
+    namespace.findCloseableBoxes = findCloseableBoxes;
+    namespace.boxHasThreeOrMoreOpen = boxHasThreeOrMoreOpen;
+    namespace.getAllOpenLines = getAllOpenLines;
+    namespace.findNonThirdSideLines = findNonThirdSideLines;
+
+
+}(dotBox.ai.utility));
+
+

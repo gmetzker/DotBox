@@ -59,7 +59,7 @@ var hLineIterator = function hLineIterator(dotCountLength, dotCountWidth) {
 
 };
 
-var vLineIterator = function hLineIterator(dotCountLength, dotCountWidth) {
+var vLineIterator = function vLineIterator(dotCountLength, dotCountWidth) {
 
     var colIndex = -1,
         rowIndex = 0,
