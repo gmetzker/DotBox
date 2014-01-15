@@ -6,7 +6,7 @@ dotBox.ai.utility = dotBox.ai.utility || {};
 (function (namespace) {
 
     var util = dotBox.utility;
-
+//        itUtil = dotBox.utility.iterators;
 
     function findCloseableBoxes(gameEngine) {
 
@@ -71,10 +71,10 @@ dotBox.ai.utility = dotBox.ai.utility || {};
 
         };
 
-        iterator = util.hLineIterator(gameEngine.getDotCountLength(), gameEngine.getDotCountWidth());
+        iterator = itUtil.hLineIterator(gameEngine.getDotCountLength(), gameEngine.getDotCountWidth());
         itAndAddIfOpen(iterator);
 
-        iterator = util.vLineIterator(gameEngine.getDotCountLength(), gameEngine.getDotCountWidth());
+        iterator = itUtil.vLineIterator(gameEngine.getDotCountLength(), gameEngine.getDotCountWidth());
         itAndAddIfOpen(iterator);
 
 

@@ -1,4 +1,4 @@
-/*global describe, it, expect, dotBox, vLineIterator, hLineIterator */
+/*global describe, it, expect, dotBox */
 
 
 describe("dotBox.gameEngine", function () {
@@ -6,7 +6,9 @@ describe("dotBox.gameEngine", function () {
     var DEFAULT_PLAYER_COUNT = 2,
         DEFAULT_DOT_COUNT_LENGTH = 10,
         DEFAULT_DOT_COUNT_WIDTH = 10,
-        DEFAULT_START_PLAYER = 0;
+        DEFAULT_START_PLAYER = 0,
+        hLineIterator = dotBox.utility.iterators.hLineIterator,
+        vLineIterator = dotBox.utility.iterators.vLineIterator;
 
     describe("factory", function () {
 

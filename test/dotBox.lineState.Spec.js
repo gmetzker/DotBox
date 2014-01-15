@@ -1,4 +1,4 @@
-/*global describe, it, expect, beforeEach, dotBox, hLineIterator, vLineIterator, boxIterator */
+/*global describe, it, expect, beforeEach, dotBox, boxIterator */
 
 function areLinesSame(line1, line2) {
 
@@ -14,7 +14,9 @@ function areLinesSame(line1, line2) {
 
 describe("dotBox.utility.lineSet", function () {
 
-    var lineState = dotBox.lineState;
+    var lineState = dotBox.lineState,
+        hLineIterator = dotBox.utility.iterators.hLineIterator,
+        vLineIterator = dotBox.utility.iterators.vLineIterator;
 
     it("should construct", function () {
 

@@ -15,6 +15,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       '../lib/Observer*.js',
+      '../src/dotBox.utility.js',
       '../src/*.js',
       '*.js'
     ],
