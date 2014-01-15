@@ -438,10 +438,16 @@ dotBox.gameEngine = function gameEngine(config) {
 
     function getTotalLineCount() {
 
-        return _lineState.getTotalLineCount.apply(getTotalLineCount, arguments);
+        return _lineState.getTotalLineCount.apply(_lineState, arguments);
     }
 
+    function isBoxScored() {
+        return _boxState.isBoxScored.apply(_boxState, arguments);
+    }
 
+    function getLineStatesForBox() {
+        return _lineState.getLineStatesForBox.apply(_lineState, arguments);
+    }
 
     return {
 
@@ -460,7 +466,9 @@ dotBox.gameEngine = function gameEngine(config) {
         canConnectDots: canConnectDots,
         getPlayerBoxes: getPlayerBoxes,
         getOpenLinesForDot: getOpenLinesForDot,
-        getTotalLineCount: getTotalLineCount
+        getTotalLineCount: getTotalLineCount,
+        isBoxScored: isBoxScored,
+        getLineStatesForBox: getLineStatesForBox
 
     };
 

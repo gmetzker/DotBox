@@ -12,7 +12,8 @@ dotBox.lineState = function lineState(dotCountLength, dotCountWidth) {
         isBoxClosed: isBoxClosed,
         getAllLinesForDot: getAllLinesForDot,
         getOpenLinesForDot: getOpenLinesForDot,
-        getTotalLineCount: getTotalLineCount
+        getTotalLineCount: getTotalLineCount,
+        getLineStatesForBox: getLineStatesForBox
     };
 
     configure(dotCountLength, dotCountWidth);
@@ -267,6 +268,34 @@ dotBox.lineState = function lineState(dotCountLength, dotCountWidth) {
 
     function getTotalLineCount() {
         return _verticalLineStates.length + _horizontalLineStates.length;
+    }
+
+    function getLineStatesForBox(boxIndex) {
+
+        var allLines,
+            open = [],
+            closed = [],
+            lIndex,
+            tempLine;
+
+        allLines = dotBox.utility.line.getLinesFromBox(boxIndex, dotCountLength);
+
+        for (lIndex = 0; lIndex < 4; lIndex++) {
+
+            tempLine = allLines[lIndex];
+            if (that.connected(tempLine)) {
+                closed.push(tempLine);
+            } else {
+                open.push(tempLine);
+            }
+
+        }
+
+        return {
+            open: open,
+            closed: closed
+        };
+
     }
 
 

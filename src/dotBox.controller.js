@@ -41,7 +41,7 @@ dotBox.controller = function (observer, config) {
         assignPlayerNames();
 
         if (config.useAi) {
-            aiPlayer = dotBox.ai.pureRandom(1, gameEngine);
+            aiPlayer = dotBox.ai.singleBoxCloser(1, gameEngine);
         }
 
         model = dotBox.model(gameEngine, config);

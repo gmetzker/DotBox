@@ -61,10 +61,10 @@ dotBox.boxState = function (dotCountLength, dotCountWidth) {
 
     /**
      * Checks to see if a box is scored by a player (and is closed).
-     * @function        isBoxScored
-     * @param {number}  boxIndex    - The index of the box that we are checking.
-     * @returns {boolean}           - true if the box is already scored/closed,
-     *                                false if the box is un-scored/open.
+     * @function          isBoxScored
+     * @param   {number}  boxIndex     - The index of the box that we are checking.
+     * @returns {boolean}              - true if the box is already scored/closed,
+     *                                   false if the box is un-scored/open.
      */
     function isBoxScored(boxIndex) {
 

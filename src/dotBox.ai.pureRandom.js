@@ -56,16 +56,19 @@ dotBox.ai.pureRandom = function pureRandom(playerIndex, gameEngine) {
 
     function makeMove(callBack) {
 
+        if (callBack === undefined) {
+            return move();
+        }
+
         setTimeout(function () {
 
-            var move = getMove();
-            callBack(move);
+            callBack(move());
 
         }, 10);
 
     }
 
-    function getMove() {
+    function move() {
 
         var line;
         line = getRandomOpenLine();
