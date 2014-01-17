@@ -212,60 +212,17 @@ dotBox.controller = function (observer, config) {
     }
 
 
-    function getRandomDot() {
+ 
 
-        var x,
-            y,
-            dotColCount = gameEngine.getDotCountLength(),
-            dotRowCount = gameEngine.getDotCountWidth();
 
-        x = util.getRandom(0, dotColCount - 1);
-        y = util.getRandom(0, dotRowCount - 1);
 
-        return {
-            x: x,
-            y: y
-        };
-
-    }
-
-    function getRandomOpenLine() {
-
-        var openLines = null,
-            line,
-            dot;
-
-        if (gameEngine.isGameOver()) { return; }
-
-        while (openLines === null) {
-            dot = getRandomDot();
-            openLines = gameEngine.getOpenLinesForDot(dot);
-            if ((openLines !== null) && openLines.length === 0) {
-                openLines = null;
-            }
-        }
-
-        line = util.getRandomItem(openLines);
-
-        return line;
-
-    }
-
-    function connectRandomLine() {
-
-        var line = getRandomOpenLine();
-
-        if (util.isNullOrUndefined(line)) { return; }
-
-        connectDots(line.d1, line.d2);
-
-    }
 
     function quickStart(percent) {
 
         var i,
             totalLineCount,
-            targetLineCount;
+            targetLineCount,
+            line;
 
 
 
@@ -281,9 +238,13 @@ dotBox.controller = function (observer, config) {
             model.isQuickStarting = true;
         }
 
+        var ai = new dotBox.ai.AvoidThirdSide(-1, gameEngine);
+
         for (i = 0; i < targetLineCount; i++) {
 
-            connectRandomLine();
+            line = ai.move();
+            connectDots(line.d1, line.d2);
+
         }
 
         model.isQuickStarting = false;
