@@ -5,8 +5,8 @@ dotBox.ai.utility = dotBox.ai.utility || {};
 
 (function (namespace) {
 
-    var util = dotBox.utility;
-//        itUtil = dotBox.utility.iterators;
+    var util = dotBox.utility,
+        itUtil = dotBox.utility.iterators;
 
     function findCloseableBoxes(gameEngine) {
 
