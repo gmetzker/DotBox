@@ -30,7 +30,8 @@ dotBox.game = function game(parent, config) {
         views = [],
         controller,
         model,
-        pixelRatio;
+        pixelRatio,
+        that;
 
     observer = new Observer();
     pixelRatio = window.devicePixelRatio;
@@ -72,6 +73,15 @@ dotBox.game = function game(parent, config) {
         return $(p);
     }
 
+    function stopGame() {
+        observer.publish('stopGame');
+    }
+
+    that = {
+        stopGame: stopGame
+    };
+
+    return that;
 };
 
 
@@ -81,9 +91,7 @@ dotBox.game = function game(parent, config) {
 
     $.fn.dotBox = function (config) {
 
-        dotBox.game(this, config);
-
-        return this;
+        return dotBox.game(this, config);
 
     };
 

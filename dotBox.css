@@ -1,0 +1,67 @@
+.container {
+
+    /*border: 1px solid darkred;*/
+
+
+}
+
+#gameContainer {
+     text-align: center;
+     margin:auto;
+ }
+
+.form-control#fillPercent {
+    widows: 50px;
+}
+
+.qg-hint {
+    margin: 20px 20px;
+}
+
+div.panel-heading span h4 {
+    display: inline;
+    line-height: 34px;
+}
+
+/* Base styles (regardless of theme) */
+.bs-callout {
+    margin: 20px 0;
+    padding: 15px 30px 15px 15px;
+    border-left: 5px solid #eee;
+}
+.bs-callout h4 {
+    margin-top: 0;
+}
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+.bs-callout code,
+.bs-callout .highlight {
+    background-color: #fff;
+}
+
+/* Themes for different contexts */
+.bs-callout-danger {
+    background-color: #fcf2f2;
+    border-color: #dFb5b4;
+}
+.bs-callout-warning {
+    background-color: #fefbed;
+    border-color: #f1e7bc;
+}
+.bs-callout-info {
+    background-color: #f0f7fd;
+    border-color: #d0e3f0;
+}
+
+.bs-callout-danger h4 {
+    color: #d9534f;
+}
+
+.bs-callout-warning h4 {
+    color: #f0ad4e;
+}
+
+.bs-callout-info h4{
+    color: #5bc0de;
+}

@@ -1,55 +1,181 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>dotBox</title>
+
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dotBox.css">
+
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
-    <script src="lib/createjs-2013.09.25.min.js" ></script>
-    <!--<script src="lib/Observer-1.0.2.js" ></script>-->
-    <script src="lib/dotBox-min.js" ></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="lib/createjs-2013.09.25.min.js"></script>
 
-<!--
-    <script src="src/dotBox.utility.js"></script>
-    <script src="src/dotBox.utility.line.js"></script>
-    <script src="src/dotBox.utility.iterators.js"></script>
-    <script src="src/dotBox.boxState.js"></script>
-    <script src="src/dotBox.lineState.js"></script>
-    <script src="src/dotBox.gameEngine.js"></script>
-    <script src="src/dotBox.model.js"></script>
-    <script src="src/dotBox.views.constants.js"></script>
-    <script src="src/dotBox.views.viewContext.js"></script>
-    <script src="src/dotBox.views.Color.js"></script>
-    <script src="src/dotBox.views.board.js"></script>
-    <script src="src/dotBox.views.score.js"></script>
-    <script src="src/dotBox.views.gameOver.js"></script>
-    <script src="src/dotBox.ai.utility.js"></script>
-    <script src="src/dotBox.ai.AiPlayer.js"></script>
-    <script src="src/dotBox.ai.AvoidThirdSide.js"></script>
-    <script src="src/dotBox.ai.SingleBoxCloser.js"></script>
-    <script src="src/dotBox.controller.js"></script>
-    <script src="src/dotBox.game.js" ></script>
--->
+
+        <!--<script src="lib/Observer-1.0.2.js" ></script>-->
+        <!--<script src="src/dotBox.utility.js"></script>-->
+        <!--<script src="src/dotBox.utility.line.js"></script>-->
+        <!--<script src="src/dotBox.utility.iterators.js"></script>-->
+        <!--<script src="src/dotBox.boxState.js"></script>-->
+        <!--<script src="src/dotBox.lineState.js"></script>-->
+        <!--<script src="src/dotBox.gameEngine.js"></script>-->
+        <!--<script src="src/dotBox.model.js"></script>-->
+        <!--<script src="src/dotBox.views.constants.js"></script>-->
+        <!--<script src="src/dotBox.views.viewContext.js"></script>-->
+        <!--<script src="src/dotBox.views.Color.js"></script>-->
+        <!--<script src="src/dotBox.views.board.js"></script>-->
+        <!--<script src="src/dotBox.views.score.js"></script>-->
+        <!--<script src="src/dotBox.views.gameOver.js"></script>-->
+        <!--<script src="src/dotBox.ai.utility.js"></script>-->
+        <!--<script src="src/dotBox.ai.AiPlayer.js"></script>-->
+        <!--<script src="src/dotBox.ai.AvoidThirdSide.js"></script>-->
+        <!--<script src="src/dotBox.ai.SingleBoxCloser.js"></script>-->
+        <!--<script src="src/dotBox.controller.js"></script>-->
+        <!--<script src="src/dotBox.game.js" ></script>-->
+
+
+    <script src="lib/dotBox-min.js"></script>
+    <script src="app.js"></script>
+
+
     <!--<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0, target-densitydpi=device-dpi">-->
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
 </head>
 <body>
-    <div id="container"></div>
+
+<div id="gameContainer" class="container">
+</div>
+
+<div class="container">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span><h4>Game Options</h4></span>
+            <button id="newGame1" type="button"
+                    class="btn btn-primary pull-right"
+                    data-bind="click: newGame">New Game
+            </button>
+
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <form class="form-horizontal" role="form">
+
+
+                <div class="form-group">
+                    <label for="playerMode" class="col-sm-2 control-label">Play
+                        as</label>
+
+                    <div class="col-sm-4">
+
+                        <select class="form-control" id="playerMode" data-bind="value: playerMode">
+                            <option value="pvc">Player vs Computer</option>
+                            <option value="pvp">Player vs Player</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="p1Name"
+                           class="col-sm-2 control-label">Player Name</label>
+
+                    <div class="col-sm-4">
+
+                        <input type="text" id="p1Name" class="form-control"
+                               data-bind="value: playerName1">
+
+                    </div>
+                </div>
+
+
+
+                <div class="form-group" data-bind="visible: useAi() == false">
+                    <label for="p2Name"
+                           class="col-sm-2 control-label">2nd Player Name</label>
+
+                    <div class="col-sm-4">
+
+                        <input type="text" id="p2Name" class="form-control"
+                               data-bind="value: playerName2" >
+
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="dotColCount" class="col-sm-2 control-label">Dot
+                        Columns</label>
+
+                    <div class="col-sm-2">
+
+                        <input type="number" id="dotColCount"
+                               class="form-control" data-bind="value: dotCols">
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="dotRowCount" class="col-sm-2 control-label">Dot
+                        Rows</label>
+
+                    <div class="col-sm-2">
+
+                        <input type="number" id="dotRowCount"
+                               class="form-control" data-bind="value: dotRows">
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-9">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" data-bind="checked: quickGame"> Quick
+                                Game
+
+                            </label>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="form-group" data-bind="visible: quickGame">
+                    <label for="fillPercent" class="col-sm-2 control-label">Fill
+                        %</label>
+
+                    <div class="col-sm-2">
+
+                        <input type="number" id="fillPercent"
+                               class="form-control" data-bind="value: fillPercent">
+                    </div>
+                </div>
+
+                <div class="qg-hint">
+                    <div class="bs-callout bs-callout-info ">
+                        <h4>Quick Game</h4>
+
+                        <p>Randomly connect a percentage of the lines to make
+                            the game shorter and get to the fun part quicker.
+                            Use <b>Fill %</b> to control the percentage of lines
+                            that are connected before the game starts.
+                        </p>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="panel-footer">
+            <button id="newGame2" type="button"
+                    class="btn btn-primary pull-right"
+                    data-bind="click: newGame">New Game
+            </button>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+</div>
+
 </body>
-<script>
-    $(document).ready(function() {
-
-        var config;
-
-        config = {
-            dotColCount: 6,
-            dotRowCount: 6,
-            useAi: true,
-            preMovePercent: 0.35
-        };
-
-        $('#container').dotBox(config);
-       // dotBox.game('container');
-
-    });
-</script>
 </html>

@@ -87,7 +87,7 @@ dotBox.views.board = function (viewContext, model) {
 
         viewContext.observer.subscribe('endRemoteTurn', onEndRemoteTurn);
 
-
+        viewContext.observer.subscribe('stopGame', onStopGame);
 
 
     }
@@ -98,6 +98,21 @@ dotBox.views.board = function (viewContext, model) {
         drawInitialView();
 
         startEventLoop();
+
+    }
+
+    function onStopGame() {
+
+        createjs.Ticker.removeEventListener("tick", tick);
+
+        if (mouseOverIntervalId) {
+
+            clearInterval(mouseOverIntervalId);
+            //noinspection JSUnusedAssignment
+            mouseOverIntervalId = null;
+
+
+        }
 
     }
 
@@ -208,6 +223,7 @@ dotBox.views.board = function (viewContext, model) {
         createjs.Ticker.addEventListener("tick", tick);
         createjs.Ticker.setFPS(60);
 
+
     }
 
     function enableMouseOver(frequency) {
@@ -217,6 +233,7 @@ dotBox.views.board = function (viewContext, model) {
             clearInterval(mouseOverIntervalId);
             //noinspection JSUnusedAssignment
             mouseOverIntervalId = null;
+
 
         }
 
