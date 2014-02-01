@@ -10,7 +10,7 @@ dotBox.views = dotBox.views || {};
  * @param {Observer} observer       - The Observer instance used for broadcasting events and binding to the controller.
  * @param {number}   pixelRatio
  */
-dotBox.views.viewContext = function viewContext(observer, pixelRatio) {
+dotBox.views.viewContext = function viewContext(observer, pixelRatio, uiScale) {
 
     var util = dotBox.utility,
         that,
@@ -83,7 +83,7 @@ dotBox.views.viewContext = function viewContext(observer, pixelRatio) {
      * @returns {number}        - The scaled pixel value.
      */
     function scalePixel(value) {
-        return value * pixelRatio;
+        return value * pixelRatio * uiScale;
     }
 
     /**
@@ -98,7 +98,7 @@ dotBox.views.viewContext = function viewContext(observer, pixelRatio) {
 
         for (propName in pixelSet) {
             if (pixelSet.hasOwnProperty(propName)) {
-                pixelSet[propName] = pixelSet[propName] * pixelRatio;
+                pixelSet[propName] = pixelSet[propName] * pixelRatio * uiScale;
             }
         }
 

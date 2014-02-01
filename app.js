@@ -10,16 +10,19 @@ dotBox.viewModel = (function () {
         playerMode: ko.observable('pvc'),
         playerName1: ko.observable('PLAYER 1'),
         playerName2Custom: ko.observable('PLAYER 2'),
-        dotCols: ko.observable(6),
+        dotCols: ko.observable(10),
         dotRows: ko.observable(6),
         quickGame: ko.observable(true),
         fillPercentCustom: ko.observable(30),
+        uiScale: ko.observable(1.25),
         game: null
     };
+
 
     vm.useAi = ko.computed(function () {
         return vm.playerMode() === 'pvc';
     });
+
 
     vm.playerName2 = ko.computed({
 
@@ -38,6 +41,8 @@ dotBox.viewModel = (function () {
             }
         }
     });
+
+
 
     vm.fillPercent = ko.computed({
 
@@ -59,6 +64,8 @@ dotBox.viewModel = (function () {
         }
     });
 
+
+
     vm.toGameConfig = function () {
 
         var config = {
@@ -66,14 +73,25 @@ dotBox.viewModel = (function () {
             dotRowCount: vm.dotRows(),
             useAi: vm.useAi(),
             preMovePercent: vm.fillPercent() / 100,
-            playerNames: [vm.playerName1(), vm.playerName2()]
+            playerNames: [vm.playerName1(), vm.playerName2()],
+            uiScale: vm.uiScale()
         };
 
         return config;
 
     };
 
+
+
     vm.newGame = function newGame() {
+
+        if (!vm.isValid()) {
+            $('#globalError').removeClass('hidden');
+            return;
+        }
+
+        $('#globalError').addClass('hidden');
+
 
         var $container = $('#gameContainer'),
             config = vm.toGameConfig();
@@ -87,6 +105,60 @@ dotBox.viewModel = (function () {
 
     };
 
+    function validatePlayerName(name) {
+
+        if (name === undefined || name === null) { return false; }
+
+        if (name.length === 0 || name.length > 10) { return false; }
+
+        return true;
+
+    }
+
+    vm.isP1NameValid = ko.computed(function () {
+        return validatePlayerName(vm.playerName1());
+    });
+
+    vm.isP2NameValid = ko.computed(function () {
+        return validatePlayerName(vm.playerName2());
+    });
+
+    vm.isDotColsValid = ko.computed(function () {
+
+        if (vm.dotCols() < 6 || vm.dotCols() > 20) { return false; }
+
+        return true;
+
+    });
+
+    vm.isDotRowsValid = ko.computed(function () {
+
+        if (vm.dotRows() < 3 || vm.dotRows() > 20) { return false; }
+
+        return true;
+
+    });
+
+    vm.isFillPercentValid = ko.computed(function () {
+
+        if (vm.fillPercentCustom() < 1 || vm.fillPercentCustom() > 100) { return false; }
+
+        return true;
+
+    });
+
+    vm.isValid = ko.computed(function () {
+
+        if (!vm.isP1NameValid()) { return false; }
+        if (!vm.isP2NameValid()) { return false; }
+        if (!vm.isDotColsValid()) { return false; }
+        if (!vm.isDotRowsValid()) { return false; }
+        if (!vm.isFillPercentValid()) { return false; }
+
+        return true;
+
+    });
+
 
     return vm;
 
@@ -98,6 +170,34 @@ dotBox.viewModel = (function () {
 
 
 $(document).ready(function () {
+
+    $('.alert .close').on('click', function () {
+        $(this).parent().addClass('hidden');
+    });
+
+    ko.bindingHandlers.slider = {
+        init: function (element, valueAccessor, allBindingsAccessor) {
+            var options = allBindingsAccessor().sliderOptions || {};
+            $(element).slider(options);
+            ko.utils.registerEventHandler(element, "slidechange", function (event, ui) {
+                var observable = valueAccessor();
+                observable(ui.value);
+            });
+            ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+                $(element).slider("destroy");
+            });
+            ko.utils.registerEventHandler(element, "slide", function (event, ui) {
+                var observable = valueAccessor();
+                observable(ui.value);
+            });
+        },
+        update: function (element, valueAccessor) {
+            var value = ko.utils.unwrapObservable(valueAccessor());
+            if (isNaN(value)) { value = 0; }
+            $(element).slider("value", value);
+
+        }
+    };
 
     ko.applyBindings(dotBox.viewModel);
 

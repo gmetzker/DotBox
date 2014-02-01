@@ -1,7 +1,7 @@
+
 .container {
 
     /*border: 1px solid darkred;*/
-
 
 }
 
@@ -22,6 +22,45 @@ div.panel-heading span h4 {
     display: inline;
     line-height: 34px;
 }
+
+.form-group.fgQuickGame {
+    margin-top: 30px;
+}
+
+
+@media (min-width: 768px) {
+
+    .form-horizontal .control-label {
+        text-align: left;
+    }
+
+    .form-horizontal .form-group {
+        padding-left: 15px;
+    }
+
+    .jumbotron h1 {
+        font-size: 60px;
+    }
+
+}
+
+.sliderWrapper {
+    padding-top: 10px;
+}
+
+.jumbotron {
+    background-color: #53d2f1;
+
+}
+
+.jumbotron h1 {
+    color: #fff;
+}
+
+.jumbotron p {
+    color: rgba(255, 255, 255, 0.75);
+}
+
 
 /* Base styles (regardless of theme) */
 .bs-callout {

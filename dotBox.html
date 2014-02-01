@@ -4,9 +4,11 @@
     <title>dotBox</title>
 
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/jquery/jquery-ui-1.10.4.custom.min.css">
     <link rel="stylesheet" href="dotBox.css">
 
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
+    <script src="lib/jquery/jquery-ui-1.10.4.custom.min.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <script src="lib/createjs-2013.09.25.min.js"></script>
@@ -44,138 +46,197 @@
 </head>
 <body>
 
-<div id="gameContainer" class="container">
-</div>
 
-<div class="container">
-
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <span><h4>Game Options</h4></span>
-            <button id="newGame1" type="button"
-                    class="btn btn-primary pull-right"
-                    data-bind="click: newGame">New Game
-            </button>
-
-            <div class="clearfix"></div>
-        </div>
-        <div class="panel-body">
-            <form class="form-horizontal" role="form">
-
-
-                <div class="form-group">
-                    <label for="playerMode" class="col-sm-2 control-label">Play
-                        as</label>
-
-                    <div class="col-sm-4">
-
-                        <select class="form-control" id="playerMode" data-bind="value: playerMode">
-                            <option value="pvc">Player vs Computer</option>
-                            <option value="pvp">Player vs Player</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="p1Name"
-                           class="col-sm-2 control-label">Player Name</label>
-
-                    <div class="col-sm-4">
-
-                        <input type="text" id="p1Name" class="form-control"
-                               data-bind="value: playerName1">
-
-                    </div>
-                </div>
-
-
-
-                <div class="form-group" data-bind="visible: useAi() == false">
-                    <label for="p2Name"
-                           class="col-sm-2 control-label">2nd Player Name</label>
-
-                    <div class="col-sm-4">
-
-                        <input type="text" id="p2Name" class="form-control"
-                               data-bind="value: playerName2" >
-
-                    </div>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="dotColCount" class="col-sm-2 control-label">Dot
-                        Columns</label>
-
-                    <div class="col-sm-2">
-
-                        <input type="number" id="dotColCount"
-                               class="form-control" data-bind="value: dotCols">
-
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="dotRowCount" class="col-sm-2 control-label">Dot
-                        Rows</label>
-
-                    <div class="col-sm-2">
-
-                        <input type="number" id="dotRowCount"
-                               class="form-control" data-bind="value: dotRows">
-
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-9">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" data-bind="checked: quickGame"> Quick
-                                Game
-
-                            </label>
-                        </div>
-                    </div>
-
-
-                </div>
-
-                <div class="form-group" data-bind="visible: quickGame">
-                    <label for="fillPercent" class="col-sm-2 control-label">Fill
-                        %</label>
-
-                    <div class="col-sm-2">
-
-                        <input type="number" id="fillPercent"
-                               class="form-control" data-bind="value: fillPercent">
-                    </div>
-                </div>
-
-                <div class="qg-hint">
-                    <div class="bs-callout bs-callout-info ">
-                        <h4>Quick Game</h4>
-
-                        <p>Randomly connect a percentage of the lines to make
-                            the game shorter and get to the fun part quicker.
-                            Use <b>Fill %</b> to control the percentage of lines
-                            that are connected before the game starts.
-                        </p>
-                    </div>
-                </div>
-
-            </form>
-        </div>
-        <div class="panel-footer">
-            <button id="newGame2" type="button"
-                    class="btn btn-primary pull-right"
-                    data-bind="click: newGame">New Game
-            </button>
-            <div class="clearfix"></div>
+    <div class="jumbotron">
+        <div class="container">
+            <h1>DotBox</h1>
+            <p>A game of dots, lines, and boxes.</p>
         </div>
     </div>
 
-</div>
+
+
+    <div class="container">
+
+
+        <div id="gameContainer" class="container"></div>
+
+        <div class="page-header">
+            <h1>Rules</h1>
+            <ul>
+                <li>Each turn connects a line by clicking two adjacent dots.</li>
+                <li>Score a box after connecting the fourth side.</li>
+                <li>When you score you get a free turn.</li>
+                <li>Player who scored most boxes wins.</li>
+            </ul>
+        </div>
+
+        <div class="page-header">
+
+            <button id="newGame1" type="button"
+                    class="btn btn-primary pull-right"
+                    data-bind="click: newGame">New Game</button>
+            <h2>Game Options</h2>
+
+
+
+
+
+
+            <div class="panel panel-default">
+
+                <div class="panel-body">
+
+                    <div id="globalError" class="alert alert-danger alert-dismissable hidden">
+                        <button type="button" class="close" aria-hidden="true">&times;</button>
+                        <b>Oh snap!</b> You need to fix your error(s) before you start a <strong>New Game</strong>.
+                    </div>
+
+                    <form class="form-horizontal" role="form">
+
+
+                        <div class="form-group">
+                            <label for="playerMode" class="col-sm-3 control-label">Play as</label>
+
+                            <div class="col-sm-4">
+
+                                <select class="form-control" id="playerMode" data-bind="value: playerMode">
+                                    <option value="pvc">Player vs Computer</option>
+                                    <option value="pvp">Player vs Player</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" data-bind="css: {'has-error has-feedback': !isP1NameValid()}">
+                            <label for="p1Name"
+                                   class="col-sm-3 control-label">Player Name</label>
+
+                            <div class="col-sm-4">
+
+                                <input type="text" id="p1Name" class="form-control"
+                                       data-bind="value: playerName1, valueUpdate: 'afterkeydown'">
+                                <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !isP1NameValid()"></span>
+
+                            </div>
+
+                        </div>
+                        <div class="form-group" data-bind="visible: !isP1NameValid()">
+                            <div class="col-sm-7">
+                                <div class="alert alert-danger"><b>Player Name</b> must be between 1 and 10 characters.</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" data-bind="visible: useAi() == false, css: {'has-error has-feedback': !isP2NameValid()}">
+                            <label for="p2Name"
+                                   class="col-sm-3 control-label">2nd Player Name</label>
+
+                            <div class="col-sm-4">
+
+                                <input type="text" id="p2Name" class="form-control"
+                                       data-bind="value: playerName2, valueUpdate: 'afterkeydown'" >
+                                <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !isP2NameValid()"></span>
+                            </div>
+                        </div>
+                        <div class="form-group" data-bind="visible: !isP2NameValid()">
+                            <div class="col-sm-7">
+                                <div class="alert alert-danger"><b>2nd Player Name</b> must be between 1 and 10 characters.</div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="dotColCount" class="col-sm-3 control-label">Game Size</label>
+
+                            <div class="col-sm-4 sliderWrapper" >
+                                <div id="slider" data-bind="slider: uiScale, sliderOptions: {min: 1.0, max: 2.5, range: 'min', step: 0.01}"></div>
+                            </div>
+                        </div>
+
+
+
+
+
+
+                        <div class="form-group" data-bind="css: {'has-error has-feedback': !isDotColsValid()}">
+                            <label for="dotColCount" class="col-sm-3 control-label">Num. of Columns</label>
+
+                            <div class="col-sm-2">
+
+                                <input type="number" id="dotColCount"
+                                       class="form-control" data-bind="value: dotCols, valueUpdate: 'afterkeydown'">
+                            </div>
+                        </div>
+                        <div class="form-group" data-bind="visible: !isDotColsValid()">
+                            <div class="col-sm-7">
+                                <div class="alert alert-danger"><b>Num. of Columns</b> is required and must be between 6 and 20.</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" data-bind="css: {'has-error has-feedback': !isDotRowsValid()}">
+                            <label for="dotRowCount" class="col-sm-3 control-label">Num. of Rows</label>
+
+                            <div class="col-sm-2">
+
+                                <input type="number" id="dotRowCount"
+                                       class="form-control" data-bind="value: dotRows, valueUpdate: 'afterkeydown'">
+
+                            </div>
+                        </div>
+                        <div class="form-group" data-bind="visible: !isDotRowsValid()">
+                            <div class="col-sm-7">
+                                <div class="alert alert-danger"><b>Num. of Rows</b> is required and must be between 3 and 20.</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group fgQuickGame">
+                            <div class="col-sm-3">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" data-bind="checked: quickGame"> <b>Quick Game</b>
+
+                                    </label>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group" data-bind="visible: quickGame, css: {'has-error has-feedback': !isFillPercentValid()}">
+                            <label for="fillPercent" class="col-sm-3 control-label">Fill Percent %</label>
+
+                            <div class="col-sm-2">
+
+                                <input type="number" id="fillPercent"
+                                       class="form-control" data-bind="value: fillPercent, valueUpdate: 'afterkeydown'">
+                            </div>
+                        </div>
+                        <div class="form-group" data-bind="visible: !isFillPercentValid()">
+                            <div class="col-sm-7">
+                                <div class="alert alert-danger"><b>Fill Percent %</b> is required and must be between 1 and 100.
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="qg-hint">
+                            <div class="bs-callout bs-callout-info ">
+                                <h4>Quick Game</h4>
+
+                                <p>Randomly connect a percentage of the lines to make
+                                    the game shorter and get to the fun part quicker.
+                                    Use <b>Fill %</b> to control the percentage of lines
+                                    that are connected before the game starts.
+                                </p>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
 
 </body>
 </html>

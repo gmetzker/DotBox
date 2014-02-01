@@ -10,6 +10,7 @@ var dotBox = dotBox || {};
  * @property    {number}        preMovePercent      - A percent value between 0 and 1.  If the value is non-zero
  *                                                    then the game will be pre-initialized a number of moves
  *                                                    equal to the given percent.
+ * @property    {number}        uiScale             - The scale of the UI.
  * @property    {string[]}      playerNames         - The names of the players.
  */
 
@@ -35,7 +36,7 @@ dotBox.game = function game(parent, config) {
 
     observer = new Observer();
     pixelRatio = window.devicePixelRatio;
-    viewContext = dotBox.views.viewContext(observer, pixelRatio, 2);
+    viewContext = dotBox.views.viewContext(observer, pixelRatio, config.uiScale);
 
     controller = dotBox.controller(observer, config);
     model = controller.model;
