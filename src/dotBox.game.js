@@ -35,7 +35,7 @@ dotBox.game = function game(parent, config) {
         that;
 
     observer = new Observer();
-    pixelRatio = window.devicePixelRatio;
+    pixelRatio = window.devicePixelRatio || Math.round(window.screen.availWidth / document.documentElement.clientWidth);
     viewContext = dotBox.views.viewContext(observer, pixelRatio, config.uiScale);
 
     controller = dotBox.controller(observer, config);

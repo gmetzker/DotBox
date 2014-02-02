@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="lib/jquery/jquery-ui-1.10.4.custom.min.css">
     <link rel="stylesheet" href="dotBox.css">
 
-    <script src="lib/jquery/jquery-2.0.3.min.js"></script>
+    <!--<script src="lib/jquery/jquery-2.0.3.min.js"></script>-->
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="lib/jquery/jquery-ui-1.10.4.custom.min.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
@@ -56,10 +57,10 @@
 
 
 
-    <div class="container">
+    <div class="container" id="mainContainer">
 
 
-        <div id="gameContainer" class="container"></div>
+        <div id="canvasContainer" class="container"></div>
 
         <div class="page-header">
             <h1>Rules</h1>
@@ -222,7 +223,7 @@
                             <div class="bs-callout bs-callout-info ">
                                 <h4>Quick Game</h4>
 
-                                <p>Randomly connect a percentage of the lines to make
+                                <p>Randomly connects a percentage of the lines to make
                                     the game shorter and get to the fun part quicker.
                                     Use <b>Fill %</b> to control the percentage of lines
                                     that are connected before the game starts.
@@ -236,6 +237,17 @@
         </div>
 
 
+    </div>
+
+    <div class="container hidden" id="failContainer">
+
+        <div class="bs-callout bs-callout-danger">
+            <h4>#BrowserFail</h4>
+
+            <p>Your browser doesn't support the HTML5 Canvas element.  Try updating to modern browser like Chrome.
+            </p>
+            <a href="https://www.google.com/intl/en/chrome/browser/" class="btn btn-primary btn-lg" role="button">Download Chrome</a>
+        </div>
     </div>
 
 </body>

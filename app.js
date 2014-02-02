@@ -93,7 +93,7 @@ dotBox.viewModel = (function () {
         $('#globalError').addClass('hidden');
 
 
-        var $container = $('#gameContainer'),
+        var $container = $('#canvasContainer'),
             config = vm.toGameConfig();
 
         $container.empty();
@@ -166,7 +166,10 @@ dotBox.viewModel = (function () {
 
 }());
 
-
+function isCanvasSupported() {
+    var elem = document.createElement('canvas');
+    return !!(elem.getContext && elem.getContext('2d'));
+}
 
 
 $(document).ready(function () {
@@ -174,6 +177,12 @@ $(document).ready(function () {
     $('.alert .close').on('click', function () {
         $(this).parent().addClass('hidden');
     });
+
+    if (!isCanvasSupported()) {
+        $('#mainContainer').addClass('hidden');
+        $('#failContainer').removeClass('hidden');
+        return;
+    }
 
     ko.bindingHandlers.slider = {
         init: function (element, valueAccessor, allBindingsAccessor) {
