@@ -12,7 +12,8 @@ dotBox.views.gameOver = function (viewContext, model) {
 
     //Members
     //noinspection JSLint
-    var that = {};
+    var that = {},
+        gameStoped = false;
 
 
     //Constants
@@ -31,7 +32,7 @@ dotBox.views.gameOver = function (viewContext, model) {
 
 
     viewContext.observer.subscribe('gameOver', onGameOver);
-
+    viewContext.observer.subscribe('stopGame', onStopGame);
 
 
 
@@ -62,6 +63,10 @@ dotBox.views.gameOver = function (viewContext, model) {
         drawText("='(  " + 'Sorry ' + looserName, looserColor, 4030);
 
 
+    }
+
+    function onStopGame() {
+        gameStoped = true;
     }
 
     function drawBackground() {
@@ -218,6 +223,8 @@ dotBox.views.gameOver = function (viewContext, model) {
             boxShape,
             boxIndex,
             boxSize;
+
+        if (gameStoped) { return; }
 
 
         playerBoxes = model.getPlayerBoxes(winner);
