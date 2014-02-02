@@ -62,7 +62,6 @@ dotBox.views.gameOver = function (viewContext, model) {
         drawText("=) " + winnerName + " wins!", winnerColor, 30);
         drawText("='(  " + 'Sorry ' + looserName, looserColor, 4030);
 
-
     }
 
     function onStopGame() {
@@ -87,8 +86,7 @@ dotBox.views.gameOver = function (viewContext, model) {
 
         createjs.Tween
             .get(tempShape, {override: true})
-            .to({alpha: 0.5}, 600, createjs.Ease.sineIn)
-            .call();
+            .to({alpha: 0.5}, 600, createjs.Ease.sineIn);
 
         return container;
 
