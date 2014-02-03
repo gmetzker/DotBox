@@ -4,50 +4,16 @@
     <title>dotBox</title>
 
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="lib/jquery/jquery-ui-1.10.4.custom.min.css">
-    <link rel="stylesheet" href="dotBox.css">
+    <link rel="stylesheet"  href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/start/jquery-ui.min.css">
+    <link rel="stylesheet" href="css/dotBox.css">
 
-    <!--<script src="lib/jquery/jquery-2.0.3.min.js"></script>-->
-    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script src="lib/jquery/jquery-ui-1.10.4.custom.min.js"></script>
-    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-    <script src="lib/createjs-2013.09.25.min.js"></script>
-
-
-        <!--<script src="lib/Observer-1.0.2.js" ></script>-->
-        <!--<script src="src/dotBox.utility.js"></script>-->
-        <!--<script src="src/dotBox.utility.line.js"></script>-->
-        <!--<script src="src/dotBox.utility.iterators.js"></script>-->
-        <!--<script src="src/dotBox.boxState.js"></script>-->
-        <!--<script src="src/dotBox.lineState.js"></script>-->
-        <!--<script src="src/dotBox.gameEngine.js"></script>-->
-        <!--<script src="src/dotBox.model.js"></script>-->
-        <!--<script src="src/dotBox.views.constants.js"></script>-->
-        <!--<script src="src/dotBox.views.viewContext.js"></script>-->
-        <!--<script src="src/dotBox.views.Color.js"></script>-->
-        <!--<script src="src/dotBox.views.board.js"></script>-->
-        <!--<script src="src/dotBox.views.score.js"></script>-->
-        <!--<script src="src/dotBox.views.gameOver.js"></script>-->
-        <!--<script src="src/dotBox.ai.utility.js"></script>-->
-        <!--<script src="src/dotBox.ai.AiPlayer.js"></script>-->
-        <!--<script src="src/dotBox.ai.AvoidThirdSide.js"></script>-->
-        <!--<script src="src/dotBox.ai.SingleBoxCloser.js"></script>-->
-        <!--<script src="src/dotBox.controller.js"></script>-->
-        <!--<script src="src/dotBox.game.js" ></script>-->
-
-
-    <script src="lib/dotBox-min.js"></script>
-    <script src="app.js"></script>
-
-
-    <!--<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0, target-densitydpi=device-dpi">-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 </head>
 <body>
 
-
+    <!--Page Header -->
     <div class="jumbotron">
         <div class="container">
             <h1>DotBox</h1>
@@ -56,12 +22,13 @@
     </div>
 
 
-
+    <!-- Main UI container for GameCanvas and Options -->
     <div class="container" id="mainContainer">
 
-
+        <!-- This will contain the DotBox game canvas when the game is started -->
         <div id="canvasContainer" class="container"></div>
 
+        <!-- Shows the rules of the game -->
         <div class="page-header">
             <h1>Rules</h1>
             <ul>
@@ -72,21 +39,21 @@
             </ul>
         </div>
 
+        <!-- Form controls for Game Options -->
         <div class="page-header">
 
-            <button id="newGame1" type="button"
-                    class="btn btn-primary pull-right"
-                    data-bind="click: newGame">New Game</button>
+            <!-- Triggers a new game -->
+            <button id="newGameBtn" type="button"
+                    class="btn btn-primary pull-right">New Game
+            </button>
+
             <h2>Game Options</h2>
 
-
-
-
-
-
+            <!-- Main panel for game options -->
             <div class="panel panel-default">
 
                 <div class="panel-body">
+
 
                     <div id="globalError" class="alert alert-danger alert-dismissable hidden">
                         <button type="button" class="close" aria-hidden="true">&times;</button>
@@ -116,12 +83,12 @@
 
                                 <input type="text" id="p1Name" class="form-control"
                                        data-bind="value: playerName1, valueUpdate: 'afterkeydown'">
-                                <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !isP1NameValid()"></span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback hidden" data-bind="css {hidden: isP1NameValid()}"></span>
 
                             </div>
 
                         </div>
-                        <div class="form-group" data-bind="visible: !isP1NameValid()">
+                        <div class="form-group hidden" data-bind="css {hidden: isP1NameValid()}">
                             <div class="col-sm-7">
                                 <div class="alert alert-danger"><b>Player Name</b> must be between 1 and 10 characters.</div>
                             </div>
@@ -135,10 +102,10 @@
 
                                 <input type="text" id="p2Name" class="form-control"
                                        data-bind="value: playerName2, valueUpdate: 'afterkeydown'" >
-                                <span class="glyphicon glyphicon-remove form-control-feedback" data-bind="visible: !isP2NameValid()"></span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback hidden" data-bind="css {hidden: isP2NameValid()}"></span>
                             </div>
                         </div>
-                        <div class="form-group" data-bind="visible: !isP2NameValid()">
+                        <div class="form-group hidden" data-bind="css {hidden: isP2NameValid()}">
                             <div class="col-sm-7">
                                 <div class="alert alert-danger"><b>2nd Player Name</b> must be between 1 and 10 characters.</div>
                             </div>
@@ -167,7 +134,7 @@
                                        class="form-control" data-bind="value: dotCols, valueUpdate: 'afterkeydown'">
                             </div>
                         </div>
-                        <div class="form-group" data-bind="visible: !isDotColsValid()">
+                        <div class="form-group hidden" data-bind="css: {hidden: isDotColsValid()}">
                             <div class="col-sm-7">
                                 <div class="alert alert-danger"><b>Num. of Columns</b> is required and must be between 6 and 20.</div>
                             </div>
@@ -183,7 +150,7 @@
 
                             </div>
                         </div>
-                        <div class="form-group" data-bind="visible: !isDotRowsValid()">
+                        <div class="form-group hidden" data-bind="css: {hidden: isDotRowsValid()}">
                             <div class="col-sm-7">
                                 <div class="alert alert-danger"><b>Num. of Rows</b> is required and must be between 3 and 20.</div>
                             </div>
@@ -211,7 +178,7 @@
                                        class="form-control" data-bind="value: fillPercent, valueUpdate: 'afterkeydown'">
                             </div>
                         </div>
-                        <div class="form-group" data-bind="visible: !isFillPercentValid()">
+                        <div class="form-group hidden" data-bind="css: {hidden: isFillPercentValid()}">
                             <div class="col-sm-7">
                                 <div class="alert alert-danger"><b>Fill Percent %</b> is required and must be between 1 and 100.
                                 </div>
@@ -233,22 +200,62 @@
 
                     </form>
                 </div>
+
             </div>
+
         </div>
 
 
     </div>
 
+    <!-- Message for Canvas failure -->
     <div class="container hidden" id="failContainer">
 
         <div class="bs-callout bs-callout-danger">
             <h4>#BrowserFail</h4>
 
-            <p>Your browser doesn't support the HTML5 Canvas element.  Try updating to modern browser like Chrome.
+            <p>Your browser doesn't support the HTML5 Canvas element.  Try updating to a modern browser like Chrome.
             </p>
             <a href="https://www.google.com/intl/en/chrome/browser/" class="btn btn-primary btn-lg" role="button">Download Chrome</a>
         </div>
     </div>
+
+
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="http://code.createjs.com/createjs-2013.09.25.min.js"></script>
+
+    <script src="lib/dotBox-min.js"></script>
+
+    <!--<script src="lib/Observer-1.0.2.js" ></script>-->
+    <!--<script src="src/dotBox.utility.js"></script>-->
+    <!--<script src="src/dotBox.utility.line.js"></script>-->
+    <!--<script src="src/dotBox.utility.iterators.js"></script>-->
+    <!--<script src="src/dotBox.boxState.js"></script>-->
+    <!--<script src="src/dotBox.lineState.js"></script>-->
+    <!--<script src="src/dotBox.gameEngine.js"></script>-->
+    <!--<script src="src/dotBox.model.js"></script>-->
+    <!--<script src="src/dotBox.views.constants.js"></script>-->
+    <!--<script src="src/dotBox.views.viewContext.js"></script>-->
+    <!--<script src="src/dotBox.views.Color.js"></script>-->
+    <!--<script src="src/dotBox.views.board.js"></script>-->
+    <!--<script src="src/dotBox.views.score.js"></script>-->
+    <!--<script src="src/dotBox.views.gameOver.js"></script>-->
+    <!--<script src="src/dotBox.ai.utility.js"></script>-->
+    <!--<script src="src/dotBox.ai.AiPlayer.js"></script>-->
+    <!--<script src="src/dotBox.ai.AvoidThirdSide.js"></script>-->
+    <!--<script src="src/dotBox.ai.SingleBoxCloser.js"></script>-->
+    <!--<script src="src/dotBox.controller.js"></script>-->
+    <!--<script src="src/dotBox.game.js" ></script>-->
+    <!--<script src="src/dotBox.viewModel.js" ></script>-->
+    <!--<script src="src/dotBox.ko.js" ></script>-->
+    <!--<script src="src/app.js"></script>-->
+
 
 </body>
 </html>

@@ -96,10 +96,11 @@ dotBox.viewModel = (function () {
         var $container = $('#canvasContainer'),
             config = vm.toGameConfig();
 
-        $container.empty();
         if (vm.game !== null) {
             vm.game.stopGame();
         }
+
+        $container.empty();
 
         vm.game = $container.dotBox(config);
 
@@ -162,54 +163,4 @@ dotBox.viewModel = (function () {
 
     return vm;
 
-
-
 }());
-
-function isCanvasSupported() {
-    var elem = document.createElement('canvas');
-    return !!(elem.getContext && elem.getContext('2d'));
-}
-
-
-$(document).ready(function () {
-
-    $('.alert .close').on('click', function () {
-        $(this).parent().addClass('hidden');
-    });
-
-    if (!isCanvasSupported()) {
-        $('#mainContainer').addClass('hidden');
-        $('#failContainer').removeClass('hidden');
-        return;
-    }
-
-    ko.bindingHandlers.slider = {
-        init: function (element, valueAccessor, allBindingsAccessor) {
-            var options = allBindingsAccessor().sliderOptions || {};
-            $(element).slider(options);
-            ko.utils.registerEventHandler(element, "slidechange", function (event, ui) {
-                var observable = valueAccessor();
-                observable(ui.value);
-            });
-            ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
-                $(element).slider("destroy");
-            });
-            ko.utils.registerEventHandler(element, "slide", function (event, ui) {
-                var observable = valueAccessor();
-                observable(ui.value);
-            });
-        },
-        update: function (element, valueAccessor) {
-            var value = ko.utils.unwrapObservable(valueAccessor());
-            if (isNaN(value)) { value = 0; }
-            $(element).slider("value", value);
-
-        }
-    };
-
-    ko.applyBindings(dotBox.viewModel);
-
-    dotBox.viewModel.newGame();
-
-});

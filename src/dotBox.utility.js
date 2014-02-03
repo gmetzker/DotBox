@@ -74,6 +74,12 @@ dotBox.utility = dotBox.utility || {};
     }());
 
 
+    namespace.isCanvasSupported = function isCanvasSupported() {
+        var elem = document.createElement('canvas');
+        return !!(elem.getContext && elem.getContext('2d'));
+    };
+
+
 }(dotBox.utility));
 
 

@@ -20,6 +20,9 @@ java -jar /closure-compiler/compiler.jar --js \
 ../src/dotBox.ai.SingleBoxCloser.js \
 ../src/dotBox.controller.js \
 ../src/dotBox.game.js \
+../src/dotBox.viewModel.js \
+../src/dotBox.ko.js \
+../src/app.js \
 --js_output_file ../lib/dotBox-min.js \
 --create_source_map ../lib/dotBox-min.js.map \
 --compilation_level SIMPLE_OPTIMIZATIONS \
