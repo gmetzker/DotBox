@@ -15,12 +15,16 @@ $(document).ready(function () {
     }
 
     $('#newGameBtn').on('click', function () {
-        dotBox.viewModel.newGame();
 
-        $('html, body').animate({
-            
-            scrollTop: $("#canvasContainer").offset().top - 50
-        }, 300);
+        if (dotBox.viewModel.newGame()) {
+            $('html, body').animate({
+
+                scrollTop: $("#canvasContainer").offset().top - 50
+            }, 300);
+        }
+
+
+
 
     });
 

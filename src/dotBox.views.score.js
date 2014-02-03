@@ -200,7 +200,7 @@ dotBox.views.score = function (viewContext, model) {
 
 
         //Add the text shape that contains the current score.
-        tempShape = new createjs.Text("0", pixelConst.SCORE_FONT_SIZE + "px Helvetica", viewConst.SCORE_TXT_COLOR);
+        tempShape = new createjs.Text("0", pixelConst.SCORE_FONT_SIZE + "px " + viewConst.FONT, viewConst.SCORE_TXT_COLOR);
         tempShape.x = pixelConst.SCORE_BOX_W / 2;
         tempShape.y = P_SCORE_TOP_PAD + (height / 2);
         tempShape.textAlign = "center";
@@ -232,8 +232,9 @@ dotBox.views.score = function (viewContext, model) {
         container.addChild(tempShape);
         playerBg.push(tempShape);
 
+
         //Add player name
-        tempShape = new createjs.Text(name, pixelConst.P_NAME_FONT_SIZE + "px Helvetica", viewConst.SCORE_TXT_COLOR);
+        tempShape = new createjs.Text(name, pixelConst.P_NAME_FONT_SIZE + "px " + viewConst.FONT, viewConst.SCORE_TXT_COLOR);
         tempShape.x = pixelConst.SCORE_BOX_W / 2;
         tempShape.y = P_NAME_TOP;
         tempShape.textAlign = "center";

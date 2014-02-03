@@ -1,8 +1,7 @@
 
-.container {
-
-    /*border: 1px solid darkred;*/
-
+body{
+    font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
 #canvasContainer {

@@ -116,7 +116,7 @@ dotBox.views.gameOver = function (viewContext, model) {
 
 
         //Create the text message.
-        txtObj = new createjs.Text(textValue, FONT_SIZE + "px Helvetica", viewConstants.SCORE_TXT_COLOR);
+        txtObj = new createjs.Text(textValue, FONT_SIZE + "px " + viewConstants.FONT, viewConstants.SCORE_TXT_COLOR);
         txtObj.textAlign = "center";
         txtObj.textBaseline = "middle";
         txtBounds = txtObj.getBounds();

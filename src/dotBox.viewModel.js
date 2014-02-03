@@ -87,7 +87,7 @@ dotBox.viewModel = (function () {
 
         if (!vm.isValid()) {
             $('#globalError').removeClass('hidden');
-            return;
+            return false;
         }
 
         $('#globalError').addClass('hidden');
@@ -103,6 +103,8 @@ dotBox.viewModel = (function () {
         $container.empty();
 
         vm.game = $container.dotBox(config);
+
+        return true;
 
     };
 

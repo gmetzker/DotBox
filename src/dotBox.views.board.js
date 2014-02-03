@@ -622,11 +622,12 @@ dotBox.views.board = function (viewContext, model) {
         ds2 = getDotShape(box.lines[0].d2);
         x = ds1.x + ((ds2.x - ds1.x) / 2);
 
+
         ds1 = getDotShape(box.lines[1].d1);
         ds2 = getDotShape(box.lines[1].d2);
         y = ds1.y + ((ds2.y - ds1.y) / 2);
 
-        tempShape = new createjs.Text("+" + pointCount, pixelSizes.POINT_FONT_SIZE + "px Helvetica", viewConst.SCORE_TXT_COLOR);
+        tempShape = new createjs.Text("+" + pointCount, pixelSizes.POINT_FONT_SIZE + "px " + viewConst.FONT, viewConst.SCORE_TXT_COLOR);
         tempShape.x = x;
         tempShape.y = y;
         tempShape.textAlign = "center";
