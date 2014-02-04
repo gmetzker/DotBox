@@ -4,7 +4,7 @@ A JavaScript game of dots, lines, and boxes.
 
 
 
-### Play It!
+## Play It!
 http://www.gmetzker.com/dotBox
 
 
@@ -18,3 +18,15 @@ http://www.gmetzker.com/dotBox
 * Score boxes by connecting four sides of a box.
 * Get a free turn when you score a box.
 * Player who scores the most boxes wins.
+
+## Built With
+
+* Game Engine & AI is plain old JavaScript.
+* Game Engine javascript tests are built with [Jasmine] (http://pivotal.github.io/jasmine/).
+* Game UI is an HTML canvas with drawing and animations managed by [CreateJs and TweenJS](http://www.createjs.com/).
+* dotBox landing page UI built with 
+  * [BootStrap] (http://getbootstrap.com/)
+  * [KnockoutJS] (http://knockoutjs.com/)
+  * [JQuery] (http://jquery.com/)
+  * [JQuery UI](http://jqueryui.com/)
+
