@@ -103,8 +103,10 @@ dotBox.views.board = function (viewContext, model) {
 
     function onStopGame() {
 
+
         createjs.Ticker.removeEventListener("tick", tick);
 
+        createjs.Touch.disable(viewContext.stage);
         if (mouseOverIntervalId) {
 
             clearInterval(mouseOverIntervalId);
@@ -126,9 +128,21 @@ dotBox.views.board = function (viewContext, model) {
             .beginFill(viewConst.BOARD_BACK_COLOR)
             .drawRect(0, 0, viewContext.width(), viewContext.height());
 
+
+        bgShape.on('click', onBgClick);
+
         viewContext.stage.addChild(bgShape);
 
 
+    }
+
+    function onBgClick() {
+
+        var dotUnder = getDotFromUnderMouse(pixelSizes.DOT_RADIUS * 2.5);
+
+        if (dotUnder && !waitingForRemotePlayer) {
+            publishDotClick(dotUnder);
+        }
     }
 
 
@@ -218,10 +232,13 @@ dotBox.views.board = function (viewContext, model) {
 
     function startEventLoop() {
 
-        enableMouseOver(20);
+        if (!model.isTouchSupported()) {
+            enableMouseOver(20);
+        }
 
         createjs.Ticker.addEventListener("tick", tick);
         createjs.Ticker.setFPS(60);
+        createjs.Touch.enable(viewContext.stage, true);
 
 
     }
@@ -250,7 +267,7 @@ dotBox.views.board = function (viewContext, model) {
 
         var prevDotUnderMouse = lastDotUnderMouse,
             dotUnderMouse = getDotFromUnderMouse(pixelSizes.DOT_RADIUS * 2.5);
-           // dotIfInRollOverArea = getDotFromUnderMouse(pixelSizes.DOT_RADIUS * 2.5);
+
 
 
 

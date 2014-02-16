@@ -1,3 +1,5 @@
+/*global createjs */
+
 var dotBox = dotBox || {};
 
 dotBox.model = function model(gameEngine, gameConfig) {
@@ -20,9 +22,14 @@ dotBox.model = function model(gameEngine, gameConfig) {
         getCurrentPlayer: getCurrentPlayer,
         getPlayerBoxes: getPlayerBoxes,
         gameConfig: gameConfig,
-        isQuickStarting: isQuickStarting
+        isQuickStarting: isQuickStarting,
+        isTouchSupported: isTouchSupported
 
     };
+
+    function isTouchSupported() {
+        return createjs.Touch.isSupported();
+    }
 
     function getDotColCount() {
         return gameEngine.getDotCountLength();
