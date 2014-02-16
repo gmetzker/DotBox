@@ -237,7 +237,7 @@ dotBox.views.board = function (viewContext, model) {
         }
 
         createjs.Ticker.addEventListener("tick", tick);
-        createjs.Ticker.setFPS(60);
+        createjs.Ticker.setFPS(30);
         createjs.Touch.enable(viewContext.stage, true);
 
 
@@ -302,7 +302,11 @@ dotBox.views.board = function (viewContext, model) {
     }
 
     function tick() {
-        viewContext.stage.update();
+
+        if (createjs.Tween.hasActiveTweens()) {
+
+           viewContext.stage.update();
+        }
     }
 
     function getDotColor(dot) {
