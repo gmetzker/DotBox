@@ -59,6 +59,10 @@ div.panel-heading span h4 {
     color: rgba(255, 255, 255, 0.75);
 }
 
+.container#canvasContainer {
+    padding: 0;
+}
+
 
 /* Base styles (regardless of theme) */
 .bs-callout {

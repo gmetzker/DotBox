@@ -10,11 +10,11 @@ dotBox.viewModel = (function () {
         playerMode: ko.observable('pvc'),
         playerName1: ko.observable('PLAYER 1'),
         playerName2Custom: ko.observable('PLAYER 2'),
-        dotCols: ko.observable(10),
+        dotCols: ko.observable(6),
         dotRows: ko.observable(6),
         quickGame: ko.observable(true),
         fillPercentCustom: ko.observable(30),
-        uiScale: ko.observable(1.25),
+        uiScale: ko.observable(1.50),
         game: null
     };
 

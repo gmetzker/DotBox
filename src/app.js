@@ -9,6 +9,7 @@ $(document).ready(function () {
 
     // Display an error if the browser doesn't support the canvas.
     if (!dotBox.utility.isCanvasSupported()) {
+        $('#canvasContainer').addClass('hidden');
         $('#mainContainer').addClass('hidden');
         $('#failContainer').removeClass('hidden');
         return;
