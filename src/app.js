@@ -31,6 +31,15 @@ $(document).ready(function () {
 
     dotBox.ko.addCustomBindings();
 
+    //Change the default dot size if the screen is large enough.
+    if ($(window).width() > 510) {
+        dotBox.viewModel.dotCols(10);
+    } else {
+        dotBox.viewModel.dotCols(6);
+    }
+
+
+
     ko.applyBindings(dotBox.viewModel);
 
     dotBox.viewModel.newGame();
