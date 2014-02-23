@@ -44,4 +44,5 @@ $(document).ready(function () {
 
     dotBox.viewModel.newGame();
 
+
 });
