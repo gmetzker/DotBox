@@ -247,11 +247,20 @@ dotBox.controller = function (observer, config) {
 
         }
 
-        model.isQuickStarting = false;
+        setTimeout(function () {
 
-        if (isPlayerAi(gameEngine.getCurrentPlayer())) {
-            makeAiMove(gameEngine.getCurrentPlayer());
-        }
+            model.isQuickStarting = false;
+
+            observer.publish("endQuickStart");
+
+            if (isPlayerAi(gameEngine.getCurrentPlayer())) {
+                makeAiMove(gameEngine.getCurrentPlayer());
+            }
+
+
+        }, 350);
+
+       
 
     }
 

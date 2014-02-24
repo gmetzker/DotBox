@@ -73,6 +73,9 @@ dotBox.views.board = function (viewContext, model) {
 
         viewContext.observer.subscribe('startGame', onStartGame);
 
+        viewContext.observer.subscribe('endQuickStart', onEndQuickStart);
+        
+
         viewContext.observer.subscribe('view.dotRollOver', onDotRollOver);
 
         viewContext.observer.subscribe('view.dotRollOut', onDotRollOut);
@@ -129,21 +132,14 @@ dotBox.views.board = function (viewContext, model) {
             .drawRect(0, 0, viewContext.width(), viewContext.height());
 
 
-        bgShape.on('click', onBgClick);
+        bgShape.on('click', onShapeClick);
 
         viewContext.stage.addChild(bgShape);
 
 
     }
 
-    function onBgClick() {
-
-        var dotUnder = getDotFromUnderMouse(pixelSizes.DOT_RADIUS * 2.5);
-
-        if (dotUnder && !waitingForRemotePlayer) {
-            publishDotClick(dotUnder);
-        }
-    }
+  
 
 
     function drawInitialView() {
@@ -530,26 +526,13 @@ dotBox.views.board = function (viewContext, model) {
 
     }
 
-    function onShapeClick(e) {
+    function onShapeClick() {
 
-        var objectsUnder,
-            dotShapes,
-            isDotShape;
+        var dotUnder = getDotFromUnderMouse(pixelSizes.DOT_RADIUS * 2.5);
 
-        objectsUnder = viewContext.stage.getObjectsUnderPoint(e.stageX, e.stageY);
-
-        isDotShape = function isDotShape(shape) {
-
-            return !util.isNullOrUndefined(shape.dot);
-
-        };
-
-        dotShapes = objectsUnder.filter(isDotShape);
-
-        if (dotShapes.length > 0) {
-            onDotClick.apply(dotShapes[0]);
+        if (dotUnder) {
+            onDotClick.apply({ dot: dotUnder });
         }
-
 
     }
 
@@ -868,7 +851,9 @@ dotBox.views.board = function (viewContext, model) {
     }
 
 
-
+    function onEndQuickStart() {
+        viewContext.stage.update();
+    }
 
     return {
 
