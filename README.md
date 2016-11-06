@@ -22,7 +22,7 @@ http://www.gmetzker.com/dotBox
 ## Built With
 
 * Game Engine & AI is plain old JavaScript.
-* Game Engine javascript tests are built with [Jasmine] (http://pivotal.github.io/jasmine/).
+* Game Engine javascript tests are built with [Jasmine] (https://jasmine.github.io/).
 * Game UI is an HTML canvas with drawing and animations managed by [CreateJs and TweenJS](http://www.createjs.com/).
 * dotBox landing page UI built with 
   * [BootStrap] (http://getbootstrap.com/)
